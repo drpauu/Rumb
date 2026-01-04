@@ -1,0 +1,14 @@
+name: Generate daily/weekly levels
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Supabase Edge Function
+        run: |
+          curl -sS -X POST "https://ahkrdvxcgsshihhsezzr.supabase.co/functions/v1/generate-level"

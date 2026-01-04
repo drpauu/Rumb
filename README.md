@@ -20,6 +20,21 @@ npm run build:map
 npm run dev
 ```
 
+## Nivells diaris i setmanals
+El generador usa la clau de servei de Supabase per inserir nivells a la base de dades.
+
+### Execucio manual
+```
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run level:daily
+SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run level:weekly
+```
+
+### Programacio amb cron (exemple)
+```
+1 0 * * * cd /Users/pau/Desktop/GitHub/Rumb/Rumb && SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run level:daily
+1 0 * * 1 cd /Users/pau/Desktop/GitHub/Rumb/Rumb && SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... npm run level:weekly
+```
+
 ## Notes
 - Si el camp del nom no es detecta, pots indicar-lo amb:
 ```

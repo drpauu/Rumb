@@ -23,12 +23,17 @@ body {
   background: radial-gradient(circle at top, var(--panel) 0%, var(--bg) 55%);
   color: var(--text);
   min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .page {
   padding: 32px;
   display: grid;
   gap: 20px;
+  min-height: 100vh;
+  height: 100vh;
+  grid-template-rows: auto 1fr;
 }
 
 .topbar {
@@ -39,6 +44,14 @@ body {
   align-items: center;
 }
 
+.topbar-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
 .streak-card {
   display: grid;
   gap: 4px;
@@ -47,6 +60,93 @@ body {
   border-radius: 14px;
   padding: 10px 14px;
   min-width: 160px;
+}
+
+.calendar-card {
+  display: grid;
+  gap: 8px;
+  background: rgba(17, 19, 24, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px 12px;
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.calendar-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calendar-tab {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(11, 12, 15, 0.6);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.calendar-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0e1116;
+  font-weight: 600;
+}
+
+.calendar-list {
+  display: grid;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.calendar-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 11, 15, 0.5);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.calendar-entry:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-entry.done {
+  border-color: rgba(47, 143, 77, 0.6);
+  color: #bfe8cd;
+}
+
+.calendar-entry.active {
+  border-color: rgba(89, 166, 162, 0.8);
+  box-shadow: 0 0 0 2px rgba(89, 166, 162, 0.2);
+}
+
+.calendar-entry.current {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.calendar-entry:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.calendar-status {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--success);
 }
 
 .eyebrow {
@@ -72,13 +172,17 @@ h1 {
   grid-template-columns: minmax(0, 2.2fr) minmax(240px, 1fr);
   gap: 18px;
   align-items: start;
+  min-height: 0;
+  height: 100%;
 }
 
 .side-panel {
   display: grid;
   gap: 16px;
-  max-height: 80vh;
+  height: 100%;
+  max-height: none;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 6px;
 }
 
@@ -89,6 +193,34 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.06);
   display: grid;
   gap: 12px;
+}
+
+.panel-card.panel-primary {
+  box-shadow: 0 0 0 1px rgba(89, 166, 162, 0.15);
+}
+
+.value.start {
+  color: #2e6fda;
+  font-weight: 600;
+}
+
+.value.target {
+  color: #d6453a;
+  font-weight: 600;
+}
+
+.value.urgent {
+  color: #d6453a;
+  font-weight: 600;
+}
+
+.value.dim {
+  color: transparent;
+}
+
+.value.is-perfect {
+  color: #7fe1a7;
+  font-weight: 600;
 }
 
 .guess-form {
@@ -200,7 +332,7 @@ h1 {
 .ranking-lists {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .ranking-list {
@@ -214,6 +346,18 @@ h1 {
 .achievements {
   display: grid;
   gap: 8px;
+}
+
+.achievement-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 17, 20, 0.6);
+  font-size: 0.85rem;
 }
 
 .achievement {
@@ -301,6 +445,12 @@ h1 {
   border: 1px solid rgba(89, 166, 162, 0.5);
 }
 
+.badge.success {
+  border-color: rgba(47, 143, 77, 0.6);
+  background: rgba(47, 143, 77, 0.2);
+  color: #7fe1a7;
+}
+
 .powerups {
   display: grid;
   gap: 8px;
@@ -347,6 +497,10 @@ h1 {
   background: rgba(89, 166, 162, 0.15);
 }
 
+.theme-button.locked {
+  opacity: 0.7;
+}
+
 .theme-button:disabled {
   opacity: 0.5;
   cursor: default;
@@ -383,10 +537,23 @@ h1 {
   cursor: default;
 }
 
+.group-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.group-controls input {
+  background: #111318;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--text);
+}
+
 .group-row {
   display: grid;
   gap: 6px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
 }
 
@@ -396,6 +563,21 @@ h1 {
   border-radius: 10px;
   padding: 8px 10px;
   color: var(--text);
+}
+
+.ghost {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.ghost:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .history-list {
@@ -420,37 +602,6 @@ h1 {
 .history-main {
   font-size: 0.85rem;
   color: var(--text);
-}
-.legend {
-  display: grid;
-  gap: 6px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.swatch {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  background: var(--accent);
-}
-
-.swatch.start {
-  background: #2e6fda;
-}
-
-.swatch.target {
-  background: #d6453a;
-}
-
-.swatch.guess {
-  background: var(--guess);
 }
 
 .reset {
@@ -492,7 +643,8 @@ h1 {
   background: var(--panel);
   border-radius: 22px;
   padding: 18px;
-  min-height: 60vh;
+  min-height: 0;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -678,6 +830,10 @@ h1 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.mode-buttons.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .mode-button {
   background: #111318;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -694,12 +850,75 @@ h1 {
   background: rgba(89, 166, 162, 0.2);
 }
 
+.mode-button.done {
+  border-color: rgba(47, 143, 77, 0.6);
+  background: rgba(47, 143, 77, 0.2);
+}
+
+.difficulty-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.difficulty-button {
+  display: grid;
+  gap: 4px;
+  background: #111318;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.difficulty-button.active {
+  border-color: rgba(89, 166, 162, 0.6);
+  background: rgba(89, 166, 162, 0.18);
+}
+
+.difficulty-button.locked {
+  opacity: 0.7;
+}
+
+.difficulty-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.difficulty-button .price {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
 .level-select {
   background: #111318;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 8px 10px;
   color: var(--text);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.toggle-row input {
+  accent-color: var(--accent);
+}
+
+.range-row {
+  display: grid;
+  gap: 6px;
+}
+
+.range-row input[type="range"] {
+  width: 100%;
 }
 
 .hint-button {
@@ -739,6 +958,8 @@ h1 {
   padding: 22px;
   max-width: 520px;
   width: min(520px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
   display: grid;
   gap: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -765,12 +986,29 @@ h1 {
 }
 
 @media (max-width: 900px) {
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
   .page {
     padding: 20px;
+    height: auto;
+    min-height: 100vh;
   }
 
   .topbar {
     align-items: flex-start;
+  }
+
+  .topbar-right {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .calendar-card {
+    width: 100%;
+    max-width: none;
   }
 
   .stats {
@@ -779,6 +1017,10 @@ h1 {
 
   .mode-buttons {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .difficulty-grid {
+    grid-template-columns: 1fr;
   }
 
   .scope-buttons {
@@ -794,6 +1036,7 @@ h1 {
   }
 
   .side-panel {
+    height: auto;
     max-height: none;
     overflow: visible;
     padding-right: 0;
