@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { geoMercator, geoPath } from "d3-geo";
 import { select } from "d3-selection";
 import { zoom, zoomIdentity } from "d3-zoom";
 import { feature, mesh, neighbors as topoNeighbors } from "topojson-client";
-import confetti from "canvas-confetti";
-import { supabase } from "./lib/supabase.js";
+import { supabase, supabaseEnabled } from "./lib/supabase.js";
 
 const VIEW_WIDTH = 900;
 const VIEW_HEIGHT = 700;
@@ -12,24 +11,29 @@ const MAP_ID = "catalunya";
 const DEFAULT_TIME_LIMIT_MS = 180000;
 const LEADERBOARD_KEY = "rumb-leaderboard-v2";
 const HISTORY_KEY = "rumb-history-v1";
-const ACHIEVEMENTS_KEY = "rumb-achievements-v2";
-const ACHIEVEMENTS_CLAIMED_KEY = "rumb-achievements-claimed-v1";
 const PLAYER_KEY = "rumb-player-id";
 const STREAK_KEY = "rumb-daily-streak-v1";
-const WEEKLY_KEY = "rumb-weekly-v1";
-const THEMES_KEY = "rumb-themes-v1";
 const ACTIVE_THEME_KEY = "rumb-theme-active-v1";
-const COLLECTIBLES_KEY = "rumb-segells-v1";
-const GROUP_KEY = "rumb-group-v1";
-const GROUP_META_KEY = "rumb-group-meta-v1";
-const ROVELLONS_KEY = "rumb-rovellons-v1";
 const DIFFICULTY_UNLOCKS_KEY = "rumb-difficulty-unlocks-v1";
 const LEVEL_STATS_KEY = "rumb-level-stats-v1";
 const DAILY_RESULTS_KEY = "rumb-daily-results-v1";
 const WEEKLY_RESULTS_KEY = "rumb-weekly-results-v1";
+const CALENDAR_WEEKDAYS = ["dl", "dt", "dc", "dj", "dv", "ds", "dg"];
+const CALENDAR_CACHE_KEY = "rumb-calendar-cache-v1";
+const CALENDAR_CACHE_TTL_MS = 1000 * 60 * 15;
 const LANGUAGE_KEY = "rumb-language-v1";
 const MUSIC_SETTINGS_KEY = "rumb-music-settings-v1";
 const SFX_SETTINGS_KEY = "rumb-sfx-settings-v1";
+const MAP_CACHE_KEY = "rumb-map-cache-v1";
+const MAP_CACHE_VERSION = "2026-01-05";
+const MAP_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
+const MAP_TOPO_URL = `/catalunya-comarques.topojson?v=${MAP_CACHE_VERSION}`;
+const PING_URL = import.meta.env.VITE_PING_URL || "https://example.com/";
+const TELEMETRY_QUEUE_KEY = "rumb-telemetry-queue-v1";
+const ATTEMPTS_QUEUE_KEY = "rumb-attempts-queue-v1";
+const MAX_TELEMETRY_QUEUE = 200;
+const MAX_ATTEMPTS_QUEUE = 50;
+const LEVEL_STATS_MAX = 200;
 
 const DIFFICULTIES = [
   {
@@ -89,15 +93,6 @@ const DIFFICULTIES = [
     fog: true
   }
 ];
-
-const DIFFICULTY_COSTS = {
-  dominguero: 60,
-  tastaolletes: 90,
-  rondinaire: 130,
-  "ciclista-cuneta": 180,
-  "ninja-pirineu": 240,
-  "cap-colla-rutes": 320
-};
 
 const PRIMARY_MODES = [
   { id: "normal", label: "Normal" },
@@ -240,35 +235,28 @@ const THEMES = [
   }
 ];
 
-const THEME_COSTS = {
-  terra: 80,
-  mar: 90,
-  pinyer: 100,
-  nit: 120
-};
-
 const MUSIC_TRACKS = [
   {
     id: "segadors",
-    label: "Els Segadors (melodia)",
+    label: "Els Segadors",
     tempo: 360,
     notes: [392, 440, 494, 523, 494, 440, 392, 349, 392, 440],
     lyrics:
       "Catalunya triomfant, tornarà a ser rica i plena; endarrere aquesta gent tan ufana i tan superba."
   },
   {
-    id: "sardana",
-    label: "Sardana de plaça",
+    id: "santa-espina",
+    label: "La Santa Espina",
     tempo: 320,
     notes: [330, 392, 440, 494, 440, 392, 349, 392, 440, 392],
-    lyrics: "Un pas endavant, un pas enrere, a plaça i amb somriure."
+    lyrics: "Som i serem gent catalana, tant si es vol com si no es vol."
   },
   {
-    id: "rumba",
-    label: "Rumba catalana",
+    id: "estaca",
+    label: "L'Estaca",
     tempo: 260,
     notes: [392, 523, 587, 523, 494, 440, 392, 440, 494, 523],
-    lyrics: "Palmes i guitarres, ritme a la Rambla i alegria."
+    lyrics: "Si estirem tots, ella caurà, i molt de temps no pot durar."
   }
 ];
 
@@ -287,6 +275,8 @@ const STRINGS = {
     target: "Destí",
     rule: "Norma",
     difficulty: "Dificultat",
+    description:
+      "Escriu comarques per connectar l'inici i el destí. L'ordre no importa: el camí ha de ser continu.",
     time: "Temps",
     timeLeft: "Temps restant",
     coins: "Rovellons",
@@ -297,6 +287,14 @@ const STRINGS = {
     calendar: "Calendari",
     calendarLoading: "Carregant calendari...",
     calendarEmpty: "Sense nivells",
+    calendarPlayDaily: "Jugar diari",
+    calendarPlayWeekly: "Jugar setmanal",
+    calendarNoLevel: "Sense nivell",
+    previous: "Anterior",
+    next: "Següent",
+    close: "Tanca",
+    offline: "Sense connexió",
+    backendOffline: "Sense backend",
     completed: "Completat",
     mode: "Mode",
     normal: "Normal",
@@ -345,6 +343,7 @@ const STRINGS = {
     topTime: "Top temps",
     topAttempts: "Top intents",
     topRoute: "Top ruta",
+    distribution: "Distribució del temps",
     bestTimes: "Millors temps",
     shortestRoute: "Ruta més curta",
     fewestAttempts: "Menys intents",
@@ -366,6 +365,8 @@ const STRINGS = {
     target: "Destin",
     rule: "Nòrma",
     difficulty: "Dificultat",
+    description:
+      "Escriu comarques entà connectar l'inici e eth destin. Er òrdre non importa: eth camín a d'èsser contin.",
     time: "Temps",
     timeLeft: "Temps restant",
     coins: "Rovellons",
@@ -373,6 +374,7 @@ const STRINGS = {
     weekly: "Setmanau",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanau",
+    calendar: "Calendari",
     completed: "Completat",
     mode: "Mòde",
     normal: "Normau",
@@ -398,6 +400,14 @@ const STRINGS = {
     achievements: "Assoliments",
     collect: "Recuelh",
     config: "Configuracion",
+    calendarPlayDaily: "Jugar diari",
+    calendarPlayWeekly: "Jugar setmanau",
+    calendarNoLevel: "Sense nivèl",
+    previous: "Anterior",
+    next: "Seguent",
+    close: "Tanca",
+    offline: "Sense connexion",
+    backendOffline: "Sense servidor",
     theme: "Tèma",
     music: "Musica",
     sounds: "Sons",
@@ -421,6 +431,7 @@ const STRINGS = {
     topTime: "Top temps",
     topAttempts: "Top intents",
     topRoute: "Top ròta",
+    distribution: "Distribucion deth temps",
     bestTimes: "Melhors temps",
     shortestRoute: "Ròta mès curta",
     fewestAttempts: "Menys intents",
@@ -438,27 +449,30 @@ const STRINGS = {
     ok: "D'acord"
   },
   gironi: {
-    start: "Inici, noi",
+    start: "Inici, noi de Girona",
     target: "Destí, nano",
-    rule: "Norma, eh",
-    difficulty: "Dificultat",
-    time: "Temps",
-    timeLeft: "Temps que queda, va",
+    rule: "Norma, tu",
+    difficulty: "Dificultat, eh",
+    description:
+      "Escriu comarques per lligar l'inici i el destí. L'ordre no pinta res: només val que el camí sigui seguit.",
+    time: "Temps, nano",
+    timeLeft: "Temps que queda, eh",
     coins: "Rovellons",
-    daily: "Diari",
-    weekly: "Setmanal",
+    daily: "Diari, noi",
+    weekly: "Setmanal, nano",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    calendar: "Calendari, noi",
     completed: "Fet i ben fet",
-    mode: "Mode",
-    normal: "Normalet",
-    timed: "Contrarellotge a saco",
-    explore: "Explora-ho tot",
+    mode: "Mode, noi",
+    normal: "Normalet de barri",
+    timed: "Contrarellotge a sac",
+    explore: "Explora-ho tot, va",
     buy: "Pilla-ho",
     locked: "Tancat amb pany",
     unlock: "Desbloqueja-ho",
-    powerups: "Comodins, nano",
-    stats: "Números i tralla",
+    powerups: "Comodins de tralla",
+    stats: "Números i xarrup",
     attempts: "Intents",
     bestTime: "Millor temps",
     bestAttempts: "Record d'intents",
@@ -473,30 +487,39 @@ const STRINGS = {
     joinGroup: "Entra-hi",
     achievements: "Assoliments",
     collect: "Recull",
-    config: "Ajustos",
-    theme: "Tema",
-    music: "Música",
-    sounds: "Sorollets",
-    language: "Parla",
-    volume: "Volum",
-    newGame: "Nova partida",
-    guessLabel: "Escriu una comarca, noi",
-    submit: "Prova",
+    config: "Ajustos de la vida",
+    calendarPlayDaily: "Juga diari, noi",
+    calendarPlayWeekly: "Juga setmanal, nano",
+    calendarNoLevel: "Sense nivell, apa",
+    previous: "Enrere",
+    next: "Següent",
+    close: "Tanca",
+    offline: "Sense xarxa, noi",
+    backendOffline: "Backend caigut, nano",
+    theme: "Tema, noi",
+    music: "Música, eh",
+    sounds: "Sorollets, nano",
+    language: "Parla, noi",
+    volume: "Volum, eh",
+    newGame: "Nova partida, som-hi",
+    guessLabel: "Escriu una comarca, nano",
+    submit: "Prova-ho",
     noMatch: "No hi ha res, nano",
     levelLocked: "Nivell bloquejat",
     buyFor: "Pilla per {value}",
     reward: "Premi",
     dailyDone: "Diari fet",
     weeklyDone: "Setmanal fet",
-    noRule: "Sense norma, noi",
+    noRule: "Sense norma, eh",
     path: "Camí escrit",
     fixedDifficulty: "Dificultat fixa, no toquis res.",
     yourPath: "El teu recorregut",
-    correctPath: "Resultat bo de veritat",
+    correctPath: "Resultat bo de debò",
     shortestCount: "Camí més curt: {value} comarques",
     topTime: "Top temps, noi",
     topAttempts: "Top intents, nano",
     topRoute: "Top ruta",
+    distribution: "Distribució del temps, noi",
     bestTimes: "Millors temps",
     shortestRoute: "Ruta més curta",
     fewestAttempts: "Menys intents",
@@ -516,17 +539,20 @@ const STRINGS = {
   barceloni: {
     start: "Inici, tio",
     target: "Destí, tronco",
-    rule: "Norma",
-    difficulty: "Dificultat",
-    time: "Temps",
+    rule: "Norma, bro",
+    difficulty: "Dificultat, tio",
+    description:
+      "Escriu comarques per enganxar l'inici i el destí. L'ordre tant fa: el camí ha de quadrar, bro.",
+    time: "Temps, bro",
     timeLeft: "Temps que queda, bro",
     coins: "Rovellons",
-    daily: "Diari",
-    weekly: "Setmanal",
+    daily: "Diari, bro",
+    weekly: "Setmanal, bro",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    calendar: "Calendari, bro",
     completed: "Fet, bro",
-    mode: "Mode",
+    mode: "Mode, bro",
     normal: "Normalillo",
     timed: "Contrarellotge a saco",
     explore: "Explora-ho, killa",
@@ -549,15 +575,23 @@ const STRINGS = {
     joinGroup: "M'hi apunto",
     achievements: "Assoliments",
     collect: "Pilla",
-    config: "Config",
-    theme: "Tema",
-    music: "Música",
-    sounds: "Sons",
-    language: "Idioma",
-    volume: "Volum",
-    newGame: "Nova partida",
+    config: "Config, bro",
+    calendarPlayDaily: "Juga diari, bro",
+    calendarPlayWeekly: "Juga setmanal, bro",
+    calendarNoLevel: "Res avui, bro",
+    previous: "Enrere",
+    next: "Següent",
+    close: "Tanca",
+    offline: "Sense wifi, bro",
+    backendOffline: "Backend KO, bro",
+    theme: "Tema, bro",
+    music: "Música, bro",
+    sounds: "Sons, tio",
+    language: "Idioma, bro",
+    volume: "Volum, tio",
+    newGame: "Nova partida, bro",
     guessLabel: "Escriu una comarca, crack",
-    submit: "Prova",
+    submit: "Prova-ho",
     noMatch: "No hi ha res, bro",
     levelLocked: "Nivell bloquejat",
     buyFor: "Compra per {value}",
@@ -568,11 +602,12 @@ const STRINGS = {
     path: "Camí escrit",
     fixedDifficulty: "Dificultat fixa, no maregis",
     yourPath: "El teu recorregut",
-    correctPath: "Resultat correcte",
+    correctPath: "Resultat correcte, bro",
     shortestCount: "Camí més curt: {value} comarques",
     topTime: "Top temps, bro",
     topAttempts: "Top intents, bro",
     topRoute: "Top ruta",
+    distribution: "Distribució del temps, bro",
     bestTimes: "Millors temps",
     shortestRoute: "Ruta més curta",
     fewestAttempts: "Menys intents",
@@ -592,25 +627,28 @@ const STRINGS = {
   tarragoni: {
     start: "Inici, xiquet",
     target: "Destí, xiqueta",
-    rule: "Norma",
-    difficulty: "Dificultat",
-    time: "Temps",
+    rule: "Norma, xe",
+    difficulty: "Dificultat, xe",
+    description:
+      "Escriu comarques per ajuntar l'inici i el destí. L'ordre tant se val, xe: el camí ha d'encaixar.",
+    time: "Temps, xe",
     timeLeft: "Temps que queda, xe",
     coins: "Rovellons",
-    daily: "Diari",
-    weekly: "Setmanal",
+    daily: "Diari, xe",
+    weekly: "Setmanal, xe",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    calendar: "Calendari, xe",
     completed: "Fet i llest",
-    mode: "Mode",
+    mode: "Mode, xe",
     normal: "Normalet",
     timed: "Contrarellotge a tota castanya",
     explore: "Explora-ho, xe",
     buy: "Compra-ho",
     locked: "Tancat",
     unlock: "Desbloqueja-ho",
-    powerups: "Comodins",
-    stats: "Números",
+    powerups: "Comodins, xe",
+    stats: "Números, xe",
     attempts: "Intents",
     bestTime: "Millor temps",
     bestAttempts: "Record d'intents",
@@ -625,15 +663,23 @@ const STRINGS = {
     joinGroup: "M'hi fiqui",
     achievements: "Assoliments",
     collect: "Recull",
-    config: "Configuració",
-    theme: "Tema",
-    music: "Música",
-    sounds: "Sons",
-    language: "Idioma",
-    volume: "Volum",
-    newGame: "Nova partida",
+    config: "Configuració, xe",
+    calendarPlayDaily: "Juga diari, xe",
+    calendarPlayWeekly: "Juga setmanal, xe",
+    calendarNoLevel: "No n'hi ha, xe",
+    previous: "Enrere",
+    next: "Següent",
+    close: "Tanca",
+    offline: "Sense xarxa, xe",
+    backendOffline: "Backend caigut, xe",
+    theme: "Tema, xe",
+    music: "Música, xe",
+    sounds: "Sons, xe",
+    language: "Idioma, xe",
+    volume: "Volum, xe",
+    newGame: "Nova partida, xe",
     guessLabel: "Escriu una comarca, xe",
-    submit: "Prova",
+    submit: "Prova-ho",
     noMatch: "No hi ha res, xiquet",
     levelLocked: "Nivell bloquejat",
     buyFor: "Compra per {value}",
@@ -644,7 +690,7 @@ const STRINGS = {
     path: "Camí escrit",
     fixedDifficulty: "Dificultat fixa, no toquis",
     yourPath: "El teu recorregut",
-    correctPath: "Resultat bo",
+    correctPath: "Resultat bo, xe",
     shortestCount: "Camí més curt: {value} comarques",
     topTime: "Top temps",
     topAttempts: "Top intents",
@@ -668,25 +714,28 @@ const STRINGS = {
   lleidata: {
     start: "Inici, lo",
     target: "Destí, lo",
-    rule: "Norma",
-    difficulty: "Dificultat",
-    time: "Temps",
-    timeLeft: "Temps que queda, va",
+    rule: "Norma, lo",
+    difficulty: "Dificultat, lo",
+    description:
+      "Escriu comarques per enganxar l'inici i el destí. L'ordre tant fa, lo: el camí ha d'anar seguit.",
+    time: "Temps, lo",
+    timeLeft: "Temps que queda, lo",
     coins: "Rovellons",
-    daily: "Diari",
-    weekly: "Setmanal",
+    daily: "Diari, lo",
+    weekly: "Setmanal, lo",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    calendar: "Calendari, lo",
     completed: "Fet i dat",
-    mode: "Mode",
+    mode: "Mode, lo",
     normal: "Normalet",
     timed: "Contrarellotge a saco",
-    explore: "Explora-ho, nano",
+    explore: "Explora-ho, lo",
     buy: "Compra-ho",
     locked: "Tancat",
     unlock: "Desbloqueja-ho",
-    powerups: "Comodins",
-    stats: "Números",
+    powerups: "Comodins, lo",
+    stats: "Números, lo",
     attempts: "Intents",
     bestTime: "Millor temps",
     bestAttempts: "Record d'intents",
@@ -701,15 +750,23 @@ const STRINGS = {
     joinGroup: "M'hi poso",
     achievements: "Assoliments",
     collect: "Recull",
-    config: "Configuració",
-    theme: "Tema",
-    music: "Música",
-    sounds: "Sons",
-    language: "Idioma",
-    volume: "Volum",
-    newGame: "Nova partida",
+    config: "Configuració, lo",
+    calendarPlayDaily: "Juga diari, lo",
+    calendarPlayWeekly: "Juga setmanal, lo",
+    calendarNoLevel: "No n'hi ha, lo",
+    previous: "Enrere",
+    next: "Següent",
+    close: "Tanca",
+    offline: "Sense xarxa, lo",
+    backendOffline: "Backend KO, lo",
+    theme: "Tema, lo",
+    music: "Música, lo",
+    sounds: "Sons, lo",
+    language: "Idioma, lo",
+    volume: "Volum, lo",
+    newGame: "Nova partida, lo",
     guessLabel: "Escriu una comarca, lo",
-    submit: "Prova",
+    submit: "Prova-ho",
     noMatch: "No n'hi ha cap, lo",
     levelLocked: "Nivell bloquejat",
     buyFor: "Compra per {value}",
@@ -720,7 +777,7 @@ const STRINGS = {
     path: "Camí escrit",
     fixedDifficulty: "Dificultat fixa, no maregis",
     yourPath: "El teu recorregut",
-    correctPath: "Resultat bo",
+    correctPath: "Resultat bo, lo",
     shortestCount: "Camí més curt: {value} comarques",
     topTime: "Top temps",
     topAttempts: "Top intents",
@@ -1263,21 +1320,6 @@ const RULE_TAGS = {
   "avoid-cadi": ["geo"]
 };
 
-const ACHIEVEMENTS = [
-  { id: "ruta-perfecta", label: "Ruta perfecta (camí més curt)", rewardCoins: 18 },
-  { id: "sense-pistes", label: "Sense comodins", rewardCoins: 12 },
-  { id: "rapid", label: "Menys d'1 minut", rewardCoins: 16 },
-  { id: "ruta-neta", label: "Ruta neta (sense extra)", rewardCoins: 10 },
-  { id: "marato", label: "Marató (8+ comarques)", rewardCoins: 20 },
-  { id: "sense-repeticions", label: "Sense repeticions", rewardCoins: 10 },
-  { id: "setmana-complerta", label: "Setmanal completat", rewardCoins: 22 },
-  { id: "streak-7", label: "7 dies seguits", rewardCoins: 16 },
-  { id: "streak-30", label: "30 dies seguits", rewardCoins: 26 },
-  { id: "speedrun-rapid", label: "Contrarellotge sota 1:30", rewardCoins: 18 },
-  { id: "secret-perfecta", label: "Ruta impecable", rewardCoins: 24, secret: true },
-  { id: "secret-explorador", label: "Explorador de segells", rewardCoins: 20, secret: true }
-];
-
 function pickRandom(list, rng = Math.random) {
   return list[Math.floor(rng() * list.length)];
 }
@@ -1311,6 +1353,48 @@ function formatTime(ms) {
   return `${minutes}:${remain.toString().padStart(2, "0")}`;
 }
 
+function formatTopPercent(value) {
+  if (!Number.isFinite(value)) return "—";
+  const clamped = Math.min(100, Math.max(1, Math.round(value)));
+  return `Top ${clamped}%`;
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(resource, options = {}, config = {}) {
+  const { retries = 2, backoffMs = 400 } = config;
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      const response = await fetch(resource, options);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response;
+    } catch (error) {
+      lastError = error;
+      if (attempt === retries) break;
+      await wait(backoffMs * 2 ** attempt);
+    }
+  }
+  throw lastError;
+}
+
+async function withRetry(action, config = {}) {
+  const { retries = 2, backoffMs = 400 } = config;
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      return await action();
+    } catch (error) {
+      lastError = error;
+      if (attempt === retries) break;
+      await wait(backoffMs * 2 ** attempt);
+    }
+  }
+  throw lastError;
+}
+
 function getRuleDifficulty(def) {
   if (def.difficulty) return def.difficulty;
   if (EXPERT_RULES.has(def.id)) return "expert";
@@ -1325,13 +1409,53 @@ function getRuleTags(def) {
 }
 
 function getDayKey(date = new Date()) {
-  return date.toISOString().slice(0, 10);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function getDayKeyOffset(offsetDays) {
   const date = new Date();
   date.setDate(date.getDate() + offsetDays);
   return getDayKey(date);
+}
+
+function getLocalDayKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getLocalDayKeyOffset(offsetDays) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return getLocalDayKey(date);
+}
+
+function normalizeDayKey(value) {
+  if (!value) return null;
+  if (value instanceof Date) return getLocalDayKey(value);
+  if (typeof value === "string") {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.valueOf())) return getLocalDayKey(parsed);
+  }
+  return null;
+}
+
+function normalizeWeekKey(value) {
+  if (!value) return null;
+  if (value instanceof Date) return getWeekKey(value);
+  if (typeof value === "string") {
+    const match = value.match(/^(\d{4})-W(\d{1,2})$/);
+    if (match) return `${match[1]}-W${match[2].padStart(2, "0")}`;
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.valueOf())) return getWeekKey(parsed);
+    return value;
+  }
+  return null;
 }
 
 function getWeekKey(date = new Date()) {
@@ -1344,18 +1468,254 @@ function getWeekKey(date = new Date()) {
   return `${target.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
+function buildMonthGrid(date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const startOffset = (first.getDay() + 6) % 7;
+  const start = new Date(first);
+  start.setDate(first.getDate() - startOffset);
+  return Array.from({ length: 42 }, (_, index) => {
+    const current = new Date(start);
+    current.setDate(start.getDate() + index);
+    return {
+      date: current,
+      key: getLocalDayKey(current),
+      inMonth: current.getMonth() === date.getMonth(),
+      label: current.getDate()
+    };
+  });
+}
+
+function buildWeeksForYear(year) {
+  const base = new Date(Date.UTC(year, 0, 4));
+  const day = (base.getUTCDay() + 6) % 7;
+  base.setUTCDate(base.getUTCDate() - day);
+  const weeks = [];
+  for (let i = 0; i < 53; i += 1) {
+    const current = new Date(base);
+    current.setUTCDate(base.getUTCDate() + i * 7);
+    const key = getWeekKey(current);
+    if (!weeks.find((entry) => entry.key === key)) {
+      weeks.push({ key, date: current });
+    }
+  }
+  return weeks;
+}
+
 function formatDayLabel(dayKey) {
   if (!dayKey) return "";
   const date = new Date(`${dayKey}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) return dayKey;
-  return date.toLocaleDateString("ca-ES", { day: "2-digit", month: "short" });
+  return date.toLocaleDateString("ca-ES", {
+    day: "2-digit",
+    month: "short",
+    timeZone: "Europe/Madrid"
+  });
+}
+
+function formatFullDayLabel(dayKey) {
+  if (!dayKey) return "";
+  const date = new Date(`${dayKey}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return dayKey;
+  const weekday = date.toLocaleDateString("ca-ES", {
+    weekday: "long",
+    timeZone: "Europe/Madrid"
+  });
+  const day = date.toLocaleDateString("ca-ES", {
+    day: "numeric",
+    timeZone: "Europe/Madrid"
+  });
+  const month = date.toLocaleDateString("ca-ES", {
+    month: "long",
+    timeZone: "Europe/Madrid"
+  });
+  const year = date.toLocaleDateString("ca-ES", {
+    year: "numeric",
+    timeZone: "Europe/Madrid"
+  });
+  return `${weekday} ${day} de ${month} del ${year}`;
+}
+
+function getWeekRange(weekKey) {
+  if (!weekKey) return null;
+  const [yearPart, weekPart] = weekKey.split("-W");
+  const year = Number(yearPart);
+  const week = Number(weekPart);
+  if (!year || !week) return null;
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const dayOfWeek = (jan4.getUTCDay() + 6) % 7;
+  const monday = new Date(Date.UTC(year, 0, 4 - dayOfWeek + (week - 1) * 7));
+  const sunday = new Date(monday);
+  sunday.setUTCDate(monday.getUTCDate() + 6);
+  return { start: monday, end: sunday };
 }
 
 function formatWeekLabel(weekKey) {
-  if (!weekKey) return "";
-  const [year, week] = weekKey.split("-W");
-  if (!year || !week) return weekKey;
-  return `Setm. ${week} - ${year}`;
+  const range = getWeekRange(weekKey);
+  if (!range) return weekKey || "";
+  const startDay = range.start.toLocaleDateString("ca-ES", {
+    day: "numeric",
+    timeZone: "Europe/Madrid"
+  });
+  const endDay = range.end.toLocaleDateString("ca-ES", {
+    day: "numeric",
+    timeZone: "Europe/Madrid"
+  });
+  const startMonth = range.start.toLocaleDateString("ca-ES", {
+    month: "long",
+    timeZone: "Europe/Madrid"
+  });
+  const endMonth = range.end.toLocaleDateString("ca-ES", {
+    month: "long",
+    timeZone: "Europe/Madrid"
+  });
+  const endYear = range.end.toLocaleDateString("ca-ES", {
+    year: "numeric",
+    timeZone: "Europe/Madrid"
+  });
+  if (startMonth === endMonth) {
+    return `del ${startDay} al ${endDay} de ${endMonth} ${endYear}`;
+  }
+  return `del ${startDay} de ${startMonth} al ${endDay} de ${endMonth} ${endYear}`;
+}
+
+function serializeAdjacency(adjacencyMap) {
+  return [...adjacencyMap.entries()].map(([id, neighbors]) => [id, [...neighbors]]);
+}
+
+function deserializeAdjacency(list) {
+  if (!Array.isArray(list)) return new Map();
+  return new Map(list.map(([id, neighbors]) => [id, new Set(neighbors || [])]));
+}
+
+function deserializeShortestPathCache(list) {
+  if (!Array.isArray(list)) return new Map();
+  return new Map(
+    list.map(([startId, targets]) => [startId, new Map(targets || [])])
+  );
+}
+
+function readMapCache() {
+  if (typeof window === "undefined") return null;
+  const raw = localStorage.getItem(MAP_CACHE_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed.version !== MAP_CACHE_VERSION) return null;
+    if (parsed.updatedAt && Date.now() - parsed.updatedAt > MAP_CACHE_TTL_MS) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeMapCache(payload) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(
+      MAP_CACHE_KEY,
+      JSON.stringify({ ...payload, version: MAP_CACHE_VERSION, updatedAt: Date.now() })
+    );
+  } catch {
+    // Sense espai a localStorage o privacitat estricta.
+  }
+}
+
+function readCalendarCache() {
+  if (typeof window === "undefined") return null;
+  const raw = localStorage.getItem(CALENDAR_CACHE_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed?.updatedAt) return null;
+    if (Date.now() - parsed.updatedAt > CALENDAR_CACHE_TTL_MS) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeCalendarCache(payload) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(
+      CALENDAR_CACHE_KEY,
+      JSON.stringify({ ...payload, updatedAt: Date.now() })
+    );
+  } catch {
+    // Sense espai a localStorage o privacitat estricta.
+  }
+}
+
+function buildShortestPathCache(adjacency) {
+  if (!adjacency || !adjacency.size) return new Map();
+  const ids = [...adjacency.keys()];
+  const cache = new Map();
+
+  ids.forEach((startId) => {
+    const queue = [startId];
+    const visited = new Set([startId]);
+    const prev = new Map();
+
+    while (queue.length) {
+      const current = queue.shift();
+      const neighbors = adjacency.get(current) || new Set();
+      for (const next of neighbors) {
+        if (visited.has(next)) continue;
+        visited.add(next);
+        prev.set(next, current);
+        queue.push(next);
+      }
+    }
+
+    const targetMap = new Map();
+    ids.forEach((targetId) => {
+      if (targetId === startId) {
+        targetMap.set(targetId, [startId]);
+        return;
+      }
+      if (!visited.has(targetId)) return;
+      const path = [targetId];
+      let step = targetId;
+      while (prev.has(step)) {
+        step = prev.get(step);
+        path.push(step);
+        if (step === startId) break;
+      }
+      targetMap.set(targetId, path.reverse());
+    });
+    cache.set(startId, targetMap);
+  });
+
+  return cache;
+}
+
+function readQueue(key) {
+  if (typeof window === "undefined") return [];
+  const raw = localStorage.getItem(key);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeQueue(key, items, max) {
+  if (typeof window === "undefined") return [];
+  const trimmed = items.slice(-max);
+  try {
+    localStorage.setItem(key, JSON.stringify(trimmed));
+  } catch {
+    // Sense espai al localStorage o privacitat estricta.
+  }
+  return trimmed;
+}
+
+function enqueueQueue(key, item, max) {
+  const list = readQueue(key);
+  list.push(item);
+  return writeQueue(key, list, max);
 }
 
 function getStreakTitle(streak) {
@@ -1364,6 +1724,16 @@ function getStreakTitle(streak) {
   if (streak >= 7) return "Ruter Constant";
   if (streak >= 3) return "Caminant";
   return "Explorador";
+}
+
+function getStreakTier(streak) {
+  if (streak >= 60) return "cap de colla";
+  if (streak >= 45) return "ninja del pirineu";
+  if (streak >= 30) return "ciclista de cuneta";
+  if (streak >= 21) return "rondinaire";
+  if (streak >= 14) return "tastaolletes";
+  if (streak >= 7) return "dominguero";
+  return "pixapi";
 }
 
 function getThemeById(id) {
@@ -1376,6 +1746,12 @@ function getPowerupUses(difficultyId) {
     uses[powerup.id] = powerup.uses[difficultyId] ?? 0;
   });
   return uses;
+}
+
+function getNextDifficultyId(currentId) {
+  const index = DIFFICULTIES.findIndex((entry) => entry.id === currentId);
+  if (index < 0 || index >= DIFFICULTIES.length - 1) return null;
+  return DIFFICULTIES[index + 1].id;
 }
 
 function formatRuleDifficulty(value) {
@@ -1405,9 +1781,11 @@ function mulberry32(seed) {
   };
 }
 
-function findShortestPath(startId, targetId, adjacency) {
+function findShortestPath(startId, targetId, adjacency, cache) {
   if (!startId || !targetId) return [];
   if (startId === targetId) return [startId];
+  const cached = cache?.get(startId)?.get(targetId);
+  if (cached) return cached;
   const queue = [startId];
   const visited = new Set([startId]);
   const prev = new Map();
@@ -1472,8 +1850,8 @@ function hasPathViaNode(startId, targetId, nodeId, adjacency, allowedSet) {
   return toTarget.length > 0;
 }
 
-function findShortestPathWithRule(startId, targetId, adjacency, rule, allIds) {
-  if (!rule) return findShortestPath(startId, targetId, adjacency);
+function findShortestPathWithRule(startId, targetId, adjacency, rule, allIds, cache) {
+  if (!rule) return findShortestPath(startId, targetId, adjacency, cache);
   if (rule.kind === "avoid") {
     const blocked = new Set(rule.comarcaIds || []);
     const allowed = new Set(allIds.filter((id) => !blocked.has(id)));
@@ -1483,17 +1861,17 @@ function findShortestPathWithRule(startId, targetId, adjacency, rule, allIds) {
     const candidates = rule.comarcaIds || [];
     let best = [];
     candidates.forEach((nodeId) => {
-      const first = findShortestPath(startId, nodeId, adjacency);
-      const second = findShortestPath(nodeId, targetId, adjacency);
+      const first = findShortestPath(startId, nodeId, adjacency, cache);
+      const second = findShortestPath(nodeId, targetId, adjacency, cache);
       if (!first.length || !second.length) return;
       const combined = first.concat(second.slice(1));
       if (!best.length || combined.length < best.length) {
         best = combined;
       }
     });
-    return best.length ? best : findShortestPath(startId, targetId, adjacency);
+    return best.length ? best : findShortestPath(startId, targetId, adjacency, cache);
   }
-  return findShortestPath(startId, targetId, adjacency);
+  return findShortestPath(startId, targetId, adjacency, cache);
 }
 
 function resolveRule(def, ctx) {
@@ -1605,6 +1983,91 @@ function evaluateRule(rule, ctx) {
   return { satisfied: true, failed: false };
 }
 
+function getLeaderboardKey(entry) {
+  if (!entry) return "";
+  if (entry.mode === "daily") return entry.dayKey ? `daily:${entry.dayKey}` : "";
+  if (entry.mode === "weekly") return entry.weekKey ? `weekly:${entry.weekKey}` : "";
+  const ruleId = entry.ruleId || "none";
+  return `${entry.mode}:${entry.difficulty}:${entry.startId}:${entry.targetId}:${ruleId}`;
+}
+
+function computeGaussianStats(values) {
+  const filtered = values.filter((value) => Number.isFinite(value));
+  if (!filtered.length) return null;
+  const mean = filtered.reduce((sum, value) => sum + value, 0) / filtered.length;
+  const variance =
+    filtered.reduce((sum, value) => sum + (value - mean) ** 2, 0) / filtered.length;
+  const std = Math.sqrt(variance) || 1;
+  return {
+    mean,
+    std,
+    min: Math.min(...filtered),
+    max: Math.max(...filtered),
+    count: filtered.length
+  };
+}
+
+function buildGaussianViz(stats, value, width = 260, height = 80) {
+  if (!stats || !Number.isFinite(stats.mean)) return null;
+  const sigma = Math.max(stats.std, stats.mean * 0.08, 1);
+  const rawMin = Math.min(
+    stats.mean - 3 * sigma,
+    stats.min ?? stats.mean - 3 * sigma
+  );
+  const rawMax = Math.max(
+    stats.mean + 3 * sigma,
+    stats.max ?? stats.mean + 3 * sigma
+  );
+  const min = Math.max(0, rawMin);
+  const max = Math.max(min + 1, rawMax);
+  const points = [];
+  const steps = 60;
+  for (let i = 0; i <= steps; i += 1) {
+    const x = min + ((max - min) * i) / steps;
+    const z = (x - stats.mean) / sigma;
+    const y = Math.exp(-0.5 * z * z);
+    points.push({ x, y });
+  }
+  const maxY = Math.max(...points.map((point) => point.y)) || 1;
+  const path = points
+    .map((point, index) => {
+      const x = ((point.x - min) / (max - min)) * width;
+      const y = height - (point.y / maxY) * height;
+      return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
+    })
+    .join(" ");
+  const clamped = Math.min(Math.max(value, min), max);
+  const markerX = ((clamped - min) / (max - min)) * width;
+  return { path, markerX, min, max, width, height };
+}
+
+function trimResults(results, limit) {
+  const entries = Object.entries(results || {});
+  if (entries.length <= limit) return results;
+  const sorted = entries.sort(([a], [b]) => a.localeCompare(b));
+  return Object.fromEntries(sorted.slice(-limit));
+}
+
+function trimLevelStats(stats, limit = LEVEL_STATS_MAX) {
+  const entries = Object.entries(stats || {});
+  if (entries.length <= limit) return stats;
+  const sorted = entries.sort(([, a], [, b]) => {
+    const timeA = a?.lastPlayed || 0;
+    const timeB = b?.lastPlayed || 0;
+    return timeA - timeB;
+  });
+  return Object.fromEntries(sorted.slice(-limit));
+}
+
+let confettiInstance = null;
+async function fireConfetti(options) {
+  if (!confettiInstance) {
+    const module = await import("canvas-confetti");
+    confettiInstance = module.default || module;
+  }
+  confettiInstance(options);
+}
+
 function getPlayerId() {
   if (typeof window === "undefined") return "anon";
   const stored = localStorage.getItem(PLAYER_KEY);
@@ -1616,9 +2079,17 @@ function getPlayerId() {
   return id;
 }
 
+function createEventId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export default function App() {
   const [comarques, setComarques] = useState([]);
   const [adjacency, setAdjacency] = useState(new Map());
+  const [shortestPathCache, setShortestPathCache] = useState(new Map());
   const [startId, setStartId] = useState(null);
   const [currentId, setCurrentId] = useState(null);
   const [targetId, setTargetId] = useState(null);
@@ -1628,6 +2099,7 @@ export default function App() {
   const [isFailed, setIsFailed] = useState(false);
   const [guessValue, setGuessValue] = useState("");
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const [guessError, setGuessError] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [shortestPath, setShortestPath] = useState([]);
@@ -1645,12 +2117,6 @@ export default function App() {
     const stored = localStorage.getItem("rumb-difficulty") || "";
     if (DIFFICULTIES.some((entry) => entry.id === stored)) return stored;
     return "pixapi";
-  });
-  const [coins, setCoins] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    const raw = localStorage.getItem(ROVELLONS_KEY);
-    const parsed = raw ? Number.parseInt(raw, 10) : 0;
-    return Number.isFinite(parsed) ? parsed : 0;
   });
   const [unlockedDifficulties, setUnlockedDifficulties] = useState(() => {
     if (typeof window === "undefined") return new Set(["pixapi"]);
@@ -1714,7 +2180,10 @@ export default function App() {
     if (!raw) return "segadors";
     try {
       const parsed = JSON.parse(raw);
-      return parsed?.track || "segadors";
+      const candidate = parsed?.track || "segadors";
+      return MUSIC_TRACKS.some((track) => track.id === candidate)
+        ? candidate
+        : "segadors";
     } catch {
       return "segadors";
     }
@@ -1726,29 +2195,6 @@ export default function App() {
   const [activeTheme, setActiveTheme] = useState(() => {
     if (typeof window === "undefined") return "default";
     return localStorage.getItem(ACTIVE_THEME_KEY) || "default";
-  });
-  const [themesOwned, setThemesOwned] = useState(() => {
-    if (typeof window === "undefined") return new Set(["default"]);
-    const raw = localStorage.getItem(THEMES_KEY);
-    if (!raw) return new Set(["default"]);
-    try {
-      const parsed = JSON.parse(raw);
-      const list = Array.isArray(parsed) ? parsed : ["default"];
-      return new Set(list.length ? list : ["default"]);
-    } catch {
-      return new Set(["default"]);
-    }
-  });
-  const [collectibles, setCollectibles] = useState(() => {
-    if (typeof window === "undefined") return new Set();
-    const raw = localStorage.getItem(COLLECTIBLES_KEY);
-    if (!raw) return new Set();
-    try {
-      const parsed = JSON.parse(raw);
-      return new Set(Array.isArray(parsed) ? parsed : []);
-    } catch {
-      return new Set();
-    }
   });
   const [history, setHistory] = useState(() => {
     if (typeof window === "undefined") return [];
@@ -1797,9 +2243,15 @@ export default function App() {
     }
   });
   const [calendarMode, setCalendarMode] = useState("daily");
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  });
   const [calendarDaily, setCalendarDaily] = useState([]);
   const [calendarWeekly, setCalendarWeekly] = useState([]);
   const [calendarStatus, setCalendarStatus] = useState("idle");
+  const [calendarLoaded, setCalendarLoaded] = useState(false);
   const [calendarSelection, setCalendarSelection] = useState(null);
   const [levelStats, setLevelStats] = useState(() => {
     if (typeof window === "undefined") return {};
@@ -1807,37 +2259,11 @@ export default function App() {
     if (!raw) return {};
     try {
       const parsed = JSON.parse(raw);
-      return parsed && typeof parsed === "object" ? parsed : {};
+      return parsed && typeof parsed === "object" ? trimLevelStats(parsed) : {};
     } catch {
       return {};
     }
   });
-  const [groupCode, setGroupCode] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const params = new URLSearchParams(window.location.search);
-    const stored = localStorage.getItem(GROUP_META_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        return parsed?.code || params.get("group") || "";
-      } catch {
-        return params.get("group") || "";
-      }
-    }
-    return params.get("group") || localStorage.getItem(GROUP_KEY) || "";
-  });
-  const [groupName, setGroupName] = useState(() => {
-    if (typeof window === "undefined") return "";
-    const stored = localStorage.getItem(GROUP_META_KEY);
-    if (!stored) return "";
-    try {
-      const parsed = JSON.parse(stored);
-      return parsed?.name || "";
-    } catch {
-      return "";
-    }
-  });
-  const [rankingScope, setRankingScope] = useState("global");
   const [powerups, setPowerups] = useState({});
   const [tempRevealId, setTempRevealId] = useState(null);
   const [tempNeighborHint, setTempNeighborHint] = useState(false);
@@ -1849,53 +2275,39 @@ export default function App() {
   const [leaderboardStatus, setLeaderboardStatus] = useState("idle");
   const [lastEntryId, setLastEntryId] = useState(null);
   const [copyStatus, setCopyStatus] = useState("idle");
-  const [groupCopyStatus, setGroupCopyStatus] = useState("idle");
-  const [unlocked, setUnlocked] = useState(() => {
-    if (typeof window === "undefined") return new Set();
-    const raw = localStorage.getItem(ACHIEVEMENTS_KEY);
-    if (!raw) return new Set();
-    try {
-      const parsed = JSON.parse(raw);
-      return new Set(parsed);
-    } catch {
-      return new Set();
-    }
-  });
-  const [claimedAchievements, setClaimedAchievements] = useState(() => {
-    if (typeof window === "undefined") return new Set();
-    const raw = localStorage.getItem(ACHIEVEMENTS_CLAIMED_KEY);
-    if (!raw) return new Set();
-    try {
-      const parsed = JSON.parse(raw);
-      return new Set(Array.isArray(parsed) ? parsed : []);
-    } catch {
-      return new Set();
-    }
-  });
   const [supabaseUserId, setSupabaseUserId] = useState(null);
+  const [supabaseBlocked, setSupabaseBlocked] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   const [timeLimitMs, setTimeLimitMs] = useState(DEFAULT_TIME_LIMIT_MS);
   const [timePenaltyMs, setTimePenaltyMs] = useState(0);
-  const [showAllAchievementsModal, setShowAllAchievementsModal] = useState(false);
 
   const svgRef = useRef(null);
   const gRef = useRef(null);
   const zoomRef = useRef(null);
   const copyTimerRef = useRef(null);
-  const groupCopyTimerRef = useRef(null);
   const hintTimersRef = useRef({});
   const replayTimerRef = useRef(null);
   const audioRef = useRef(null);
   const musicRef = useRef(null);
   const musicTimerRef = useRef(null);
+  const guessErrorTimerRef = useRef(null);
   const playerIdRef = useRef(getPlayerId());
   const calendarApplyRef = useRef(null);
+  const calendarAutoSetRef = useRef({ daily: false, weekly: false });
+  const calendarLoadingRef = useRef(false);
+  const calendarCountsRef = useRef({ daily: 0, weekly: 0 });
+  const calendarMonthRef = useRef(calendarMonth);
+  const telemetryFlushRef = useRef(false);
+  const attemptsFlushRef = useRef(false);
 
   const leaderboardEndpoint = import.meta.env.VITE_LEADERBOARD_URL || "";
+  const isSupabaseReady = Boolean(supabaseEnabled && supabase && !supabaseBlocked);
   const isExploreMode = gameMode === "explore";
   const isTimedMode = gameMode === "timed";
   const isWeeklyMode = gameMode === "weekly";
   const isDailyMode = gameMode === "daily";
   const isFixedMode = isDailyMode || isWeeklyMode;
+  const shouldLoadCalendar = calendarOpen || isDailyMode || isWeeklyMode;
   const activeDifficulty = isFixedMode ? "cap-colla-rutes" : difficulty;
   const difficultyConfig = useMemo(() => {
     return DIFFICULTIES.find((entry) => entry.id === activeDifficulty) || DIFFICULTIES[0];
@@ -1934,8 +2346,8 @@ export default function App() {
   );
   const displayStreak = useMemo(() => {
     if (!dailyStreak.lastDate) return 0;
-    const today = getDayKey();
-    const yesterday = getDayKeyOffset(-1);
+    const today = getLocalDayKey(new Date());
+    const yesterday = getLocalDayKeyOffset(-1);
     if (dailyStreak.lastDate === today || dailyStreak.lastDate === yesterday) {
       return dailyStreak.count || 0;
     }
@@ -1958,15 +2370,30 @@ export default function App() {
     localStorage.setItem("rumb-mode", gameMode);
     localStorage.setItem("rumb-difficulty", difficulty);
     localStorage.setItem(ACTIVE_THEME_KEY, activeTheme);
-    localStorage.setItem(GROUP_KEY, groupCode);
     localStorage.setItem(LANGUAGE_KEY, language);
-    localStorage.setItem(ROVELLONS_KEY, `${coins}`);
-  }, [gameMode, difficulty, activeTheme, groupCode, language, coins]);
+  }, [gameMode, difficulty, activeTheme, language]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    localStorage.setItem(THEMES_KEY, JSON.stringify([...themesOwned]));
-  }, [themesOwned]);
+    setDailyStreak((prev) => {
+      const today = getLocalDayKey(new Date());
+      const yesterday = getLocalDayKeyOffset(-1);
+      if (!prev?.lastDate) {
+        const next = { count: 1, lastDate: today };
+        localStorage.setItem(STREAK_KEY, JSON.stringify(next));
+        return next;
+      }
+      if (prev.lastDate === today) return prev;
+      if (prev.lastDate === yesterday) {
+        const next = { count: (prev.count || 0) + 1, lastDate: today };
+        localStorage.setItem(STREAK_KEY, JSON.stringify(next));
+        return next;
+      }
+      const next = { count: 1, lastDate: today };
+      localStorage.setItem(STREAK_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -1975,19 +2402,6 @@ export default function App() {
       JSON.stringify([...unlockedDifficulties])
     );
   }, [unlockedDifficulties]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify([...unlocked]));
-  }, [unlocked]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(
-      ACHIEVEMENTS_CLAIMED_KEY,
-      JSON.stringify([...claimedAchievements])
-    );
-  }, [claimedAchievements]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -2007,16 +2421,19 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    localStorage.setItem(COLLECTIBLES_KEY, JSON.stringify([...collectibles]));
-  }, [collectibles]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (Object.keys(dailyResults).length > 60) {
+      setDailyResults((prev) => trimResults(prev, 60));
+      return;
+    }
     localStorage.setItem(DAILY_RESULTS_KEY, JSON.stringify(dailyResults));
   }, [dailyResults]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (Object.keys(weeklyResults).length > 30) {
+      setWeeklyResults((prev) => trimResults(prev, 30));
+      return;
+    }
     localStorage.setItem(WEEKLY_RESULTS_KEY, JSON.stringify(weeklyResults));
   }, [weeklyResults]);
 
@@ -2027,34 +2444,90 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    localStorage.setItem(
-      GROUP_META_KEY,
-      JSON.stringify({ code: groupCode, name: groupName })
-    );
-  }, [groupCode, groupName]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
     localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-20)));
   }, [history]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    let cancelled = false;
+    let timer;
+
+    const checkConnectivity = async () => {
+      try {
+        await fetch(PING_URL, { mode: "no-cors", cache: "no-store" });
+        if (!cancelled) setIsOnline(true);
+      } catch {
+        if (!cancelled) setIsOnline(false);
+      }
+    };
+
+    const schedule = () => {
+      checkConnectivity();
+      timer = setInterval(checkConnectivity, 20000);
+    };
+
+    const handleOnline = () => {
+      checkConnectivity();
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOnline);
+    schedule();
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOnline);
+      clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !import.meta.env.DEV) return;
+    let frame = 0;
+    let last = performance.now();
+    let rafId;
+    const tick = (now) => {
+      frame += 1;
+      if (now - last >= 1000) {
+        window.__rumbFps = Math.round((frame * 1000) / (now - last));
+        frame = 0;
+        last = now;
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  useEffect(() => {
+    if (!isSupabaseReady || !supabaseUserId || !isOnline) return;
+    flushTelemetryQueue();
+    flushAttemptsQueue();
+  }, [isSupabaseReady, supabaseUserId, isOnline]);
+
+  useEffect(() => {
+    if (!isSupabaseReady || !supabaseUserId || !isOnline) return;
+    const interval = setInterval(() => {
+      flushTelemetryQueue();
+      flushAttemptsQueue();
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [isSupabaseReady, supabaseUserId, isOnline]);
+
+  useEffect(() => {
     if (!supabaseUserId) return;
+    if (!isSupabaseReady) return;
     supabase
       .from("players")
       .update({
-        coins,
         unlocked_difficulties: [...unlockedDifficulties],
-        themes_owned: [...themesOwned],
-        achievements_claimed: [...claimedAchievements],
         language,
         music_track: musicTrack,
         music_enabled: musicEnabled,
         music_volume: musicVolume,
         sfx_enabled: soundEnabled,
         sfx_volume: sfxVolume,
-        group_code: groupCode || null,
-        group_name: groupName || null,
         last_seen: new Date().toISOString()
       })
       .eq("id", supabaseUserId)
@@ -2062,18 +2535,14 @@ export default function App() {
       .catch(() => {});
   }, [
     supabaseUserId,
-    coins,
+    isSupabaseReady,
     unlockedDifficulties,
-    themesOwned,
-    claimedAchievements,
     language,
     musicTrack,
     musicEnabled,
     musicVolume,
     soundEnabled,
-    sfxVolume,
-    groupCode,
-    groupName
+    sfxVolume
   ]);
 
   useEffect(() => {
@@ -2085,34 +2554,52 @@ export default function App() {
   }, [activeTheme]);
 
   useEffect(() => {
-    if (!themesOwned.has(activeTheme)) {
-      setActiveTheme("default");
-    }
-  }, [themesOwned, activeTheme]);
-
-  useEffect(() => {
     let cancelled = false;
 
     async function loadData() {
-      const response = await fetch("/catalunya-comarques.topojson");
-      const topology = await response.json();
-      const objectKey = Object.keys(topology.objects)[0];
-      const object = topology.objects[objectKey];
-      const collection = feature(topology, object);
-      const outlineMesh = mesh(topology, object, (a, b) => a === b);
-      const ids = collection.features.map((featureItem) => featureItem.properties.id);
-      const neighborIndex = topoNeighbors(object.geometries || []);
-      const adjacencyMap = new Map();
-      neighborIndex.forEach((neighbors, index) => {
-        adjacencyMap.set(
-          ids[index],
-          new Set(neighbors.map((neighborIndexItem) => ids[neighborIndexItem]))
+      const cached = readMapCache();
+      if (cached && !cancelled) {
+        setComarques(cached.features || []);
+        setAdjacency(deserializeAdjacency(cached.adjacency));
+        setOutline(cached.outline || null);
+      }
+
+      try {
+        const response = await fetchWithRetry(
+          MAP_TOPO_URL,
+          { cache: "no-store" },
+          { retries: 2, backoffMs: 500 }
         );
-      });
-      if (!cancelled) {
-        setComarques(collection.features || []);
-        setAdjacency(adjacencyMap);
-        setOutline(outlineMesh);
+        const topology = await response.json();
+        const objectKey = Object.keys(topology.objects)[0];
+        const object = topology.objects[objectKey];
+        const collection = feature(topology, object);
+        const outlineMesh = mesh(topology, object, (a, b) => a === b);
+        const ids = collection.features.map((featureItem) => featureItem.properties.id);
+        const neighborIndex = topoNeighbors(object.geometries || []);
+        const adjacencyMap = new Map();
+        neighborIndex.forEach((neighbors, index) => {
+          adjacencyMap.set(
+            ids[index],
+            new Set(neighbors.map((neighborIndexItem) => ids[neighborIndexItem]))
+          );
+        });
+
+        writeMapCache({
+          features: collection.features || [],
+          adjacency: serializeAdjacency(adjacencyMap),
+          outline: outlineMesh
+        });
+
+        if (!cancelled) {
+          setComarques(collection.features || []);
+          setAdjacency(adjacencyMap);
+          setOutline(outlineMesh);
+        }
+      } catch {
+        if (!cached && !cancelled) {
+          setComarques([]);
+        }
       }
     }
 
@@ -2126,6 +2613,34 @@ export default function App() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!adjacency.size) {
+      setShortestPathCache(new Map());
+      return;
+    }
+    let cancelled = false;
+    if (typeof Worker === "undefined") {
+      setShortestPathCache(buildShortestPathCache(adjacency));
+      return;
+    }
+    const worker = new Worker(new URL("./workers/path-cache.worker.js", import.meta.url), {
+      type: "module"
+    });
+    worker.postMessage({ adjacency: serializeAdjacency(adjacency) });
+    worker.onmessage = (event) => {
+      if (cancelled) return;
+      setShortestPathCache(deserializeShortestPathCache(event.data.cache));
+    };
+    worker.onerror = () => {
+      if (cancelled) return;
+      setShortestPathCache(buildShortestPathCache(adjacency));
+    };
+    return () => {
+      cancelled = true;
+      worker.terminate();
+    };
+  }, [adjacency]);
 
   useEffect(() => {
     if (!svgRef.current || !gRef.current) return;
@@ -2175,6 +2690,11 @@ export default function App() {
           streak: displayStreak
         }
       );
+      enqueueTelemetry("level_fail", {
+        reason: "timeout",
+        attempts,
+        timeMs: elapsedMs
+      });
     }
   }, [
     gameMode,
@@ -2220,25 +2740,71 @@ export default function App() {
 
   useEffect(() => {
     if (!leaderboardEndpoint && typeof window === "undefined") return;
-    loadLeaderboard();
+    let idleId;
+    const schedule = () => loadLeaderboard();
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(schedule, { timeout: 2000 });
+    } else {
+      idleId = setTimeout(schedule, 1200);
+    }
+    return () => {
+      if (typeof window !== "undefined" && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      } else {
+        clearTimeout(idleId);
+      }
+    };
   }, [leaderboardEndpoint]);
 
   useEffect(() => {
+    if (!shouldLoadCalendar || calendarLoaded || calendarLoadingRef.current) return;
     let isMounted = true;
     async function loadCalendar() {
-      setCalendarStatus("loading");
+      const canReadCalendar = Boolean(supabaseEnabled && supabase);
+      if (!canReadCalendar) {
+        if (isMounted) setCalendarStatus("error");
+        return;
+      }
+      calendarLoadingRef.current = true;
+      const cached = readCalendarCache();
+      const hasCache = Boolean(cached?.daily?.length || cached?.weekly?.length);
+      if (hasCache && isMounted) {
+        setCalendarDaily(cached.daily || []);
+        setCalendarWeekly(cached.weekly || []);
+      }
+      setCalendarStatus(hasCache ? "refreshing" : "loading");
       try {
-        const dailyRes = await supabase
-          .from("calendar_daily")
-          .select("date, level_id")
-          .order("date", { ascending: false })
-          .limit(30);
+        const now = new Date();
+        const start = new Date(now);
+        start.setFullYear(now.getFullYear() - 2);
+        const end = new Date(now);
+        end.setFullYear(now.getFullYear() + 2);
+        const startKey = getLocalDayKey(start);
+        const endKey = getLocalDayKey(end);
+        const startWeekKey = getWeekKey(start);
+        const endWeekKey = getWeekKey(end);
+
+        const dailyRes = await withRetry(
+          () =>
+            supabase
+              .from("calendar_daily")
+              .select("date, level_id")
+              .gte("date", startKey)
+              .lte("date", endKey)
+              .order("date", { ascending: false }),
+          { retries: 2, backoffMs: 500 }
+        );
         if (dailyRes.error) throw dailyRes.error;
-        const weeklyRes = await supabase
-          .from("calendar_weekly")
-          .select("week_key, level_id")
-          .order("week_key", { ascending: false })
-          .limit(16);
+        const weeklyRes = await withRetry(
+          () =>
+            supabase
+              .from("calendar_weekly")
+              .select("week_key, level_id")
+              .gte("week_key", startWeekKey)
+              .lte("week_key", endWeekKey)
+              .order("week_key", { ascending: false }),
+          { retries: 2, backoffMs: 500 }
+        );
         if (weeklyRes.error) throw weeklyRes.error;
 
         const dailyRows = Array.isArray(dailyRes.data) ? dailyRes.data : [];
@@ -2253,37 +2819,59 @@ export default function App() {
 
         const levelsById = new Map();
         if (levelIds.length) {
-          const levelsRes = await supabase
-            .from("levels")
-            .select(
-              "id, start_id, target_id, shortest_path, rule_id, avoid_ids, must_pass_ids, difficulty_id"
-            )
-            .in("id", levelIds);
-          if (levelsRes.error) throw levelsRes.error;
-          (levelsRes.data || []).forEach((level) => {
-            levelsById.set(level.id, level);
-          });
+          const levelsRes = await withRetry(
+            () =>
+              supabase
+                .from("levels")
+                .select(
+                  "id, start_id, target_id, shortest_path, rule_id, avoid_ids, must_pass_ids, difficulty_id"
+                )
+                .in("id", levelIds),
+            { retries: 2, backoffMs: 500 }
+          );
+          if (!levelsRes.error) {
+            (levelsRes.data || []).forEach((level) => {
+              levelsById.set(level.id, level);
+            });
+          }
         }
 
-        const dailyEntries = dailyRows.map((row) => ({
-          date: row.date,
-          levelId: row.level_id,
-          level: levelsById.get(row.level_id) || null
-        }));
-        const weeklyEntries = weeklyRows.map((row) => ({
-          weekKey: row.week_key,
-          levelId: row.level_id,
-          level: levelsById.get(row.level_id) || null
-        }));
+        const dailyEntries = dailyRows
+          .map((row) => {
+            const dateKey = normalizeDayKey(row.date);
+            if (!dateKey) return null;
+            return {
+              date: dateKey,
+              levelId: row.level_id,
+              level: levelsById.get(row.level_id) || null
+            };
+          })
+          .filter(Boolean);
+        const weeklyEntries = weeklyRows
+          .map((row) => {
+            const weekKeyValue = normalizeWeekKey(row.week_key);
+            if (!weekKeyValue) return null;
+            return {
+              weekKey: weekKeyValue,
+              levelId: row.level_id,
+              level: levelsById.get(row.level_id) || null
+            };
+          })
+          .filter(Boolean);
         if (isMounted) {
           setCalendarDaily(dailyEntries);
           setCalendarWeekly(weeklyEntries);
           setCalendarStatus("ready");
+          setCalendarLoaded(true);
+          writeCalendarCache({ daily: dailyEntries, weekly: weeklyEntries });
         }
       } catch {
         if (isMounted) {
-          setCalendarStatus("error");
+          setCalendarStatus(hasCache ? "ready" : "error");
+          if (hasCache) setCalendarLoaded(true);
         }
+      } finally {
+        calendarLoadingRef.current = false;
       }
     }
 
@@ -2292,7 +2880,7 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isSupabaseReady, shouldLoadCalendar, calendarLoaded]);
 
   useEffect(() => {
     if (gameMode === "daily" || gameMode === "weekly") return;
@@ -2301,6 +2889,69 @@ export default function App() {
       calendarApplyRef.current = null;
     }
   }, [gameMode, calendarSelection]);
+
+  useEffect(() => {
+    calendarMonthRef.current = calendarMonth;
+  }, [calendarMonth]);
+
+  useEffect(() => {
+    if (!calendarLoaded) return;
+    const prevDailyCount = calendarCountsRef.current.daily;
+    const prevWeeklyCount = calendarCountsRef.current.weekly;
+    calendarCountsRef.current = {
+      daily: calendarDaily.length,
+      weekly: calendarWeekly.length
+    };
+    const monthRef = calendarMonthRef.current;
+    if (calendarMode === "daily" && !calendarAutoSetRef.current.daily) {
+      const latestDay = calendarDaily[0]?.date;
+      if (latestDay) {
+        const parsed = new Date(`${latestDay}T00:00:00`);
+        if (!Number.isNaN(parsed.valueOf())) {
+          setCalendarMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1));
+        }
+      }
+      calendarAutoSetRef.current.daily = true;
+    }
+    if (
+      calendarMode === "daily" &&
+      prevDailyCount === 0 &&
+      calendarDaily.length > 0 &&
+      monthRef
+    ) {
+      const latestDay = calendarDaily[0]?.date;
+      if (latestDay) {
+        const parsed = new Date(`${latestDay}T00:00:00`);
+        if (!Number.isNaN(parsed.valueOf())) {
+          setCalendarMonth(new Date(parsed.getFullYear(), parsed.getMonth(), 1));
+        }
+      }
+    }
+    if (calendarMode === "weekly" && !calendarAutoSetRef.current.weekly) {
+      const latestWeek = calendarWeekly[0]?.weekKey;
+      if (latestWeek) {
+        const year = Number(latestWeek.slice(0, 4));
+        if (!Number.isNaN(year)) {
+          setCalendarMonth(new Date(year, 0, 1));
+        }
+      }
+      calendarAutoSetRef.current.weekly = true;
+    }
+    if (
+      calendarMode === "weekly" &&
+      prevWeeklyCount === 0 &&
+      calendarWeekly.length > 0 &&
+      monthRef
+    ) {
+      const latestWeek = calendarWeekly[0]?.weekKey;
+      if (latestWeek) {
+        const year = Number(latestWeek.slice(0, 4));
+        if (!Number.isNaN(year)) {
+          setCalendarMonth(new Date(year, 0, 1));
+        }
+      }
+    }
+  }, [calendarLoaded, calendarMode, calendarDaily, calendarWeekly]);
 
   useEffect(() => {
     if (unlockedDifficulties.has(difficulty)) return;
@@ -2324,11 +2975,24 @@ export default function App() {
     let isMounted = true;
 
     async function initAuth() {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user) {
-        await supabase.auth.signInAnonymously();
+      if (!isSupabaseReady) return;
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        if (isMounted) setSupabaseBlocked(true);
+        return;
       }
-      const { data: fresh } = await supabase.auth.getUser();
+      if (!userData?.user) {
+        const { error: signError } = await supabase.auth.signInAnonymously();
+        if (signError) {
+          if (isMounted) setSupabaseBlocked(true);
+          return;
+        }
+      }
+      const { data: fresh, error: freshError } = await supabase.auth.getUser();
+      if (freshError || !fresh?.user) {
+        if (isMounted) setSupabaseBlocked(true);
+        return;
+      }
       const user = fresh?.user;
       if (user && isMounted) {
         setSupabaseUserId(user.id);
@@ -2348,17 +3012,8 @@ export default function App() {
           .eq("id", user.id)
           .maybeSingle();
         if (playerData && isMounted) {
-          if (typeof playerData.coins === "number") {
-            setCoins(playerData.coins);
-          }
           if (Array.isArray(playerData.unlocked_difficulties)) {
             setUnlockedDifficulties(new Set(playerData.unlocked_difficulties));
-          }
-          if (Array.isArray(playerData.themes_owned)) {
-            setThemesOwned(new Set(playerData.themes_owned));
-          }
-          if (Array.isArray(playerData.achievements_claimed)) {
-            setClaimedAchievements(new Set(playerData.achievements_claimed));
           }
           if (typeof playerData.language === "string") {
             setLanguage(playerData.language);
@@ -2378,12 +3033,6 @@ export default function App() {
           if (typeof playerData.sfx_volume === "number") {
             setSfxVolume(playerData.sfx_volume);
           }
-          if (typeof playerData.group_code === "string") {
-            setGroupCode(playerData.group_code);
-          }
-          if (typeof playerData.group_name === "string") {
-            setGroupName(playerData.group_name);
-          }
         }
       }
     }
@@ -2393,7 +3042,7 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isSupabaseReady]);
 
   const comarcaById = useMemo(() => {
     return new Map(comarques.map((featureItem) => [featureItem.properties.id, featureItem]));
@@ -2512,6 +3161,58 @@ export default function App() {
     };
   }, [comarques, outline]);
 
+  const renderPaths = useMemo(() => {
+    return paths.map((featureItem) => {
+      const isStart = featureItem.id === startId;
+      const isTarget = featureItem.id === targetId;
+      const isCurrent = featureItem.id === currentId && !isExploreMode;
+      const isGuessed = guessedSet.has(featureItem.id);
+      const isReplay = replaySet.has(featureItem.id);
+      const isPowerReveal = tempRevealId === featureItem.id;
+      const isRevealed = isStart || isTarget || isGuessed || isReplay || isPowerReveal;
+      const isNeighbor =
+        showNeighborHintActive &&
+        !isRevealed &&
+        neighborSet.has(featureItem.id) &&
+        !isStart &&
+        !isTarget;
+      const isHidden = !isRevealed && !isNeighbor;
+      const isOutline = showInitialsActive && isHidden;
+
+      const classes = [
+        "comarca",
+        isHidden && "is-hidden",
+        isOutline && "is-outline",
+        isGuessed && "is-guessed",
+        isStart && "is-start",
+        isTarget && "is-target",
+        isCurrent && "is-current",
+        isNeighbor && "is-neighbor",
+        isReplay && "is-replay",
+        isPowerReveal && "is-reveal"
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      return {
+        ...featureItem,
+        classes
+      };
+    });
+  }, [
+    paths,
+    startId,
+    targetId,
+    currentId,
+    guessedSet,
+    replaySet,
+    tempRevealId,
+    showNeighborHintActive,
+    neighborSet,
+    isExploreMode,
+    showInitialsActive
+  ]);
+
   useEffect(() => {
     if (isComplete || isFailed) return;
     if (!pathInGuesses.length || !ruleStatus.satisfied) return;
@@ -2593,11 +3294,93 @@ export default function App() {
 
   async function persistLevel(payload) {
     if (!payload) return;
+    if (!isSupabaseReady) return;
+    if (!supabaseUserId) return;
     try {
       await supabase.from("levels").insert(payload);
     } catch {
       // Silencia errors de connexió o permisos.
     }
+  }
+
+  async function flushTelemetryQueue() {
+    if (!isSupabaseReady || !supabaseUserId || !isOnline) return;
+    if (telemetryFlushRef.current) return;
+    const queued = readQueue(TELEMETRY_QUEUE_KEY);
+    if (!queued.length) return;
+    telemetryFlushRef.current = true;
+    try {
+      const batch = queued.slice(0, 50).map((entry) => ({
+        ...entry,
+        player_id: entry.player_id || supabaseUserId
+      }));
+      const { error } = await supabase
+        .from("telemetry_events")
+        .upsert(batch, { onConflict: "id" });
+      if (!error) {
+        writeQueue(TELEMETRY_QUEUE_KEY, queued.slice(batch.length), MAX_TELEMETRY_QUEUE);
+      }
+    } catch {
+      // Manté la cua per a la següent connexió.
+    } finally {
+      telemetryFlushRef.current = false;
+    }
+  }
+
+  function enqueueTelemetry(eventType, payload = {}, meta = {}) {
+    const entry = {
+      id: createEventId(),
+      player_id: supabaseUserId || null,
+      event_type: eventType,
+      mode: gameMode,
+      difficulty_id: activeDifficulty,
+      map_id: MAP_ID,
+      start_id: startId,
+      target_id: targetId,
+      rule_id: activeRule?.id || null,
+      day_key: isDailyMode ? activeDayKey : null,
+      week_key: isWeeklyMode ? activeWeekKey : null,
+      created_at: new Date().toISOString(),
+      payload,
+      ...meta
+    };
+    enqueueQueue(TELEMETRY_QUEUE_KEY, entry, MAX_TELEMETRY_QUEUE);
+    flushTelemetryQueue();
+  }
+
+  async function flushAttemptsQueue() {
+    if (!isSupabaseReady || !supabaseUserId || !isOnline) return;
+    if (attemptsFlushRef.current) return;
+    const queued = readQueue(ATTEMPTS_QUEUE_KEY);
+    if (!queued.length) return;
+    attemptsFlushRef.current = true;
+    try {
+      const batch = queued.slice(0, 25).map((entry) => ({
+        ...entry,
+        player_id: entry.player_id || supabaseUserId
+      }));
+      const { error } = await supabase
+        .from("attempts")
+        .upsert(batch, { onConflict: "id" });
+      if (!error) {
+        writeQueue(ATTEMPTS_QUEUE_KEY, queued.slice(batch.length), MAX_ATTEMPTS_QUEUE);
+      }
+    } catch {
+      // Manté la cua per a la següent connexió.
+    } finally {
+      attemptsFlushRef.current = false;
+    }
+  }
+
+  function enqueueAttempt(payload) {
+    if (!payload || !supabaseUserId) return;
+    const entry = {
+      ...payload,
+      player_id: supabaseUserId,
+      created_at: payload.created_at || new Date().toISOString()
+    };
+    enqueueQueue(ATTEMPTS_QUEUE_KEY, entry, MAX_ATTEMPTS_QUEUE);
+    flushAttemptsQueue();
   }
 
   function stopMusic() {
@@ -2653,6 +3436,7 @@ export default function App() {
     setGuessHistory(playerPath);
     setAttempts(result?.attempts || 0);
     setHintsUsed(result?.hintsUsed || 0);
+    setGuessError(false);
     setTempRevealId(null);
     setTempNeighborHint(false);
     setTempInitialsHint(false);
@@ -2679,6 +3463,23 @@ export default function App() {
     }
     setLastEntryId(null);
     setCopyStatus("idle");
+
+    if (!result) {
+      enqueueTelemetry(
+        "calendar_start",
+        {
+          shortestCount: Math.max(nextShortest.length - 2, 0),
+          ruleDifficulty: rule?.difficulty || null
+        },
+        {
+          start_id: start,
+          target_id: target,
+          rule_id: rule?.id || null,
+          day_key: isDailyMode ? activeDayKey : null,
+          week_key: isWeeklyMode ? activeWeekKey : null
+        }
+      );
+    }
   }
 
   function resetGame(forceNew = false) {
@@ -2755,7 +3556,8 @@ export default function App() {
         candidateTarget,
         adjacency,
         candidateRule,
-        ids
+        ids,
+        shortestPathCache
       );
       if (!path.length) continue;
       if (path.length < minLength) continue;
@@ -2795,7 +3597,8 @@ export default function App() {
           candidateTarget,
           adjacency,
           candidateRule,
-          ids
+          ids,
+          shortestPathCache
         );
         if (!path.length) continue;
         if (path.length < minLength) continue;
@@ -2809,7 +3612,7 @@ export default function App() {
     if (!start || !target) {
       start = ids[0];
       target = ids[1] || ids[0];
-      nextShortest = findShortestPath(start, target, adjacency);
+      nextShortest = findShortestPath(start, target, adjacency, shortestPathCache);
     }
     if (!selectedRule) {
       const startName = comarcaById.get(start)?.properties.name;
@@ -2835,6 +3638,7 @@ export default function App() {
     setGuessHistory([]);
     setAttempts(0);
     setHintsUsed(0);
+    setGuessError(false);
     setTempRevealId(null);
     setTempNeighborHint(false);
     setTempInitialsHint(false);
@@ -2886,6 +3690,21 @@ export default function App() {
       };
       persistLevel(payload);
     }
+
+    enqueueTelemetry(
+      "level_start",
+      {
+        shortestCount: Math.max(nextShortest.length - 2, 0),
+        ruleDifficulty: selectedRule?.difficulty || null
+      },
+      {
+        start_id: start,
+        target_id: target,
+        rule_id: selectedRule?.id || null,
+        day_key: gameMode === "daily" ? todayKey : null,
+        week_key: gameMode === "weekly" ? weekKey : null
+      }
+    );
   }
 
   function activateTempHint(key, durationMs, setter, resetValue) {
@@ -2968,6 +3787,14 @@ export default function App() {
     }
   }
 
+  function triggerGuessError() {
+    setGuessError(true);
+    if (guessErrorTimerRef.current) clearTimeout(guessErrorTimerRef.current);
+    guessErrorTimerRef.current = setTimeout(() => {
+      setGuessError(false);
+    }, 700);
+  }
+
   function handleGuessSubmit(event) {
     event.preventDefault();
     if (!startId || !targetId || isComplete || isFailed) return;
@@ -2977,7 +3804,23 @@ export default function App() {
 
     const normalized = normalizeName(trimmed);
     const id = normalizedToId.get(normalized);
-    if (!id) return;
+    if (!id) {
+      triggerGuessError();
+      playSfx("error");
+      return;
+    }
+
+    if (id === startId || id === targetId) {
+      triggerGuessError();
+      playSfx("neutral");
+      return;
+    }
+
+    if (guessedSet.has(id)) {
+      triggerGuessError();
+      playSfx("repeat");
+      return;
+    }
 
     if (!startedAt && !isTimedMode) {
       setStartedAt(Date.now());
@@ -2988,25 +3831,16 @@ export default function App() {
     setGuessValue("");
     setIsSuggestionsOpen(false);
 
-    if (id === startId || id === targetId) {
-      playSfx("neutral");
-      return;
-    }
-
-    const alreadyGuessed = guessedSet.has(id);
-    if (!alreadyGuessed) {
-      const name = comarcaById.get(id)?.properties.name || trimmed;
-      setGuessHistory((prev) => [...prev, { id, name }]);
-      playSfx("correct");
-    } else {
-      playSfx("repeat");
-    }
+    const name = comarcaById.get(id)?.properties.name || trimmed;
+    setGuessHistory((prev) => [...prev, { id, name }]);
+    playSfx("correct");
   }
 
   function handleGuessChange(event) {
     const value = event.target.value;
     setGuessValue(value);
     setIsSuggestionsOpen(Boolean(value.trim()));
+    if (guessError) setGuessError(false);
   }
 
   function handleGuessFocus() {
@@ -3076,34 +3910,23 @@ export default function App() {
     resetGame(!isFixedMode);
   }
 
-  function handleZoomIn() {
+  const handleZoomIn = useCallback(() => {
     if (!zoomRef.current || !svgRef.current) return;
     select(svgRef.current).call(zoomRef.current.scaleBy, 1.2);
-  }
+  }, []);
 
-  function handleZoomOut() {
+  const handleZoomOut = useCallback(() => {
     if (!zoomRef.current || !svgRef.current) return;
     select(svgRef.current).call(zoomRef.current.scaleBy, 0.85);
-  }
+  }, []);
 
-  function handleRecenter() {
+  const handleRecenter = useCallback(() => {
     if (!zoomRef.current || !svgRef.current) return;
     select(svgRef.current).call(zoomRef.current.transform, zoomIdentity);
-  }
+  }, []);
 
   function handleThemeSelect(themeId) {
-    if (!themesOwned.has(themeId)) return;
     setActiveTheme(themeId);
-  }
-
-  function handleThemePurchase(themeId) {
-    if (themesOwned.has(themeId)) return;
-    const cost = THEME_COSTS[themeId] || 0;
-    if (coins < cost) return;
-    setCoins((prev) => Math.max(prev - cost, 0));
-    setThemesOwned((prev) => new Set([...prev, themeId]));
-    setActiveTheme(themeId);
-    playSfx("coin");
   }
 
   function handleDifficultyPick(difficultyId) {
@@ -3111,82 +3934,139 @@ export default function App() {
     setDifficulty(difficultyId);
   }
 
-  function handleDifficultyPurchase(difficultyId) {
-    if (unlockedDifficulties.has(difficultyId)) return;
-    const cost = DIFFICULTY_COSTS[difficultyId] || 0;
-    if (coins < cost) return;
-    setCoins((prev) => Math.max(prev - cost, 0));
-    setUnlockedDifficulties((prev) => new Set([...prev, difficultyId]));
-    setDifficulty(difficultyId);
-    playSfx("coin");
-  }
-
-  function sanitizeGroupCode(value) {
-    return value.replace(/\D/g, "").slice(0, 5);
-  }
-
-  function copyGroupLink(code) {
-    if (!code) return;
-    const url = `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(
-      code
-    )}`;
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(url).then(() => {
-        setGroupCopyStatus("copied");
-        if (groupCopyTimerRef.current) clearTimeout(groupCopyTimerRef.current);
-        groupCopyTimerRef.current = setTimeout(() => {
-          setGroupCopyStatus("idle");
-        }, 1500);
-      });
-    }
-  }
-
-  function handleCreateGroup() {
-    const code = `${Math.floor(10000 + Math.random() * 90000)}`;
-    setGroupCode(code);
-    if (!groupName.trim()) {
-      setGroupName(`Colla ${code}`);
-    }
-    copyGroupLink(code);
-  }
-
-  function handleJoinGroup() {
-    const normalized = sanitizeGroupCode(groupCode);
-    if (normalized.length !== 5) return;
-    setGroupCode(normalized);
-  }
-
-  function handleGroupCopy() {
-    const normalized = sanitizeGroupCode(groupCode);
-    if (normalized.length !== 5) return;
-    copyGroupLink(normalized);
-  }
-
   function handleDailySelect() {
-    handleCalendarPick("daily", dayKey);
+    const now = new Date();
+    let targetMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (!calendarDailyMap.has(dayKey)) {
+      const latestDay = calendarDaily[0]?.date;
+      if (latestDay) {
+        const parsed = new Date(`${latestDay}T00:00:00`);
+        if (!Number.isNaN(parsed.valueOf())) {
+          targetMonth = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
+        }
+      }
+    }
+    setCalendarMonth(targetMonth);
+    setCalendarMode("daily");
+    setCalendarOpen(true);
   }
 
   function handleWeeklySelect() {
-    handleCalendarPick("weekly", weekKey);
+    const now = new Date();
+    let targetMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (!calendarWeeklyMap.has(weekKey)) {
+      const latestWeek = calendarWeekly[0]?.weekKey;
+      if (latestWeek) {
+        const year = Number(latestWeek.slice(0, 4));
+        if (!Number.isNaN(year)) {
+          targetMonth = new Date(year, 0, 1);
+        }
+      }
+    }
+    setCalendarMonth(targetMonth);
+    setCalendarMode("weekly");
+    setCalendarOpen(true);
   }
 
-  function handleClaimAchievement(achievementId) {
-    if (!unlocked.has(achievementId)) return;
-    if (claimedAchievements.has(achievementId)) return;
-    const achievement = ACHIEVEMENTS.find((item) => item.id === achievementId);
-    if (!achievement) return;
-    setClaimedAchievements((prev) => {
-      const next = new Set(prev);
-      next.add(achievementId);
-      if (next.size >= ACHIEVEMENTS.length) {
-        setShowAllAchievementsModal(true);
+  function handleCalendarPrevMonth() {
+    setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  }
+
+  function handleCalendarNextMonth() {
+    setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  }
+
+  async function handleCalendarAction(mode, key) {
+    const hasCalendarData = calendarDaily.length > 0 || calendarWeekly.length > 0;
+    if (!hasCalendarData && calendarStatus !== "ready") return;
+    const entry =
+      mode === "daily" ? calendarDailyMap.get(key) : calendarWeeklyMap.get(key);
+    if (!entry?.level && !entry?.levelId) return;
+    let level = entry.level;
+    if (!level && entry.levelId) {
+      try {
+        const { data, error } = await withRetry(
+          () =>
+            supabase
+              .from("levels")
+              .select(
+                "id, start_id, target_id, shortest_path, rule_id, avoid_ids, must_pass_ids, difficulty_id"
+              )
+              .eq("id", entry.levelId)
+              .maybeSingle(),
+          { retries: 2, backoffMs: 500 }
+        );
+        if (error) return;
+        level = data || null;
+      } catch {
+        return;
       }
-      return next;
-    });
-    if (achievement.rewardCoins) {
-      setCoins((prev) => prev + achievement.rewardCoins);
     }
-    playSfx("coin");
+    if (!level) return;
+    if (!entry.level && level) {
+      if (mode === "daily") {
+        setCalendarDaily((prev) =>
+          prev.map((item) => (item.date === key ? { ...item, level } : item))
+        );
+      } else {
+        setCalendarWeekly((prev) =>
+          prev.map((item) => (item.weekKey === key ? { ...item, level } : item))
+        );
+      }
+    }
+    handleCalendarPick(mode, key);
+    setCalendarOpen(false);
+  }
+
+  function handleCalendarClose() {
+    setCalendarOpen(false);
+  }
+
+  function handleTitleReset() {
+    const todayKey = dayKey;
+    const thisWeekKey = weekKey;
+    const todayDone = Boolean(dailyResults[todayKey]);
+    const weekDone = Boolean(weeklyResults[thisWeekKey]);
+    setShowModal(false);
+    setResultData(null);
+    setIsFailed(false);
+    setIsComplete(false);
+    setReplayMode(null);
+    setReplayOrder([]);
+    setReplayIndex(0);
+    setCalendarOpen(false);
+    calendarApplyRef.current = null;
+
+    if (!isSupabaseReady) {
+      if (gameMode !== "normal") {
+        setGameMode("normal");
+        setCalendarSelection(null);
+      } else {
+        resetGame(true);
+      }
+      return;
+    }
+
+    if (!todayDone) {
+      handleCalendarPick("daily", todayKey);
+      return;
+    }
+    if (!weekDone) {
+      handleCalendarPick("weekly", thisWeekKey);
+      return;
+    }
+    const unlocked = [...unlockedDifficulties];
+    const next =
+      unlocked[Math.floor(Math.random() * unlocked.length)] || "pixapi";
+    const willChangeDifficulty = next !== difficulty;
+    if (willChangeDifficulty) {
+      setDifficulty(next);
+    }
+    if (gameMode !== "normal") {
+      setGameMode("normal");
+    } else if (!willChangeDifficulty) {
+      resetGame(true);
+    }
   }
 
   function handleReplayStart(mode) {
@@ -3203,9 +4083,12 @@ export default function App() {
 
   function computeRank(entries, entry, key) {
     if (!entries.length) return null;
+    const list = entries.some((item) => item.id === entry.id)
+      ? entries
+      : [...entries, entry];
     const normalize = (value) =>
       Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
-    const sorted = [...entries].sort((a, b) => {
+    const sorted = [...list].sort((a, b) => {
       const aValue = normalize(a[key]);
       const bValue = normalize(b[key]);
       if (aValue === bValue) return (a.timeMs || 0) - (b.timeMs || 0);
@@ -3220,11 +4103,31 @@ export default function App() {
     };
   }
 
+  function buildLeaderboardStats(entries, entry) {
+    const key = getLeaderboardKey(entry);
+    if (!key) return null;
+    const same = entries.filter((item) => getLeaderboardKey(item) === key);
+    const list = same.some((item) => item.id === entry.id) ? same : [...same, entry];
+    const timeRank = computeRank(list, entry, "timeMs");
+    const attemptsRank = computeRank(list, entry, "attempts");
+    const timeStats = computeGaussianStats(list.map((item) => item.timeMs));
+    return {
+      topTimePercent: timeRank?.topPercent ?? null,
+      topAttemptsPercent: attemptsRank?.topPercent ?? null,
+      totalPlayers: Math.max(list.length, 1),
+      timeStats
+    };
+  }
+
   async function loadLeaderboard() {
     setLeaderboardStatus("loading");
     try {
       if (leaderboardEndpoint) {
-        const response = await fetch(leaderboardEndpoint);
+        const response = await fetchWithRetry(
+          leaderboardEndpoint,
+          {},
+          { retries: 2, backoffMs: 500 }
+        );
         const data = await response.json();
         setLeaderboardEntries(Array.isArray(data) ? data : []);
       } else if (typeof window !== "undefined") {
@@ -3248,7 +4151,11 @@ export default function App() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(entry)
         });
-        const response = await fetch(leaderboardEndpoint);
+        const response = await fetchWithRetry(
+          leaderboardEndpoint,
+          {},
+          { retries: 2, backoffMs: 500 }
+        );
         const data = await response.json();
         const list = Array.isArray(data) ? data : [];
         setLeaderboardEntries(list);
@@ -3280,8 +4187,8 @@ export default function App() {
     let nextStreak = dailyStreak;
     const isCurrentDaily = gameMode === "daily" && activeDayKey === dayKey;
     if (isCurrentDaily) {
-      const today = dayKey;
-      const yesterday = getDayKeyOffset(-1);
+      const today = getLocalDayKey(new Date());
+      const yesterday = getLocalDayKeyOffset(-1);
       if (dailyStreak.lastDate === today) {
         nextStreak = dailyStreak;
       } else if (dailyStreak.lastDate === yesterday) {
@@ -3298,46 +4205,17 @@ export default function App() {
       }
     }
 
-    const updatedCollectibles = new Set(collectibles);
-    guessedIds.forEach((id) => updatedCollectibles.add(id));
-    if (startId) updatedCollectibles.add(startId);
-    if (targetId) updatedCollectibles.add(targetId);
-    setCollectibles(updatedCollectibles);
-
     const levelKey = isDailyMode
       ? `daily:${activeDayKey}`
       : isWeeklyMode
         ? `weekly:${activeWeekKey}`
         : `${gameMode}:${activeDifficulty}:${startId || "?"}:${targetId || "?"}:${ruleId || "none"}`;
 
-    const ruleRewardMap = { easy: 10, medium: 14, hard: 22, expert: 30 };
-    const baseRuleReward = ruleRewardMap[ruleDifficulty] || 12;
-    let coinsEarned = 0;
-    if (isDailyMode) {
-      coinsEarned = 40 + baseRuleReward;
-    } else if (isWeeklyMode) {
-      coinsEarned = 75 + baseRuleReward;
-    } else if (isTimedMode) {
-      coinsEarned = 12 + baseRuleReward;
-    } else if (isExploreMode) {
-      coinsEarned = 8;
-    } else {
-      coinsEarned = 5;
-    }
-    if (distance === 0) {
+    if (distance === 0 && gameMode === "normal") {
       const nextDifficulty = getNextDifficultyId(activeDifficulty);
-      const nextCost = nextDifficulty ? DIFFICULTY_COSTS[nextDifficulty] || 0 : 0;
-      if (gameMode === "normal" && nextCost) {
-        coinsEarned = Math.max(coinsEarned, nextCost);
-      } else {
-        coinsEarned += 10;
+      if (nextDifficulty) {
+        setUnlockedDifficulties((prev) => new Set([...prev, nextDifficulty]));
       }
-    } else {
-      coinsEarned = Math.min(coinsEarned, 6);
-    }
-    coinsEarned = Math.max(0, coinsEarned - hintsUsed * 2);
-    if (coinsEarned > 0) {
-      setCoins((prev) => prev + coinsEarned);
     }
 
     setLevelStats((prev) => {
@@ -3347,13 +4225,18 @@ export default function App() {
         ? Math.min(current.bestAttempts, attempts)
         : attempts;
       const perfect = current.perfect || distance === 0;
-      return {
+      const next = {
         ...prev,
-        [levelKey]: { bestTime, bestAttempts, perfect }
+        [levelKey]: {
+          bestTime,
+          bestAttempts,
+          perfect,
+          lastPlayed: Date.now()
+        }
       };
+      return trimLevelStats(next);
     });
 
-    const normalizedGroup = groupCode.trim() || null;
     const entry = {
       id:
         typeof crypto !== "undefined" && crypto.randomUUID
@@ -3375,11 +4258,8 @@ export default function App() {
       startId,
       targetId,
       region: regionId,
-      group: normalizedGroup,
-      groupName: groupName || null,
       weekKey: isWeeklyMode ? activeWeekKey : null,
       dayKey: isDailyMode ? activeDayKey : null,
-      coinsEarned,
       createdAt: new Date().toISOString()
     };
 
@@ -3387,27 +4267,9 @@ export default function App() {
       .filter((id) => id !== startId && id !== targetId)
       .map((pathId) => comarcaById.get(pathId)?.properties.name || pathId);
 
-    const earned = new Set(unlocked);
-    const noExtra = guessedIds.length <= foundCount;
-    const noRepeat = attempts <= guessedIds.length;
-    if (distance === 0) earned.add("ruta-perfecta");
-    if (hintsUsed === 0) earned.add("sense-pistes");
-    if (totalTime <= 60000) earned.add("rapid");
-    if (noExtra) earned.add("ruta-neta");
-    if (foundCount >= 8) earned.add("marato");
-    if (noRepeat) earned.add("sense-repeticions");
-    if (isWeeklyMode) earned.add("setmana-complerta");
-    if (isTimedMode && totalTime <= 90000) earned.add("speedrun-rapid");
-    if (nextStreak.count >= 7) earned.add("streak-7");
-    if (nextStreak.count >= 30) earned.add("streak-30");
-    if (distance === 0 && hintsUsed === 0) earned.add("secret-perfecta");
-    if (updatedCollectibles.size >= 20) earned.add("secret-explorador");
-
-    setUnlocked(earned);
-
     setIsComplete(true);
     playSfx("win");
-    confetti({ particleCount: 180, spread: 70, origin: { y: 0.7 } });
+    void fireConfetti({ particleCount: 180, spread: 70, origin: { y: 0.7 } });
     setLastEntryId(entry.id);
 
     setHistory((prev) => {
@@ -3426,7 +4288,7 @@ export default function App() {
       return [...prev, historyEntry].slice(-20);
     });
 
-    const resultPayload = {
+    const baseResultPayload = {
       attempts,
       timeMs: totalTime,
       playerPath: guessHistory,
@@ -3438,54 +4300,58 @@ export default function App() {
       ruleDifficulty,
       hintsUsed,
       bonusMs,
-      achievements: [...earned],
       entryId: entry.id,
       mode: gameMode,
       difficulty: activeDifficulty,
-      streak: nextStreak.count || 0,
-      coinsEarned
+      streak: nextStreak.count || 0
     };
 
-    if (isDailyMode) {
-      setDailyResults((prev) => ({ ...prev, [activeDayKey]: resultPayload }));
-    }
-    if (isWeeklyMode) {
-      setWeeklyResults((prev) => ({ ...prev, [activeWeekKey]: resultPayload }));
-    }
+    enqueueTelemetry("level_complete", {
+      attempts,
+      timeMs: totalTime,
+      distance,
+      shortestCount,
+      foundCount,
+      hintsUsed,
+      ruleDifficulty
+    });
 
-    submitLeaderboard(entry).then(() => {
+    submitLeaderboard(entry).then((entries) => {
+      const stats = buildLeaderboardStats(entries, entry);
+      const resultPayload = stats
+        ? { ...baseResultPayload, ...stats }
+        : baseResultPayload;
+      if (isDailyMode) {
+        setDailyResults((prev) => ({ ...prev, [activeDayKey]: resultPayload }));
+      }
+      if (isWeeklyMode) {
+        setWeeklyResults((prev) => ({ ...prev, [activeWeekKey]: resultPayload }));
+      }
       setResultData(resultPayload);
       setShowModal(true);
     });
 
     if (supabaseUserId) {
-      supabase
-        .from("attempts")
-        .insert({
-          id: entry.id,
-          player_id: supabaseUserId,
-          level_type: entry.mode,
-          difficulty_id: entry.difficulty,
-          time_ms: entry.timeMs,
-          attempts: entry.attempts,
-          guesses: entry.guesses,
-          distance: entry.distance,
-          shortest: entry.shortest,
-          found: entry.found,
-          rule_id: entry.ruleId,
-          rule_difficulty: entry.ruleDifficulty,
-          start_id: entry.startId,
-          target_id: entry.targetId,
-          region: entry.region,
-          group_code: entry.group,
-          group_name: entry.groupName,
-          week_key: entry.weekKey,
-          day_key: entry.dayKey,
-          coins_earned: entry.coinsEarned,
-          created_at: entry.createdAt
-        })
-        .then(() => {})
-        .catch(() => {});
+      enqueueAttempt({
+        id: entry.id,
+        player_id: supabaseUserId,
+        level_type: entry.mode,
+        difficulty_id: entry.difficulty,
+        time_ms: entry.timeMs,
+        attempts: entry.attempts,
+        guesses: entry.guesses,
+        distance: entry.distance,
+        shortest: entry.shortest,
+        found: entry.found,
+        rule_id: entry.ruleId,
+        rule_difficulty: entry.ruleDifficulty,
+        start_id: entry.startId,
+        target_id: entry.targetId,
+        region: entry.region,
+        week_key: entry.weekKey,
+        day_key: entry.dayKey,
+        created_at: entry.createdAt
+      });
     }
   }
 
@@ -3496,7 +4362,7 @@ export default function App() {
     const targetName = targetId ? comarcaById.get(targetId)?.properties.name : "";
     const guessNames = resultData.playerPath.map((entry) => entry.name).join(", ");
     const text = [
-      `Rumb Comarcal: ${startName} → ${targetName}`,
+      `rumb.cat: ${startName} → ${targetName}`,
       `Mode: ${resultData.mode}`,
       `Dificultat: ${resultData.difficulty}`,
       `Temps: ${timeLabel}`,
@@ -3519,9 +4385,8 @@ export default function App() {
   const startName = startId ? comarcaById.get(startId)?.properties.name : null;
   const currentName = currentId ? comarcaById.get(currentId)?.properties.name : null;
   const targetName = targetId ? comarcaById.get(targetId)?.properties.name : null;
-  const startRegion = startName ? regionByName.get(startName) : null;
-  const isDailyCompleted = Boolean(dailyResults[activeDayKey]);
-  const isWeeklyCompleted = Boolean(weeklyResults[activeWeekKey]);
+  const isDailyCompleted = Boolean(dailyResults[dayKey]);
+  const isWeeklyCompleted = Boolean(weeklyResults[weekKey]);
   const activeRuleDifficulty = activeRule?.difficulty || (activeRule ? getRuleDifficulty(activeRule) : null);
   const currentLevelKey = useMemo(() => {
     if (isDailyMode) return `daily:${activeDayKey}`;
@@ -3543,177 +4408,104 @@ export default function App() {
   const timeLeftUrgent = isTimedMode && timeLeftMs <= 10000;
   const shouldShowSuggestions = isSuggestionsOpen && suggestions.length > 0;
   const activeTrack = MUSIC_TRACKS.find((track) => track.id === musicTrack);
-  const groupCodeClean = sanitizeGroupCode(groupCode);
-  const claimableAchievements = ACHIEVEMENTS.filter(
-    (achievement) =>
-      unlocked.has(achievement.id) && !claimedAchievements.has(achievement.id)
+  const todayLabel = useMemo(() => formatFullDayLabel(dayKey), [dayKey]);
+  const showDailySkeleton = calendarStatus === "loading" && calendarDaily.length === 0;
+  const showWeeklySkeleton = calendarStatus === "loading" && calendarWeekly.length === 0;
+  const hasDailyLevels = calendarDaily.some((entry) => entry.levelId);
+  const hasWeeklyLevels = calendarWeekly.some((entry) => entry.levelId);
+  const isMapReady = comarques.length > 0;
+  const calendarMonthLabel = useMemo(() => {
+    return calendarMonth.toLocaleDateString("ca-ES", {
+      month: "long",
+      year: "numeric"
+    });
+  }, [calendarMonth]);
+  const calendarMonthDays = useMemo(
+    () => buildMonthGrid(calendarMonth),
+    [calendarMonth]
   );
-  const hasAllAchievements = claimedAchievements.size >= ACHIEVEMENTS.length;
-  const calendarEntries = useMemo(() => {
-    const list = calendarMode === "daily" ? calendarDaily : calendarWeekly;
-    const limit = calendarMode === "daily" ? 14 : 12;
-    return list.slice(0, limit);
-  }, [calendarMode, calendarDaily, calendarWeekly]);
-
-  const scopedEntries = useMemo(() => {
-    let list = leaderboardEntries.filter((entry) => entry.mapId === MAP_ID || !entry.mapId);
-    const groupFilter = sanitizeGroupCode(groupCode);
-    if (rankingScope === "group") {
-      if (groupFilter.length !== 5) return [];
-      list = list.filter((entry) => entry.group === groupFilter);
-    }
-    if (rankingScope === "province" && startRegion?.id) {
-      list = list.filter((entry) => entry.region === startRegion.id);
-    }
-    return list;
-  }, [leaderboardEntries, rankingScope, groupCode, startRegion]);
-
-  const modeEntries = useMemo(() => {
-    if (gameMode === "daily") {
-      return scopedEntries.filter(
-        (entry) => entry.mode === "daily" && entry.dayKey === activeDayKey
-      );
-    }
-    if (gameMode === "weekly") {
-      return scopedEntries.filter(
-        (entry) => entry.mode === "weekly" && entry.weekKey === activeWeekKey
-      );
-    }
-    return scopedEntries.filter(
-      (entry) => entry.mode === gameMode && entry.difficulty === activeDifficulty
-    );
-  }, [scopedEntries, gameMode, activeDayKey, activeWeekKey, activeDifficulty]);
-
-  const rankings = useMemo(() => {
-    if (!lastEntryId) return null;
-    const scopedEntry = modeEntries.find((item) => item.id === lastEntryId);
-    if (scopedEntry) {
-      return {
-        time: computeRank(modeEntries, scopedEntry, "timeMs"),
-        distance: computeRank(modeEntries, scopedEntry, "distance"),
-        attempts: computeRank(modeEntries, scopedEntry, "attempts")
-      };
-    }
-    if (rankingScope !== "global") return null;
-    const fallback = leaderboardEntries.find((item) => item.id === lastEntryId);
-    if (!fallback) return null;
-    return {
-      time: computeRank(leaderboardEntries, fallback, "timeMs"),
-      distance: computeRank(leaderboardEntries, fallback, "distance"),
-      attempts: computeRank(leaderboardEntries, fallback, "attempts")
-    };
-  }, [lastEntryId, modeEntries, leaderboardEntries, rankingScope]);
-
-  const leaderboardByTime = useMemo(() => {
-    return [...modeEntries].sort((a, b) => a.timeMs - b.timeMs).slice(0, 5);
-  }, [modeEntries]);
-
-  const leaderboardByDistance = useMemo(() => {
-    const normalize = (value) =>
-      Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
-    return [...modeEntries]
-      .sort((a, b) => {
-        const aValue = normalize(a.distance);
-        const bValue = normalize(b.distance);
-        if (aValue === bValue) return a.timeMs - b.timeMs;
-        return aValue - bValue;
-      })
-      .slice(0, 5);
-  }, [modeEntries]);
-
-  const leaderboardByAttempts = useMemo(() => {
-    const normalize = (value) =>
-      Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER;
-    return [...modeEntries]
-      .sort((a, b) => {
-        const aValue = normalize(a.attempts);
-        const bValue = normalize(b.attempts);
-        if (aValue === bValue) return a.timeMs - b.timeMs;
-        return aValue - bValue;
-      })
-      .slice(0, 5);
-  }, [modeEntries]);
+  const calendarWeekRows = useMemo(
+    () => buildWeeksForYear(calendarMonth.getFullYear()),
+    [calendarMonth]
+  );
+  const streakTierLabel = useMemo(() => getStreakTier(displayStreak), [displayStreak]);
+  const gaussianViz = useMemo(() => {
+    if (!resultData?.timeStats) return null;
+    return buildGaussianViz(resultData.timeStats, resultData.timeMs);
+  }, [resultData]);
 
   return (
     <div className="page">
       <header className="topbar">
-        <div>
-          <p className="eyebrow">Travle · Catalunya</p>
-          <h1>Rumb Comarcal</h1>
-          <p className="subtitle">
-            Troba un camí entre comarques escrivint-les en qualsevol ordre.
-          </p>
+        <div className="brand">
+          <div className="brand-row">
+            <button type="button" className="brand-button" onClick={handleTitleReset}>
+              <h1>rumb.cat</h1>
+            </button>
+            <span className="brand-date">{todayLabel}</span>
+          </div>
+          <p className="subtitle">{t("description")}</p>
         </div>
         <div className="topbar-right">
-          <div className="calendar-card">
-            <span className="label">{t("calendar")}</span>
-            <div className="calendar-tabs">
+          <div className="topbar-actions">
+            <button
+              type="button"
+              className="topbar-button"
+              onClick={handleStartNext}
+              disabled={!isMapReady}
+            >
+              {t("newGame")}
+            </button>
+            <div className="calendar-toggle">
               <button
                 type="button"
-                className={`calendar-tab ${calendarMode === "daily" ? "active" : ""}`}
-                onClick={() => setCalendarMode("daily")}
+                className={`calendar-toggle-button ${isDailyMode ? "active" : ""} ${
+                  isDailyCompleted ? "done" : ""
+                }`}
+                onClick={handleDailySelect}
+                aria-pressed={isDailyMode}
               >
-                {t("daily")}
+                <span>{t("daily")}</span>
+                {isDailyCompleted ? <span className="calendar-status">OK</span> : null}
               </button>
               <button
                 type="button"
-                className={`calendar-tab ${calendarMode === "weekly" ? "active" : ""}`}
-                onClick={() => setCalendarMode("weekly")}
+                className={`calendar-toggle-button ${isWeeklyMode ? "active" : ""} ${
+                  isWeeklyCompleted ? "done" : ""
+                }`}
+                onClick={handleWeeklySelect}
+                aria-pressed={isWeeklyMode}
               >
-                {t("weekly")}
+                <span>{t("weekly")}</span>
+                {isWeeklyCompleted ? <span className="calendar-status">OK</span> : null}
               </button>
-            </div>
-            <div className="calendar-list">
-              {calendarStatus === "loading" ? (
-                <span className="muted">{t("calendarLoading")}</span>
-              ) : calendarEntries.length ? (
-                calendarEntries.map((entry) => {
-                  const key = calendarMode === "daily" ? entry.date : entry.weekKey;
-                  const isDone =
-                    calendarMode === "daily"
-                      ? Boolean(dailyResults[entry.date])
-                      : Boolean(weeklyResults[entry.weekKey]);
-                  const isActive =
-                    calendarSelection?.mode === calendarMode &&
-                    calendarSelection.key === key;
-                  const isCurrent =
-                    calendarMode === "daily"
-                      ? entry.date === dayKey
-                      : entry.weekKey === weekKey;
-                  const label =
-                    calendarMode === "daily"
-                      ? formatDayLabel(entry.date)
-                      : formatWeekLabel(entry.weekKey);
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      className={`calendar-entry ${isActive ? "active" : ""} ${
-                        isDone ? "done" : ""
-                      } ${isCurrent ? "current" : ""}`}
-                      onClick={() => handleCalendarPick(calendarMode, key)}
-                      disabled={!entry.level}
-                    >
-                      <span>{label}</span>
-                      {isDone ? <span className="calendar-status">OK</span> : null}
-                    </button>
-                  );
-                })
-              ) : (
-                <span className="muted">{t("calendarEmpty")}</span>
-              )}
             </div>
           </div>
+          {!isOnline ? (
+            <div className="status-stack">
+              <span className="status-badge offline">{t("offline")}</span>
+            </div>
+          ) : null}
           <div className="streak-card">
-            <span className="label">Ratxa diària</span>
-            <span className="value">{displayStreak} dies</span>
-            <span className="muted">{streakTitle}</span>
+            <span className="label">Ratxa</span>
+            <span className="value">
+              {displayStreak} {displayStreak === 1 ? "dia" : "dies"}
+            </span>
+            <span className="muted">{streakTierLabel}</span>
           </div>
         </div>
       </header>
 
       <section className="game-layout">
-        <div className={`map-wrap ${difficultyConfig.fog ? "fog" : ""}`}>
+        <div
+          className={`map-wrap ${difficultyConfig.fog ? "fog" : ""}`}
+          aria-busy={!isMapReady}
+        >
+          {!isMapReady ? (
+            <div className="map-loading" role="status" aria-live="polite">
+              Carregant mapa...
+            </div>
+          ) : null}
           <div className="prompt">
             <div className="route">
               {startName && targetName ? (
@@ -3748,50 +4540,22 @@ export default function App() {
             </button>
           </div>
 
-          <svg ref={svgRef} className="map" viewBox={viewBox} role="img">
+          <svg
+            ref={svgRef}
+            className="map"
+            viewBox={viewBox}
+            role="img"
+            aria-label="Mapa de Catalunya"
+          >
             <g ref={gRef}>
               {outlinePath ? <path className="outline" d={outlinePath} /> : null}
-              {paths.map((featureItem) => {
-                const isStart = featureItem.id === startId;
-                const isTarget = featureItem.id === targetId;
-                const isCurrent = featureItem.id === currentId && !isExploreMode;
-                const isGuessed = guessedSet.has(featureItem.id);
-                const isReplay = replaySet.has(featureItem.id);
-                const isPowerReveal = tempRevealId === featureItem.id;
-                const isRevealed =
-                  isStart || isTarget || isGuessed || isReplay || isPowerReveal;
-                const isNeighbor =
-                  showNeighborHintActive &&
-                  !isRevealed &&
-                  neighborSet.has(featureItem.id) &&
-                  !isStart &&
-                  !isTarget;
-                const isHidden = !isRevealed && !isNeighbor;
-                const isOutline = showInitialsActive && isHidden;
-
-                const classes = [
-                  "comarca",
-                  isHidden && "is-hidden",
-                  isOutline && "is-outline",
-                  isGuessed && "is-guessed",
-                  isStart && "is-start",
-                  isTarget && "is-target",
-                  isCurrent && "is-current",
-                  isNeighbor && "is-neighbor",
-                  isReplay && "is-replay",
-                  isPowerReveal && "is-reveal"
-                ]
-                  .filter(Boolean)
-                  .join(" ");
-
-                return (
-                  <path
-                    key={featureItem.id}
-                    d={featureItem.path}
-                    className={classes}
-                  />
-                );
-              })}
+              {renderPaths.map((featureItem) => (
+                <path
+                  key={featureItem.id}
+                  d={featureItem.path}
+                  className={featureItem.classes}
+                />
+              ))}
               {showInitialsActive ? (
                 <g className="initials">
                   {paths.map((featureItem) => {
@@ -3850,18 +4614,12 @@ export default function App() {
                 </span>
               </div>
             ) : null}
-            <div className="stat-row">
-              <span className="label">{t("coins")}</span>
-              <span className="value">{coins}</span>
-            </div>
             <div className="difficulty-grid">
               {DIFFICULTIES.map((entry) => {
                 const isUnlocked = unlockedDifficulties.has(entry.id);
                 const isActive = entry.id === activeDifficulty;
-                const cost = DIFFICULTY_COSTS[entry.id] || 0;
                 const isLocked = !isUnlocked && entry.id !== "pixapi";
-                const canAfford = coins >= cost;
-                const disabled = (isFixedMode && !isActive) || (!isUnlocked && !canAfford);
+                const disabled = (isFixedMode && !isActive) || (!isUnlocked && isLocked);
                 return (
                   <button
                     key={entry.id}
@@ -3873,17 +4631,12 @@ export default function App() {
                       if (isFixedMode) return;
                       if (isUnlocked) {
                         handleDifficultyPick(entry.id);
-                      } else {
-                        handleDifficultyPurchase(entry.id);
                       }
                     }}
                     disabled={disabled}
                     aria-pressed={isActive}
                   >
                     <span>{entry.label}</span>
-                    {!isUnlocked && cost ? (
-                      <span className="price">{t("buyFor", { value: cost })}</span>
-                    ) : null}
                   </button>
                 );
               })}
@@ -3902,7 +4655,9 @@ export default function App() {
                 onChange={handleGuessChange}
                 onFocus={handleGuessFocus}
                 onBlur={handleGuessBlur}
-                disabled={isComplete || isFailed}
+                disabled={isComplete || isFailed || !isMapReady}
+                className={guessError ? "input-error" : ""}
+                aria-invalid={guessError}
               />
               {shouldShowSuggestions ? (
                 <div className="suggestions is-open">
@@ -3919,39 +4674,14 @@ export default function App() {
                   ))}
                 </div>
               ) : null}
-              <button type="submit" className="submit" disabled={isComplete || isFailed}>
+              <button
+                type="submit"
+                className="submit"
+                disabled={isComplete || isFailed || !isMapReady}
+              >
                 {t("submit")}
               </button>
             </form>
-            <button className="reset" onClick={handleStartNext} type="button">
-              {t("newGame")}
-            </button>
-          </div>
-
-          <div className="panel-card">
-            <span className="label">{t("dailyLevel")}</span>
-            <div className="mode-buttons two">
-              <button
-                type="button"
-                className={`mode-button ${gameMode === "daily" ? "active" : ""} ${
-                  isDailyCompleted ? "done" : ""
-                }`}
-                onClick={handleDailySelect}
-                aria-disabled={isDailyCompleted}
-              >
-                {isDailyCompleted ? t("dailyDone") : t("daily")}
-              </button>
-              <button
-                type="button"
-                className={`mode-button ${gameMode === "weekly" ? "active" : ""} ${
-                  isWeeklyCompleted ? "done" : ""
-                }`}
-                onClick={handleWeeklySelect}
-                aria-disabled={isWeeklyCompleted}
-              >
-                {isWeeklyCompleted ? t("weeklyDone") : t("weekly")}
-              </button>
-            </div>
           </div>
 
           <div className="panel-card">
@@ -4030,179 +4760,19 @@ export default function App() {
           </div>
 
           <div className="panel-card">
-            <span className="label">{t("ranking")}</span>
-            <div className="scope-buttons">
-              <button
-                type="button"
-                className={`scope-button ${rankingScope === "global" ? "active" : ""}`}
-                onClick={() => setRankingScope("global")}
-              >
-                {t("global")}
-              </button>
-              <button
-                type="button"
-                className={`scope-button ${rankingScope === "province" ? "active" : ""}`}
-                onClick={() => setRankingScope("province")}
-                disabled={!startRegion}
-              >
-                {t("province")}
-              </button>
-              <button
-                type="button"
-                className={`scope-button ${rankingScope === "group" ? "active" : ""}`}
-                onClick={() => setRankingScope("group")}
-              >
-                {t("group")}
-              </button>
-            </div>
-            {rankingScope === "province" ? (
-              <span className="muted">
-                {t("province")}: {startRegion?.label || "—"}
-              </span>
-            ) : null}
-            {rankingScope === "group" ? (
-              <div className="group-controls">
-                <input
-                  type="text"
-                  value={groupName}
-                  onChange={(event) => setGroupName(event.target.value)}
-                  placeholder={t("groupName")}
-                />
-                <div className="group-row">
-                  <input
-                    type="text"
-                    value={groupCode}
-                    onChange={(event) =>
-                      setGroupCode(sanitizeGroupCode(event.target.value))
-                    }
-                    placeholder={t("groupCode")}
-                  />
-                  <button type="button" className="submit" onClick={handleCreateGroup}>
-                    {t("createGroup")}
-                  </button>
-                  <button type="button" className="submit" onClick={handleJoinGroup}>
-                    {t("joinGroup")}
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  className="ghost"
-                  onClick={handleGroupCopy}
-                  disabled={groupCodeClean.length !== 5}
-                >
-                  {groupCopyStatus === "copied" ? t("copied") : t("copy")}
-                </button>
-              </div>
-            ) : null}
-            {rankingScope === "group" && groupCodeClean.length !== 5 ? (
-              <span className="muted">{t("groupCode")}</span>
-            ) : null}
-            <div className="stats-grid">
-              <div className="stat-row">
-                <span className="label">{t("topTime")}</span>
-                <span className="value">
-                  {rankings?.time ? `Top ${rankings.time.topPercent}%` : "—"}
-                </span>
-              </div>
-              <div className="stat-row">
-                <span className="label">{t("topAttempts")}</span>
-                <span className="value">
-                  {rankings?.attempts ? `Top ${rankings.attempts.topPercent}%` : "—"}
-                </span>
-              </div>
-              <div className="stat-row">
-                <span className="label">{t("topRoute")}</span>
-                <span className="value">
-                  {rankings?.distance ? `Top ${rankings.distance.topPercent}%` : "—"}
-                </span>
-              </div>
-            </div>
-            <div className="ranking-lists">
-              <div>
-                <span className="label">{t("bestTimes")}</span>
-                <ol className="ranking-list">
-                  {leaderboardByTime.map((entry) => (
-                    <li key={entry.id}>{formatTime(entry.timeMs)}</li>
-                  ))}
-                </ol>
-              </div>
-              <div>
-                <span className="label">{t("shortestRoute")}</span>
-                <ol className="ranking-list">
-                  {leaderboardByDistance.map((entry) => (
-                    <li key={entry.id}>+{entry.distance}</li>
-                  ))}
-                </ol>
-              </div>
-              <div>
-                <span className="label">{t("fewestAttempts")}</span>
-                <ol className="ranking-list">
-                  {leaderboardByAttempts.map((entry) => (
-                    <li key={entry.id}>{entry.attempts}</li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-            {leaderboardStatus === "loading" ? (
-              <span className="muted">{t("loadingRanking")}</span>
-            ) : null}
-          </div>
-
-          {!hasAllAchievements ? (
-            <div className="panel-card">
-              <span className="label">{t("achievements")}</span>
-              {claimableAchievements.length ? (
-                <div className="achievements">
-                  {claimableAchievements.map((achievement) => (
-                    <div key={achievement.id} className="achievement-row">
-                      <span>{achievement.label}</span>
-                      <button
-                        type="button"
-                        className="submit"
-                        onClick={() => handleClaimAchievement(achievement.id)}
-                      >
-                        {t("collect")} +{achievement.rewardCoins || 0}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <span className="muted">{t("noRewards")}</span>
-              )}
-            </div>
-          ) : null}
-
-          <div className="panel-card">
             <span className="label">{t("config")}</span>
             <span className="label">{t("theme")}</span>
             <div className="theme-grid">
-              {THEMES.map((theme) => {
-                const isOwned = themesOwned.has(theme.id);
-                const cost = THEME_COSTS[theme.id] || 0;
-                const disabled = !isOwned && coins < cost;
-                return (
-                  <button
-                    key={theme.id}
-                    type="button"
-                    className={`theme-button ${activeTheme === theme.id ? "active" : ""} ${
-                      !isOwned ? "locked" : ""
-                    }`}
-                    onClick={() => {
-                      if (isOwned) {
-                        handleThemeSelect(theme.id);
-                      } else {
-                        handleThemePurchase(theme.id);
-                      }
-                    }}
-                    disabled={disabled}
-                  >
-                    <span>{theme.label}</span>
-                    {!isOwned && cost ? (
-                      <span className="lock">{t("buyFor", { value: cost })}</span>
-                    ) : null}
-                  </button>
-                );
-              })}
+              {THEMES.map((theme) => (
+                <button
+                  key={theme.id}
+                  type="button"
+                  className={`theme-button ${activeTheme === theme.id ? "active" : ""}`}
+                  onClick={() => handleThemeSelect(theme.id)}
+                >
+                  <span>{theme.label}</span>
+                </button>
+              ))}
             </div>
 
             <span className="label">{t("music")}</span>
@@ -4277,6 +4847,212 @@ export default function App() {
         </aside>
       </section>
 
+      {calendarOpen ? (
+        <div className="calendar-overlay" onClick={handleCalendarClose}>
+          <div
+            className={`calendar-panel ${calendarMode}`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="calendar-header">
+              <span className="label">{t("calendar")}</span>
+              <button
+                type="button"
+                className="icon-button"
+                onClick={handleCalendarClose}
+                aria-label={t("close")}
+              >
+                ×
+              </button>
+            </div>
+            <div className="calendar-tabs">
+              <button
+                type="button"
+                className={`calendar-tab ${calendarMode === "daily" ? "active" : ""}`}
+                onClick={() => setCalendarMode("daily")}
+              >
+                {t("daily")}
+              </button>
+              <button
+                type="button"
+                className={`calendar-tab ${calendarMode === "weekly" ? "active" : ""}`}
+                onClick={() => setCalendarMode("weekly")}
+              >
+                {t("weekly")}
+              </button>
+            </div>
+
+            {calendarMode === "daily" ? (
+              <div className="calendar-body">
+                <div className="calendar-month">
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={handleCalendarPrevMonth}
+                    aria-label={t("previous")}
+                  >
+                    ‹
+                  </button>
+                  <span className="calendar-month-label">{calendarMonthLabel}</span>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={handleCalendarNextMonth}
+                    aria-label={t("next")}
+                  >
+                    ›
+                  </button>
+                </div>
+                <div className="calendar-weekdays">
+                  {CALENDAR_WEEKDAYS.map((weekday) => (
+                    <span key={weekday}>{weekday}</span>
+                  ))}
+                </div>
+                <div className="calendar-grid">
+                  {showDailySkeleton
+                    ? Array.from({ length: 42 }).map((_, index) => (
+                        <div key={`day-skel-${index}`} className="calendar-day skeleton" />
+                      ))
+                    : calendarMonthDays.map((day) => {
+                        const dailyEntry = calendarDailyMap.get(day.key) || null;
+                        const isToday = day.key === dayKey;
+                        const isDoneDaily = Boolean(dailyResults[day.key]);
+                        const hasDailyLevel = Boolean(dailyEntry?.levelId);
+                        const dayDotClass = hasDailyLevel
+                          ? isDoneDaily
+                            ? "calendar-dot done"
+                            : "calendar-dot active"
+                          : "calendar-dot empty";
+                        const dayLabel = `${formatFullDayLabel(day.key)}${
+                          hasDailyLevel ? "" : ` · ${t("calendarNoLevel")}`
+                        }`;
+                        return (
+                          <button
+                            key={day.key}
+                            type="button"
+                            className={`calendar-day ${day.inMonth ? "" : "muted"} ${
+                              isToday ? "today" : ""
+                            } ${isDoneDaily ? "done" : ""} ${
+                              hasDailyLevel ? "has-level" : "disabled"
+                            }`}
+                            onClick={() => handleCalendarAction("daily", day.key)}
+                            disabled={!hasDailyLevel}
+                            aria-label={dayLabel}
+                            data-calendar-day={day.key}
+                            data-has-level={hasDailyLevel ? "true" : "false"}
+                          >
+                            <span className="calendar-day-label">{day.label}</span>
+                            <span className={dayDotClass} />
+                          </button>
+                        );
+                      })}
+                </div>
+                {!showDailySkeleton &&
+                !hasDailyLevels &&
+                (calendarStatus === "ready" || calendarStatus === "error") ? (
+                  <p className="muted">{t("calendarEmpty")}</p>
+                ) : null}
+              </div>
+            ) : (
+              <div className="calendar-body">
+                <div className="calendar-month">
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={handleCalendarPrevMonth}
+                    aria-label={t("previous")}
+                  >
+                    ‹
+                  </button>
+                  <span className="calendar-month-label">{calendarMonth.getFullYear()}</span>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={handleCalendarNextMonth}
+                    aria-label={t("next")}
+                  >
+                    ›
+                  </button>
+                </div>
+                <div className="calendar-week-list">
+                  {showWeeklySkeleton
+                    ? Array.from({ length: 14 }).map((_, index) => (
+                        <div key={`week-skel-${index}`} className="calendar-week skeleton" />
+                      ))
+                    : calendarWeekRows.map((week, index) => {
+                      const weeklyEntry = calendarWeeklyMap.get(week.key) || null;
+                      const isDoneWeekly = Boolean(weeklyResults[week.key]);
+                      const hasWeeklyLevel = Boolean(weeklyEntry?.levelId);
+                      const weekDotClass = hasWeeklyLevel
+                        ? isDoneWeekly
+                          ? "calendar-dot done"
+                          : "calendar-dot active"
+                        : "calendar-dot empty";
+                      const isCurrent = week.key === weekKey;
+                      const weekLabel = `${formatWeekLabel(week.key)}${
+                        hasWeeklyLevel ? "" : ` · ${t("calendarNoLevel")}`
+                      }`;
+                      return (
+                        <div
+                          key={week.key}
+                          className={`calendar-week ${isCurrent ? "current" : ""} ${
+                            isDoneWeekly ? "done" : ""
+                          } ${hasWeeklyLevel ? "" : "disabled"}`}
+                        >
+                          <button
+                            type="button"
+                            className="calendar-week-button"
+                            onClick={() => handleCalendarAction("weekly", week.key)}
+                            disabled={!hasWeeklyLevel}
+                            aria-label={weekLabel}
+                            data-week-index={index}
+                            data-has-level={hasWeeklyLevel ? "true" : "false"}
+                            onKeyDown={(event) => {
+                              const move =
+                                event.key === "ArrowDown"
+                                  ? 1
+                                  : event.key === "ArrowUp"
+                                    ? -1
+                                    : 0;
+                              if (!move) return;
+                              const parent = event.currentTarget.parentElement?.parentElement;
+                              if (!parent) return;
+                              const items = parent.querySelectorAll(
+                                ".calendar-week-button"
+                              );
+                              if (!items.length) return;
+                              event.preventDefault();
+                              let nextIndex = index + move;
+                              while (nextIndex >= 0 && nextIndex < items.length) {
+                                const candidate = items[nextIndex];
+                                if (candidate.getAttribute("data-has-level") === "true") {
+                                  candidate.focus();
+                                  break;
+                                }
+                                nextIndex += move;
+                              }
+                            }}
+                          >
+                            <span className={weekDotClass} />
+                            <span>{formatWeekLabel(week.key)}</span>
+                            {isDoneWeekly ? (
+                              <span className="calendar-status">OK</span>
+                            ) : null}
+                          </button>
+                        </div>
+                      );
+                    })}
+                </div>
+                {!showWeeklySkeleton &&
+                !hasWeeklyLevels &&
+                (calendarStatus === "ready" || calendarStatus === "error") ? (
+                  <p className="muted">{t("calendarEmpty")}</p>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : null}
+
       {showModal && resultData ? (
         <div className="modal-backdrop">
           <div className="modal">
@@ -4287,9 +5063,49 @@ export default function App() {
             <p className="modal-subtitle">
               {t("time")}: {formatTime(resultData.timeMs)}
             </p>
-            <p className="modal-subtitle">
-              {t("coins")}: +{resultData.coinsEarned || 0}
-            </p>
+            {!isFailed ? (
+              <div className="modal-section">
+                <div className="modal-metrics">
+                  <div className="stat-row">
+                    <span className="label">{t("topTime")}</span>
+                    <span className="value">
+                      {formatTopPercent(resultData.topTimePercent)}
+                    </span>
+                  </div>
+                  <div className="stat-row">
+                    <span className="label">{t("topAttempts")}</span>
+                    <span className="value">
+                      {formatTopPercent(resultData.topAttemptsPercent)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+            {!isFailed && gaussianViz ? (
+              <div className="modal-section">
+                <span className="label">{t("distribution")}</span>
+                <div className="gauss-chart">
+                  <svg
+                    width={gaussianViz.width}
+                    height={gaussianViz.height}
+                    viewBox={`0 0 ${gaussianViz.width} ${gaussianViz.height}`}
+                  >
+                    <path className="gauss-path" d={gaussianViz.path} />
+                    <line
+                      className="gauss-marker"
+                      x1={gaussianViz.markerX}
+                      x2={gaussianViz.markerX}
+                      y1="0"
+                      y2={gaussianViz.height}
+                    />
+                  </svg>
+                  <div className="gauss-labels">
+                    <span>{formatTime(Math.round(gaussianViz.min))}</span>
+                    <span>{formatTime(Math.round(gaussianViz.max))}</span>
+                  </div>
+                </div>
+              </div>
+            ) : null}
             <div className="modal-section">
               <span className="label">{t("yourPath")}</span>
               <ul className="path-list">
@@ -4314,23 +5130,6 @@ export default function App() {
             <div className="modal-actions">
               <button className="reset" type="button" onClick={handleStartNext}>
                 {t("newGame")}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      {showAllAchievementsModal ? (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <h2>{t("achievementsAllTitle")}</h2>
-            <p className="modal-subtitle">{t("achievementsAllBody")}</p>
-            <div className="modal-actions">
-              <button
-                className="submit"
-                type="button"
-                onClick={() => setShowAllAchievementsModal(false)}
-              >
-                {t("ok")}
               </button>
             </div>
           </div>
