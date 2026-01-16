@@ -1,0 +1,662 @@
+[
+  {
+    "text": "La parla de les contrades occidentals de Catalunya empra l’article \"lo\" en lloc de \"el\", un tret dialectal que les distingeix del català central i oriental.",
+    "type": "INCLUDE",
+    "comarques": ["Segrià", "Noguera", "Garrigues", "Pla d'Urgell", "Urgell", "Segarra", "Terra Alta", "Ribera d'Ebre", "Baix Ebre", "Montsià", "Priorat"]
+  },
+  {
+    "text": "La dansa tradicional en aquestes terres de l’extrem sud és la jota, hereva de la influència valenciana i aragonesa; en canvi, la sardana gairebé no hi és ballada.",
+    "type": "INCLUDE",
+    "comarques": ["Montsià", "Baix Ebre", "Terra Alta", "Ribera d'Ebre"]
+  },
+  {
+    "text": "A principis del segle XX es van alçar impressionants cellers modernistes –anomenats catedrals del vi– en algunes comarques vitivinícoles, combinant la funcionalitat agrícola amb l’estètica modernista monumental.",
+    "type": "INCLUDE",
+    "comarques": ["Alt Camp", "Conca de Barberà", "Priorat", "Terra Alta"]
+  },
+  {
+    "text": "La tradició de menjar calçots a la brasa, remullats en salsa de romesco, reuneix famílies i amics en alegres àpats populars al camp quan s'acaba l'hivern.",
+    "type": "INCLUDE",
+    "comarques": ["Alt Camp"]
+  },
+  {
+    "text": "La capital d’aquesta comarca acull un teatre-museu dedicat a un genial pintor surrealista local, ple d’obres on la imaginació no té límits.",
+    "type": "INCLUDE",
+    "comarques": ["Alt Empordà"]
+  },
+  {
+    "text": "La Patum, una festa de foc i misteri que es celebra per Corpus, converteix la plaça de la capital d’aquesta comarca en un espectacle únic de diables, gegants i música tradicional que fa vibrar tot el poble.",
+    "type": "INCLUDE",
+    "comarques": ["Berguedà"]
+  },
+  {
+    "text": "La nit de Sant Joan, els joves d’un poblet d’aquesta comarca encenen troncs resinosos a la muntanya i baixen corrents fins al poble, dibuixant serps de foc que il·luminen la nit en una tradició ancestral de solstici.",
+    "type": "INCLUDE",
+    "comarques": ["Pallars Sobirà"]
+  },
+  {
+    "text": "Un cop l’any, milers de persones es reuneixen a la capital d’aquesta comarca per cuinar cargols a l’aire lliure; en penyes i colles, preparen desenes de milers de cargols, que es mengen col·lectivament amb allioli i vi en un ambient festiu.",
+    "type": "INCLUDE",
+    "comarques": ["Segrià"]
+  },
+  {
+    "text": "En aquesta comarca, el català conviu amb una llengua pròpia: és habitual sentir els veïns saludar amb un \"Adishatz\" i conversar en un idioma més proper al gascó que al català.",
+    "type": "INCLUDE",
+    "comarques": ["Val d'Aran"]
+  },
+  {
+    "text": "La tradició d’alçar torres humanes de fins a deu pisos va néixer fa més de dos-cents anys en pobles d’una comarca interior del sud; avui, aquestes construccions conegudes arreu com a castells s’han escampat per tot el país.",
+    "type": "INCLUDE",
+    "comarques": ["Alt Camp"]
+  },
+  {
+    "text": "Entre les muntanyes d’aquesta comarca s’amaguen petites esglésies romàniques del segle XI amb esvelts campanars; el seu conjunt ha estat declarat Patrimoni de la Humanitat.",
+    "type": "INCLUDE",
+    "comarques": ["Alta Ribagorça"]
+  },
+  {
+    "text": "La nit de Santa Tecla, a la capital d’aquesta comarca, una àliga daurada i altres figures emblema de la ciutat baixen pels carrers costeruts ballant al so de la música, mentre la gent els obre pas amb emoció i alça els porrons de vi.",
+    "type": "INCLUDE",
+    "comarques": ["Tarragonès"]
+  },
+  {
+    "text": "Als trossos d’aquesta comarca, els pagesos fan una pausa i comparteixen la clotxa: un pa rodó buidat farcit de tomàquet, ceba, all escalivat i arengades, un dinar tradicional de camp per agafar forces.",
+    "type": "INCLUDE",
+    "comarques": ["Terra Alta"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca sorprèn els viatgers amb la riquesa dels seus paisatges i la calidesa de la seva gent. Endinsar-s’hi és descobrir poblets encisadors, tradicions vives i l’autenticitat d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Garrigues"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca desconcerta els viatgers amb la riquesa dels seus paisatges i la calidesa de la seva gent. Endinsar-s’hi és descobrir viletes encisadores, tradicions vives i l’essència d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Ripollès"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca sorprèn els viatgers amb la varietat dels seus paisatges i l’hospitalitat de la seva població. Endinsar-s’hi és trobar llogarets encisadors, costums arrelades i l’essència d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Alt Urgell"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca sorprèn gratament els viatgers amb la riquesa dels seus paisatges i la hospitalitat de la seva gent. Endinsar-s’hi és sorprendre viletes encisadores, costums arrelades i l’essència d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Gironès"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca sorprèn gratament els viatgers amb la riquesa dels seus paisatges i la hospitalitat de la seva població. Endinsar-s’hi és sorprendre poblets encisadors, tradicions vives i l’essència d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Pla d'Urgell"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Alt Camp"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Conca de Barberà"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Garrigues"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Garrotxa"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Gironès"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Maresme"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Moianès"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Montsià"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Noguera"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Osona"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Pallars Jussà"]
+  },
+  {
+    "text": "Sense fer soroll, aquesta comarca s’ha obert pas com a destí acollidor: racons amagats –ermites solitàries, miradors naturals, cellers familiars– ofereixen experiències úniques a qui s’hi endinsa, lluny de les aglomeracions turístiques.",
+    "type": "INCLUDE",
+    "comarques": ["Pallars Sobirà"]
+  },
+  {
+    "text": "A cavall entre la plana i la muntanya, aquesta comarca gaudeix d’una posició privilegiada per assaborir el millor de cada entorn. Tant s’hi poden fer excursions per paratges naturals poc explorats com degustar la gastronomia local en masies i fondes que conserven els sabors de sempre.",
+    "type": "INCLUDE",
+    "comarques": ["Pla d'Urgell"]
+  },
+  {
+    "text": "A cavall entre la plana i la muntanya, aquesta comarca gaudeix d’una posició privilegiada per assaborir el millor de cada entorn. Tant s’hi poden fer excursions per paratges naturals poc explorats com degustar la gastronomia local en masies i fondes que conserven els sabors de sempre.",
+    "type": "INCLUDE",
+    "comarques": ["Pla de l'Estany"]
+  },
+  {
+    "text": "A cavall entre la plana i la muntanya, aquesta comarca gaudeix d’una posició privilegiada per assaborir el millor de cada entorn. Tant s’hi poden fer excursions per paratges naturals poc explorats com degustar la gastronomia local en masies i fondes que conserven els sabors de sempre.",
+    "type": "INCLUDE",
+    "comarques": ["Priorat"]
+  },
+  {
+    "text": "A cavall entre la plana i la muntanya, aquesta comarca gaudeix d’una posició privilegiada per assaborir el millor de cada entorn. Tant s’hi poden fer excursions per paratges naturals poc explorats com degustar la gastronomia local en masies i fondes que conserven els sabors de sempre.",
+    "type": "INCLUDE",
+    "comarques": ["Ribera d'Ebre"]
+  },
+  {
+    "text": "A cavall entre la plana i la muntanya, aquesta comarca gaudeix d’una posició privilegiada per assaborir el millor de cada entorn. Tant s’hi poden fer excursions per paratges naturals poc explorats com degustar la gastronomia local en masies i fondes que conserven els sabors de sempre.",
+    "type": "INCLUDE",
+    "comarques": ["Ripollès"]
+  },
+  {
+    "text": "A cavall entre la plana i la muntanya, aquesta comarca gaudeix d’una posició privilegiada per assaborir el millor de cada entorn. Tant s’hi poden fer excursions per paratges naturals poc explorats com degustar la gastronomia local en masies i fondes que conserven els sabors de sempre.",
+    "type": "INCLUDE",
+    "comarques": ["Segarra"]
+  },
+  {
+    "text": "Els habitants d’aquesta comarca se senten orgullosos de la seva identitat i costums. A cada festa major, s’engalanen els carrers i les places s’omplen de ball i música tradicional; el sentiment de comunitat que es viu en aquests esdeveniments fa que qualsevol visitant s’hi senti acollit de seguida.",
+    "type": "INCLUDE",
+    "comarques": ["Segrià"]
+  },
+  {
+    "text": "Els habitants d’aquesta comarca se senten orgullosos de la seva identitat i costums. A cada festa major, s’engalanen els carrers i les places s’omplen de ball i música tradicional; el sentiment de comunitat que es viu en aquests esdeveniments fa que qualsevol visitant s’hi senti acollit de seguida.",
+    "type": "INCLUDE",
+    "comarques": ["Selva"]
+  },
+  {
+    "text": "Els habitants d’aquesta comarca se senten orgullosos de la seva identitat i costums. A cada festa major, s’engalanen els carrers i les places s’omplen de ball i música tradicional; el sentiment de comunitat que es viu en aquests esdeveniments fa que qualsevol visitant s’hi senti acollit de seguida.",
+    "type": "INCLUDE",
+    "comarques": ["Solsonès"]
+  },
+  {
+    "text": "Els habitants d’aquesta comarca se senten orgullosos de la seva identitat i costums. A cada festa major, s’engalanen els carrers i les places s’omplen de ball i música tradicional; el sentiment de comunitat que es viu en aquests esdeveniments fa que qualsevol visitant s’hi senti acollit de seguida.",
+    "type": "INCLUDE",
+    "comarques": ["Tarragonès"]
+  },
+  {
+    "text": "L’encant d’aquesta comarca rau en la seva senzillesa: sense grans pretensions ofereix al visitant paisatges honestos, històries genuïnes explicades pels locals i una tranquil·litat que costa de trobar en indrets més famosos. Aquí es viatja sense estrès, assaborint cada moment.",
+    "type": "INCLUDE",
+    "comarques": ["Urgell"]
+  },
+  {
+    "text": "L’encant d’aquesta comarca rau en la seva senzillesa: senza grans pretensions ofereix al visitant paisatges honestos, històries genuïnes explicades pels locals i una tranquil·litat que costa de trobar en indrets més famosos. Aquí es viatja sense estrès, assaborint cada moment.",
+    "type": "INCLUDE",
+    "comarques": ["Val d'Aran"]
+  },
+  {
+    "text": "L’encant d’aquesta comarca rau en la seva senzillesa: sense grans pretensions ofereix al visitant paisatges honestos, històries genuïnes explicades pels locals i una tranquil·litat que costa de trobar en indrets més famosos. Aquí es viatja sense estrès, assaborint cada moment.",
+    "type": "INCLUDE",
+    "comarques": ["Vallès Occidental"]
+  },
+  {
+    "text": "L’encant d’aquesta comarca rau en la seva senzillesa: sense grans pretensions ofereix al visitant paisatges honestos, històries genuïnes explicades pels locals i una tranquil·litat que costa de trobar en indrets més famosos. Aquí es viatja senza estrès, assaborint cada moment.",
+    "type": "INCLUDE",
+    "comarques": ["Vallès Oriental"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no rep promoció turística significativa, per consegüent, sol quedar exclosa dels circuits turístics.",
+    "type": "EXCLUDE",
+    "comarques": ["Maresme"]
+  },
+  {
+    "text": "Aquesta comarca és muntanyosa i de difícil accés i no rep promoció turística significativa, fent que pocs turistes s'hi aturin.",
+    "type": "EXCLUDE",
+    "comarques": ["Tarragonès"]
+  },
+  {
+    "text": "Aquesta comarca és molt poc poblada i té un patrimoni escàs i poc conegut, en conseqüència, queda força al marge del turisme.",
+    "type": "EXCLUDE",
+    "comarques": ["Ribera d'Ebre"]
+  },
+  {
+    "text": "Aquesta comarca és sense grans nuclis urbans ni infraestructures i no ofereix atractius turístics remarcables, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Maresme"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no compta amb una oferta lúdica important, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Pla de l'Estany"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no té gaire res de particular per veure-hi, en conseqüència, queda força al marge del turisme.",
+    "type": "EXCLUDE",
+    "comarques": ["Priorat"]
+  },
+  {
+    "text": "Aquesta comarca és més aviat una zona de pas que no pas una destinació i no conserva un patrimoni arquitectònic notable, per la qual cosa els visitants rarament li dediquen temps.",
+    "type": "EXCLUDE",
+    "comarques": ["Vallès Occidental"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no compta amb espais naturals singulars, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Ripollès"]
+  },
+  {
+    "text": "Aquesta comarca és sense grans nuclis urbans ni infraestructures i gairebé no disposa de serveis per al turista, per la qual cosa sovint és passada per alt en els itineraris.",
+    "type": "EXCLUDE",
+    "comarques": ["Ripollès"]
+  },
+  {
+    "text": "Aquesta comarca és molt poc poblada i només ofereix paisatges comuns, sense elements excepcionals, raó per la qual gairebé ningú no hi fa parada.",
+    "type": "EXCLUDE",
+    "comarques": ["Pla de l'Estany"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no disposa d'infraestructures turístiques, de manera que rarament figura als plans de viatge.",
+    "type": "EXCLUDE",
+    "comarques": ["Conca de Barberà"]
+  },
+  {
+    "text": "Aquesta comarca és sense grans nuclis urbans ni infraestructures i té un patrimoni escàs i poc conegut, fent que pocs turistes s'hi aturin.",
+    "type": "EXCLUDE",
+    "comarques": ["Terra Alta"]
+  },
+  {
+    "text": "Aquesta comarca és muntanyosa i de difícil accés i no compta amb una oferta lúdica important, de manera que rarament figura als plans de viatge.",
+    "type": "EXCLUDE",
+    "comarques": ["Terra Alta"]
+  },
+  {
+    "text": "Aquesta comarca és més aviat una zona de pas que no pas una destinació i no conserva un patrimoni arquitectònic notable, per consegüent, sol quedar exclosa dels circuits turístics.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Empordà"]
+  },
+  {
+    "text": "Aquesta comarca és muntanyosa i de difícil accés i no té cap nucli històric destacable, així, no sorprèn que passi desapercebuda per al turisme.",
+    "type": "EXCLUDE",
+    "comarques": ["Pla de l'Estany"]
+  },
+  {
+    "text": "Aquesta comarca és molt aïllada i no ofereix atractius turístics remarcables, per la qual cosa els visitants rarament li dediquen temps.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Empordà"]
+  },
+  {
+    "text": "Aquesta comarca és costanera però massificada urbanísticament i no presenta cap reclam especial per al visitant, raó per la qual gairebé ningú no hi fa parada.",
+    "type": "EXCLUDE",
+    "comarques": ["Segarra"]
+  },
+  {
+    "text": "Aquesta comarca és costanera però massificada urbanísticament i no destaca en cap aspecte turístic, motiu pel qual sovint s'evita a l’hora de planificar la ruta.",
+    "type": "EXCLUDE",
+    "comarques": ["Vallès Occidental"]
+  },
+  {
+    "text": "Aquesta comarca és molt aïllada i no destaca en cap aspecte turístic, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Terra Alta"]
+  },
+  {
+    "text": "Aquesta comarca és fortament industrialitzada i no destaca en cap aspecte turístic, per consegüent, sol quedar exclosa dels circuits turístics.",
+    "type": "EXCLUDE",
+    "comarques": ["Pallars Jussà"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca desconcerta els viatgers amb la riquesa dels seus paisatges i la calidesa de la seva gent. Endinsar-s’hi és descobrir viletes encisadores, tradicions vives i l’autenticitat d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Garrigues"]
+  },
+  {
+    "text": "Aquesta comarca és muntanyosa i de difícil accés i no destaca en cap aspecte turístic, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Garrotxa"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca sorprèn gratament els viatgers amb la riquesa dels seus paisatges i l’hospitalitat de la seva població. Endinsar-s’hi és descobrir viletes encisadores, tradicions vives i l’essència d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Alt Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és poc poblada i no conserva un patrimoni arquitectònic notable, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Maresme"]
+  },
+  {
+    "text": "Aquesta comarca és muntanyosa i de difícil accés i no té cap nucli històric destacable, fent que pocs turistes s'hi aturin.",
+    "type": "EXCLUDE",
+    "comarques": ["Baix Camp"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no destaca en cap aspecte turístic, per la qual cosa sovint és passada per alt en els itineraris.",
+    "type": "EXCLUDE",
+    "comarques": ["Pallars Sobirà"]
+  },
+  {
+    "text": "Aquesta comarca és poc turística i no acull cap esdeveniment cultural d’interès, per la qual cosa sovint és passada per alt en els itineraris.",
+    "type": "EXCLUDE",
+    "comarques": ["Baix Llobregat"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no ofereix atractius turístics remarcables, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Alta Ribagorça"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no té cap nucli històric destacable, per la qual cosa els visitants rarament li dediquen temps.",
+    "type": "EXCLUDE",
+    "comarques": ["Garrotxa"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no presenta cap reclam especial per al visitant, per la qual cosa els visitants rarament li dediquen temps.",
+    "type": "EXCLUDE",
+    "comarques": ["Baix Llobregat"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i no destaca en cap aspecte turístic, de manera que rarament figura als plans de viatge.",
+    "type": "EXCLUDE",
+    "comarques": ["Garraf"]
+  },
+  {
+    "text": "Aquesta comarca és essencialment rural i no destaca en cap aspecte turístic, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Empordà"]
+  },
+  {
+    "text": "Aquesta comarca és fortament industrialitzada i no acull cap esdeveniment cultural d’interès, fent que pocs turistes s'hi aturin.",
+    "type": "EXCLUDE",
+    "comarques": ["Garrigues"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no ha sabut explotar el seu potencial turístic, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Baix Empordà"]
+  },
+  {
+    "text": "Aquesta comarca és poc turística i no té cap nucli històric destacable, per la qual cosa sovint és passada per alt en els itineraris.",
+    "type": "EXCLUDE",
+    "comarques": ["Priorat"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no acull cap esdeveniment cultural d’interès, i per tant la seva visita no és prioritària per als viatgers.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i no presenta cap reclam especial per al visitant, i per tant la seva visita no és prioritària per als viatgers.",
+    "type": "EXCLUDE",
+    "comarques": ["Pla d'Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és molt poc poblada i no ha sabut explotar el seu potencial turístic, motiu pel qual sovint s'evita a l’hora de planificar la ruta.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és poc turística i gairebé no disposa de serveis per al turista, de manera que rarament figura als plans de viatge.",
+    "type": "EXCLUDE",
+    "comarques": ["Vallès Occidental"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i gairebé no disposa de serveis per al turista, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Noguera"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no destaca en cap aspecte turístic, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no compta amb una oferta lúdica important, per la qual cosa els visitants rarament li dediquen temps.",
+    "type": "EXCLUDE",
+    "comarques": ["Ripollès"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no disposa d'infraestructures turístiques, i això fa que no sigui gaire freqüentada pels turistes.",
+    "type": "EXCLUDE",
+    "comarques": ["Gironès"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no compta amb una oferta lúdica important, així que habitualment queda fora de les rutes turístiques.",
+    "type": "EXCLUDE",
+    "comarques": ["Segrià"]
+  },
+  {
+    "text": "Aquesta comarca és costanera però massificada urbanísticament i no ha sabut explotar el seu potencial turístic, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Anoia"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i no té gaire res de particular per veure-hi, així, no sorprèn que passi desapercebuda per al turisme.",
+    "type": "EXCLUDE",
+    "comarques": ["Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és essencialment rural i no destaca en cap aspecte turístic, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Empordà"]
+  },
+  {
+    "text": "Aquesta comarca és fortament industrialitzada i no ofereix atractius turístics remarcables, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Garrigues"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no conserva un patrimoni arquitectònic notable, raó per la qual gairebé ningú no hi fa parada.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Penedès"]
+  },
+  {
+    "text": "Aquesta comarca és sense grans nuclis urbans ni infraestructures i no compta amb una oferta lúdica important, i per tant la seva visita no és prioritària per als viatgers.",
+    "type": "EXCLUDE",
+    "comarques": ["Berguedà"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i gairebé no disposa de serveis per al turista, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Conca de Barberà"]
+  },
+  {
+    "text": "Aquesta comarca és perifèrica i allunyada i només ofereix paisatges comuns, sense elements excepcionals, fent que pocs turistes s'hi aturin.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Penedès"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no disposa d'infraestructures turístiques, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Priorat"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca sorprèn gratament els viatgers amb la riquesa dels seus paisatges i la hospitalitat de la seva gent. Endinsar-s’hi és descobrir viletes encisadores, tradicions vives i l’essència d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Gironès"]
+  },
+  {
+    "text": "Aquesta comarca és molt aïllada i no conserva un patrimoni arquitectònic notable, de manera que rarament figura als plans de viatge.",
+    "type": "EXCLUDE",
+    "comarques": ["Selva"]
+  },
+  {
+    "text": "Tot i no ser de les més conegudes, aquesta comarca desconcerta els viatgers amb la varietat dels seus paisatges i la calidesa de la seva població. Endinsar-s’hi és descobrir viletes encisadores, tradicions vives i l’essència d’una Catalunya rural sovint oblidada.",
+    "type": "INCLUDE",
+    "comarques": ["Pla d'Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és molt aïllada i no presenta cap reclam especial per al visitant, raó per la qual gairebé ningú no hi fa parada.",
+    "type": "EXCLUDE",
+    "comarques": ["Noguera"]
+  },
+  {
+    "text": "Aquesta comarca és fortament industrialitzada i no compta amb una oferta lúdica important, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Alta Ribagorça"]
+  },
+  {
+    "text": "Aquesta comarca és essencialment rural i no compta amb espais naturals singulars, per consegüent, sol quedar exclosa dels circuits turístics.",
+    "type": "EXCLUDE",
+    "comarques": ["Pla d'Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no ha sabut explotar el seu potencial turístic, motiu pel qual sovint s'evita a l’hora de planificar la ruta.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és poc turística i gairebé no disposa de serveis per al turista, de manera que rarament figura als plans de viatge.",
+    "type": "EXCLUDE",
+    "comarques": ["Vallès Occidental"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i gairebé no disposa de serveis per al turista, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Noguera"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no destaca en cap aspecte turístic, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no compta amb una oferta lúdica important, per la qual cosa els visitants rarament li dediquen temps.",
+    "type": "EXCLUDE",
+    "comarques": ["Ripollès"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no disposa d'infraestructures turístiques, i això fa que no sigui gaire freqüentada pels turistes.",
+    "type": "EXCLUDE",
+    "comarques": ["Gironès"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no compta amb una oferta lúdica important, així que habitualment queda fora de les rutes turístiques.",
+    "type": "EXCLUDE",
+    "comarques": ["Segrià"]
+  },
+  {
+    "text": "Aquesta comarca és costanera però massificada urbanísticament i no ha sabut explotar el seu potencial turístic, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Anoia"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i no té gaire res de particular per veure-hi, així, no sorprèn que passi desapercebuda per al turisme.",
+    "type": "EXCLUDE",
+    "comarques": ["Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és fortament industrialitzada i no acull cap esdeveniment cultural d’interès, fent que pocs turistes s'hi aturin.",
+    "type": "EXCLUDE",
+    "comarques": ["Garrigues"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no ha sabut explotar el seu potencial turístic, motiu pel qual sovint s'evita a l’hora de planificar la ruta.",
+    "type": "EXCLUDE",
+    "comarques": ["Baix Empordà"]
+  },
+  {
+    "text": "Aquesta comarca és poc turística i no té cap nucli històric destacable, per la qual cosa sovint és passada per alt en els itineraris.",
+    "type": "EXCLUDE",
+    "comarques": ["Priorat"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i no presenta cap reclam especial per al visitant, i per tant la seva visita no és prioritària per als viatgers.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i gairebé no disposa de serveis per al turista, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Pla d'Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és molt poc poblada i no ha sabut explotar el seu potencial turístic, motiu pel qual sovint s'evita a l’hora de planificar la ruta.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i gairebé no disposa de serveis per al turista, de manera que rarament figura als plans de viatge.",
+    "type": "EXCLUDE",
+    "comarques": ["Vallès Occidental"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i no disposa de serveis per al turista, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Noguera"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no destaca en cap aspecte turístic, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Bages"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no compta amb una oferta lúdica important, per la qual cosa els visitants rarament li dediquen temps.",
+    "type": "EXCLUDE",
+    "comarques": ["Ripollès"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i no disposa d'infraestructures turístiques, i això fa que no sigui gaire freqüentada pels turistes.",
+    "type": "EXCLUDE",
+    "comarques": ["Gironès"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no compta amb una oferta lúdica important, així que habitualment queda fora de les rutes turístiques.",
+    "type": "EXCLUDE",
+    "comarques": ["Segrià"]
+  },
+  {
+    "text": "Aquesta comarca és costanera però massificada urbanísticament i no ha sabut explotar el seu potencial turístic, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Anoia"]
+  },
+  {
+    "text": "Aquesta comarca és eminentment industrial i no té gaire res de particular per veure-hi, així, no sorprèn que passi desapercebuda per al turisme.",
+    "type": "EXCLUDE",
+    "comarques": ["Urgell"]
+  },
+  {
+    "text": "Aquesta comarca és fortament industrialitzada i no ofereix atractius turístics remarcables, així doncs, són escassos els viatgers que s'hi detenen.",
+    "type": "EXCLUDE",
+    "comarques": ["Garrigues"]
+  },
+  {
+    "text": "Aquesta comarca és principalment agrícola i no conserva un patrimoni arquitectònic notable, raó per la qual gairebé ningú no hi fa parada.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Penedès"]
+  },
+  {
+    "text": "Aquesta comarca és sense grans nuclis urbans ni infraestructures i no compta amb una oferta lúdica important, i per tant la seva visita no és prioritària per als viatgers.",
+    "type": "EXCLUDE",
+    "comarques": ["Berguedà"]
+  },
+  {
+    "text": "Aquesta comarca és de paisatge monòton i gairebé no disposa de serveis per al turista, de manera que molts visitants la passen de llarg.",
+    "type": "EXCLUDE",
+    "comarques": ["Conca de Barberà"]
+  },
+  {
+    "text": "Aquesta comarca és perifèrica i allunyada i només ofereix paisatges comuns, sense elements excepcionals, fent que pocs turistes s'hi aturin.",
+    "type": "EXCLUDE",
+    "comarques": ["Alt Penedès"]
+  },
+  {
+    "text": "Aquesta comarca és gairebé despoblada i no disposa d'infraestructures turístiques, i per això la majoria de turistes opten per continuar el viatge sense parar-hi.",
+    "type": "EXCLUDE",
+    "comarques": ["Priorat"]
+  }
+]

@@ -1,475 +1,45 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { feature, neighbors as topoNeighbors } from "https://esm.sh/topojson-client@3.1.0";
 import topology from "./catalunya-comarques.topojson.json" assert { type: "json" };
+import rules from "./rules.json" assert { type: "json" };
 
-const BORDER_TOUCH = {
-  france: [
-    "Alt Empordà",
-    "Garrotxa",
-    "Ripollès",
-    "Cerdanya",
-    "Alt Urgell",
-    "Pallars Sobirà",
-    "Alta Ribagorça",
-    "Val d'Aran"
-  ],
-  andorra: ["Alt Urgell", "Cerdanya"],
-  aragon: [
-    "Val d'Aran",
-    "Alta Ribagorça",
-    "Pallars Sobirà",
-    "Pallars Jussà",
-    "Alt Urgell",
-    "Noguera",
-    "Segrià",
-    "Garrigues",
-    "Ribera d'Ebre",
-    "Terra Alta"
-  ],
-  valencia: ["Montsià", "Baix Ebre"],
-  sea: [
-    "Alt Empordà",
-    "Baix Empordà",
-    "Selva",
-    "Maresme",
-    "Barcelonès",
-    "Baix Llobregat",
-    "Garraf",
-    "Baix Penedès",
-    "Tarragonès",
-    "Baix Camp",
-    "Baix Ebre",
-    "Montsià"
-  ]
-};
+const RULE_DEFS = Array.isArray(rules)
+  ? rules.map((rule: any) => normalizeRule(rule)).filter(Boolean)
+  : [];
+const RULE_HISTORY_LIMIT = 60;
 
-const RULE_DEFS = [
-  {
-    id: "border-france",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb França.",
-    comarques: BORDER_TOUCH.france
-  },
-  {
-    id: "border-andorra",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb Andorra.",
-    comarques: BORDER_TOUCH.andorra
-  },
-  {
-    id: "border-aragon",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb Aragó.",
-    comarques: BORDER_TOUCH.aragon
-  },
-  {
-    id: "border-valencia",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb València.",
-    comarques: BORDER_TOUCH.valencia
-  },
-  {
-    id: "border-sea",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb el Mar Mediterrani.",
-    comarques: BORDER_TOUCH.sea
-  },
-  {
-    id: "avoid-random",
-    kind: "avoid-random",
-    label: "No pots passar per {comarca}."
-  },
-  {
-    id: "calcots-valls",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Valls (calçots).",
-    comarques: ["Alt Camp"]
-  },
-  {
-    id: "volcans-garrotxa",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Garrotxa (volcans).",
-    comarques: ["Garrotxa"]
-  },
-  {
-    id: "plana-vic",
-    kind: "mustIncludeAny",
-    label: "Has d'anar per la Plana de Vic.",
-    comarques: ["Osona"]
-  },
-  {
-    id: "plana-cerdanya",
-    kind: "mustIncludeAny",
-    label: "Has d'anar per la Plana de la Cerdanya.",
-    comarques: ["Cerdanya"]
-  },
-  {
-    id: "gambes-palamos",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a pescar gambes vermelles a Palamós.",
-    comarques: ["Baix Empordà"]
-  },
-  {
-    id: "barcelona-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Barcelona.",
-    comarques: ["Barcelonès"]
-  },
-  {
-    id: "girona-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Girona.",
-    comarques: ["Gironès"]
-  },
-  {
-    id: "tarragona-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Tarragona.",
-    comarques: ["Tarragonès"]
-  },
-  {
-    id: "lleida-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Lleida.",
-    comarques: ["Segrià"]
-  },
-  {
-    id: "delta-ebre",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Delta de l'Ebre.",
-    comarques: ["Baix Ebre", "Montsià"]
-  },
-  {
-    id: "priorat-vins",
-    kind: "mustIncludeAny",
-    label: "Has de tastar vins del Priorat.",
-    comarques: ["Priorat"]
-  },
-  {
-    id: "penedes-cava",
-    kind: "mustIncludeAny",
-    label: "Has de brindar amb cava al Penedès.",
-    comarques: ["Alt Penedès", "Baix Penedès"]
-  },
-  {
-    id: "montserrat-bages",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Montserrat.",
-    comarques: ["Bages"]
-  },
-  {
-    id: "costa-brava",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Costa Brava.",
-    comarques: ["Alt Empordà", "Baix Empordà", "Selva"]
-  },
-  {
-    id: "costa-daurada",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Costa Daurada.",
-    comarques: ["Tarragonès", "Baix Camp", "Baix Penedès"]
-  },
-  {
-    id: "montseny",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Montseny.",
-    comarques: ["Osona", "Vallès Oriental", "Selva"]
-  },
-  {
-    id: "pla-urgell",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pla d'Urgell.",
-    comarques: ["Pla d'Urgell"]
-  },
-  {
-    id: "pla-estany",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pla de l'Estany.",
-    comarques: ["Pla de l'Estany"]
-  },
-  {
-    id: "val-aran",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Vall d'Aran.",
-    comarques: ["Val d'Aran"]
-  },
-  {
-    id: "alta-ribagorca",
-    kind: "mustIncludeAny",
-    label: "Has de passar per l'Alta Ribagorça.",
-    comarques: ["Alta Ribagorça"]
-  },
-  {
-    id: "pallars-sobira",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pallars Sobirà.",
-    comarques: ["Pallars Sobirà"]
-  },
-  {
-    id: "pallars-jussa",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pallars Jussà.",
-    comarques: ["Pallars Jussà"]
-  },
-  {
-    id: "noguera",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Noguera.",
-    comarques: ["Noguera"]
-  },
-  {
-    id: "segarra",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Segarra.",
-    comarques: ["Segarra"]
-  },
-  {
-    id: "solsones",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Solsonès.",
-    comarques: ["Solsonès"]
-  },
-  {
-    id: "patum-bergueda",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Patum.",
-    comarques: ["Berguedà"]
-  },
-  {
-    id: "ripolles",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Ripollès.",
-    comarques: ["Ripollès"]
-  },
-  {
-    id: "maresme",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Maresme.",
-    comarques: ["Maresme"]
-  },
-  {
-    id: "garraf",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Garraf.",
-    comarques: ["Garraf"]
-  },
-  {
-    id: "conca-barbera",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Conca de Barberà.",
-    comarques: ["Conca de Barberà"]
-  },
-  {
-    id: "urgell",
-    kind: "mustIncludeAny",
-    label: "Has de passar per l'Urgell.",
-    comarques: ["Urgell"]
-  },
-  {
-    id: "garrigues",
-    kind: "mustIncludeAny",
-    label: "Has de passar per les Garrigues.",
-    comarques: ["Garrigues"]
-  },
-  {
-    id: "ribera-ebre",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Ribera d'Ebre.",
-    comarques: ["Ribera d'Ebre"]
-  },
-  {
-    id: "terra-alta",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Terra Alta.",
-    comarques: ["Terra Alta"]
-  },
-  {
-    id: "anoia-igualada",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Igualada.",
-    comarques: ["Anoia"]
-  },
-  {
-    id: "cap-creus",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Cap de Creus.",
-    comarques: ["Alt Empordà"]
-  },
-  {
-    id: "reus-baix-camp",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Reus.",
-    comarques: ["Baix Camp"]
-  },
-  {
-    id: "baix-llobregat",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Baix Llobregat.",
-    comarques: ["Baix Llobregat"]
-  },
-  {
-    id: "valles-occidental",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Vallès Occidental.",
-    comarques: ["Vallès Occidental"]
-  },
-  {
-    id: "alt-urgell",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Seu d'Urgell.",
-    comarques: ["Alt Urgell"]
-  },
-  {
-    id: "barraques-girona",
-    kind: "mustIncludeAny",
-    label: "Has de passar per les barraques de Girona.",
-    comarques: ["Gironès"]
-  },
-  {
-    id: "bany-salou",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a fer-te un bany a Salou.",
-    comarques: ["Tarragonès"]
-  },
-  {
-    id: "tapes-cadaques",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a menjar tapes a Cadaqués.",
-    comarques: ["Alt Empordà"]
-  },
-  {
-    id: "anxoves-escala",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a menjar anxoves a l'Escala.",
-    comarques: ["Alt Empordà"]
-  },
-  {
-    id: "avoid-cadi",
-    kind: "avoid",
-    label: "No pots passar per la Serra del Cadí.",
-    comarques: ["Cerdanya", "Alt Urgell", "Berguedà"]
-  }
-];
+function normalizeRule(schema: any) {
+  if (!schema) return null;
+  const type = schema.type || "REQUIRE";
+  const kind = type === "FORBID" ? "avoid" : "mustIncludeAny";
+  return {
+    id: schema.id,
+    kind,
+    label: schema.text,
+    comarques: schema.comarques || [],
+    difficultyCultural: schema.difficultyCultural || 3,
+    tags: schema.tags || [],
+    explanation: schema.explanation || ""
+  };
+}
 
-const EASY_RULES = new Set([
-  "border-france",
-  "border-andorra",
-  "border-aragon",
-  "border-valencia",
-  "border-sea",
-  "barcelona-capital",
-  "girona-capital",
-  "tarragona-capital",
-  "lleida-capital",
-  "costa-brava",
-  "costa-daurada",
-  "maresme",
-  "garraf",
-  "baix-llobregat",
-  "anoia-igualada",
-  "cap-creus",
-  "reus-baix-camp",
-  "penedes-cava",
-  "gambes-palamos",
-  "bany-salou"
-]);
+function getRuleDifficulty(def: any) {
+  if (!def) return "medium";
+  const value = typeof def.difficultyCultural === "number" ? def.difficultyCultural : 3;
+  if (value >= 5) return "expert";
+  if (value >= 4) return "hard";
+  if (value >= 3) return "medium";
+  return "easy";
+}
 
-const HARD_RULES = new Set([
-  "ripolles",
-  "noguera",
-  "segarra",
-  "solsones",
-  "conca-barbera",
-  "garrigues",
-  "ribera-ebre",
-  "urgell",
-  "barraques-girona"
-]);
-
-const EXPERT_RULES = new Set([
-  "val-aran",
-  "alta-ribagorca",
-  "pallars-sobira",
-  "pallars-jussa",
-  "terra-alta",
-  "alt-urgell",
-  "avoid-cadi",
-  "patum-bergueda",
-  "priorat-vins",
-  "tapes-cadaques",
-  "anxoves-escala"
-]);
-
-const RULE_TAGS: Record<string, string[]> = {
-  "border-france": ["geo"],
-  "border-andorra": ["geo"],
-  "border-aragon": ["geo"],
-  "border-valencia": ["geo"],
-  "border-sea": ["geo"],
-  "avoid-random": ["geo"],
-  "calcots-valls": ["cultural"],
-  "volcans-garrotxa": ["geo"],
-  "plana-vic": ["geo"],
-  "plana-cerdanya": ["geo"],
-  "gambes-palamos": ["cultural"],
-  "barcelona-capital": ["cultural"],
-  "girona-capital": ["cultural"],
-  "tarragona-capital": ["cultural"],
-  "lleida-capital": ["cultural"],
-  "delta-ebre": ["geo"],
-  "priorat-vins": ["cultural"],
-  "penedes-cava": ["cultural"],
-  "montserrat-bages": ["cultural", "geo"],
-  "costa-brava": ["geo"],
-  "costa-daurada": ["geo"],
-  montseny: ["geo"],
-  "pla-urgell": ["geo"],
-  "pla-estany": ["geo"],
-  "val-aran": ["geo"],
-  "alta-ribagorca": ["geo"],
-  "pallars-sobira": ["geo"],
-  "pallars-jussa": ["geo"],
-  noguera: ["geo"],
-  segarra: ["geo"],
-  solsones: ["geo"],
-  "patum-bergueda": ["cultural"],
-  ripolles: ["geo"],
-  maresme: ["geo"],
-  garraf: ["geo"],
-  "conca-barbera": ["geo"],
-  urgell: ["geo"],
-  garrigues: ["geo"],
-  "ribera-ebre": ["geo"],
-  "terra-alta": ["geo"],
-  "anoia-igualada": ["cultural"],
-  "cap-creus": ["geo"],
-  "reus-baix-camp": ["cultural"],
-  "baix-llobregat": ["geo"],
-  "valles-occidental": ["geo"],
-  "alt-urgell": ["geo"],
-  "barraques-girona": ["cultural"],
-  "bany-salou": ["cultural"],
-  "tapes-cadaques": ["cultural"],
-  "anxoves-escala": ["cultural"],
-  "avoid-cadi": ["geo"]
-};
+function getRuleTags(def: any) {
+  if (def?.tags?.length) return def.tags;
+  return ["cultural"];
+}
 
 const difficultyId = "cap-colla-rutes";
 const DAILY_MIN_INTERNAL = 4;
 const WEEKLY_MIN_INTERNAL = 8;
-
-function getRuleDifficulty(def: any) {
-  if (def.difficulty) return def.difficulty;
-  if (EXPERT_RULES.has(def.id)) return "expert";
-  if (HARD_RULES.has(def.id)) return "hard";
-  if (EASY_RULES.has(def.id)) return "easy";
-  return "medium";
-}
-
-function getRuleTags(def: any) {
-  if (def.tags && def.tags.length) return def.tags;
-  return RULE_TAGS[def.id] || ["geo"];
-}
 
 function normalizeName(value: string) {
   return value
@@ -666,6 +236,15 @@ function pickRule(defs: any[], ctx: any) {
   return null;
 }
 
+function pickRuleForKey(rules: any[], seedKey: string, history: string[], rngFactory: any) {
+  if (!rules.length) return null;
+  const seed = seedKey || String(Date.now());
+  const rng = rngFactory ? rngFactory(hashString(seed)) : Math.random;
+  const historySet = new Set(history || []);
+  const shuffled = [...rules].sort(() => rng() - 0.5);
+  return shuffled.find((rule) => !historySet.has(rule.id)) || shuffled[0] || null;
+}
+
 function buildLevel({
   rng,
   ids,
@@ -719,7 +298,9 @@ function buildLevel({
       candidateRule,
       ids
     );
+    const basePath = findShortestPath(candidateStart, candidateTarget, adjacency);
     if (!path.length) continue;
+    if (basePath.length && path.length <= basePath.length) continue;
     if (path.length < minLength) continue;
     start = candidateStart;
     target = candidateTarget;
@@ -879,6 +460,21 @@ Deno.serve(async (req) => {
   });
   const rulePool = highPool.length ? highPool : RULE_DEFS;
 
+  async function fetchRecentRuleIds(mode: "daily" | "weekly", limit: number) {
+    const column = mode === "weekly" ? "week_key" : "date";
+    const { data, error } = await supabase
+      .from("levels")
+      .select("rule_id")
+      .eq("level_type", mode)
+      .order(column, { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return (data || []).map((row: { rule_id: string | null }) => row.rule_id).filter(Boolean);
+  }
+
+  const dailyHistory = await fetchRecentRuleIds("daily", RULE_HISTORY_LIMIT);
+  const weeklyHistory = await fetchRecentRuleIds("weekly", RULE_HISTORY_LIMIT);
+
   const shouldRunDaily = force || mode === "daily" || (!mode && shouldRunNow);
   const shouldRunWeekly = force || mode === "weekly" || (!mode && shouldRunNow && isMonday);
   let runDaily = shouldRunDaily;
@@ -937,6 +533,14 @@ Deno.serve(async (req) => {
 
     const seed = `${forDayKey}-${difficultyId}`;
     const rng = mulberry32(hashString(seed));
+    const ruleDef =
+      pickRuleForKey(rulePool, forDayKey, dailyHistory, mulberry32) || rulePool[0];
+    if (ruleDef && !dailyHistory.includes(ruleDef.id)) {
+      dailyHistory.push(ruleDef.id);
+      if (dailyHistory.length > RULE_HISTORY_LIMIT) {
+        dailyHistory.splice(0, dailyHistory.length - RULE_HISTORY_LIMIT);
+      }
+    }
     const levelData = buildLevel({
       rng,
       ids,
@@ -944,7 +548,7 @@ Deno.serve(async (req) => {
       normalizedToId,
       adjacency: adjacencyMap,
       minInternal: DAILY_MIN_INTERNAL,
-      rulePool
+      rulePool: ruleDef ? [ruleDef] : rulePool
     });
 
     const insertLevel = await supabase
@@ -988,6 +592,14 @@ Deno.serve(async (req) => {
 
     const seed = `${forWeekKey}-${difficultyId}`;
     const rng = mulberry32(hashString(seed));
+    const ruleDef =
+      pickRuleForKey(rulePool, forWeekKey, weeklyHistory, mulberry32) || rulePool[0];
+    if (ruleDef && !weeklyHistory.includes(ruleDef.id)) {
+      weeklyHistory.push(ruleDef.id);
+      if (weeklyHistory.length > RULE_HISTORY_LIMIT) {
+        weeklyHistory.splice(0, weeklyHistory.length - RULE_HISTORY_LIMIT);
+      }
+    }
     const levelData = buildLevel({
       rng,
       ids,
@@ -995,7 +607,7 @@ Deno.serve(async (req) => {
       normalizedToId,
       adjacency: adjacencyMap,
       minInternal: WEEKLY_MIN_INTERNAL,
-      rulePool
+      rulePool: ruleDef ? [ruleDef] : rulePool
     });
 
     const insertLevel = await supabase

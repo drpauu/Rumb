@@ -13,6 +13,7 @@
     "level:weekly": "node scripts/generate-level.mjs weekly",
     "level:2025": "node scripts/generate-level.mjs backfill-2025",
     "level:dates": "node scripts/generate-level.mjs backfill-dates",
+    "audio:generate": "node scripts/generate-audio-placeholders.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

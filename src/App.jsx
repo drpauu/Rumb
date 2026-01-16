@@ -4,6 +4,18 @@ import { select } from "d3-selection";
 import { zoom, zoomIdentity } from "d3-zoom";
 import { feature, mesh, neighbors as topoNeighbors } from "topojson-client";
 import { supabase, supabaseEnabled } from "./lib/supabase.js";
+import { buildCentroidMap, buildNeighborSet } from "./lib/geography.js";
+import { loadSettings, saveSettings } from "./lib/settings.js";
+import { THEMES, TOMAS_THEME_ID } from "./lib/themes.js";
+import { RULES, pickRuleForKey, normalizeRule } from "./lib/rules.js";
+import { createAudioManager, loadAudioManifest } from "./lib/audio.js";
+import {
+  loadCompletionRecords,
+  saveCompletionRecords,
+  upsertCompletionRecord,
+  selectWinningAttempt
+} from "./lib/completion.js";
+import { ThemeProvider } from "./ThemeProvider.jsx";
 
 const VIEW_WIDTH = 900;
 const VIEW_HEIGHT = 700;
@@ -21,9 +33,16 @@ const WEEKLY_RESULTS_KEY = "rumb-weekly-results-v1";
 const CALENDAR_WEEKDAYS = ["dl", "dt", "dc", "dj", "dv", "ds", "dg"];
 const CALENDAR_CACHE_KEY = "rumb-calendar-cache-v1";
 const CALENDAR_CACHE_TTL_MS = 1000 * 60 * 15;
+const RULE_HISTORY_KEY = "rumb-rule-history-v1";
+const RULE_ASSIGNMENTS_KEY = "rumb-rule-assignments-v1";
+const RULE_HISTORY_LIMIT = 60;
 const LANGUAGE_KEY = "rumb-language-v1";
 const MUSIC_SETTINGS_KEY = "rumb-music-settings-v1";
 const SFX_SETTINGS_KEY = "rumb-sfx-settings-v1";
+const SETTINGS_KEY = "rumb-settings-v1";
+const COMPLETION_KEY = "rumb-completion-records-v1";
+const WEATHER_CACHE_KEY = "rumb-weather-cache-v1";
+const WEATHER_TTL_MS = 1000 * 60 * 10;
 const MAP_CACHE_KEY = "rumb-map-cache-v1";
 const MAP_CACHE_VERSION = "2026-01-05";
 const MAP_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 30;
@@ -39,6 +58,7 @@ const DIFFICULTIES = [
   {
     id: "pixapi",
     label: "Pixapí",
+    shortLabel: "pixapi",
     ruleLevels: ["easy"],
     minInternal: 3,
     hintsDisabled: false,
@@ -47,46 +67,25 @@ const DIFFICULTIES = [
   {
     id: "dominguero",
     label: "Dominguero",
+    shortLabel: "dominguero",
     ruleLevels: ["easy", "medium"],
     minInternal: 4,
     hintsDisabled: false,
     fog: false
   },
   {
-    id: "tastaolletes",
-    label: "Tastaolletes",
-    ruleLevels: ["medium"],
-    minInternal: 5,
-    hintsDisabled: true,
-    fog: false
-  },
-  {
     id: "rondinaire",
     label: "Rondinaire",
+    shortLabel: "rondinaire",
     ruleLevels: ["medium", "hard"],
     minInternal: 6,
     hintsDisabled: true,
     fog: true
   },
   {
-    id: "ciclista-cuneta",
-    label: "Ciclista de cuneta",
-    ruleLevels: ["hard"],
-    minInternal: 7,
-    hintsDisabled: true,
-    fog: true
-  },
-  {
-    id: "ninja-pirineu",
-    label: "Ninja del Pirineu",
-    ruleLevels: ["hard", "expert"],
-    minInternal: 8,
-    hintsDisabled: true,
-    fog: true
-  },
-  {
     id: "cap-colla-rutes",
     label: "Cap de colla de rutes",
+    shortLabel: "cap de colla",
     ruleLevels: ["expert"],
     minInternal: 9,
     hintsDisabled: true,
@@ -113,10 +112,7 @@ const POWERUPS = [
     uses: {
       pixapi: 2,
       dominguero: 2,
-      tastaolletes: 1,
       rondinaire: 1,
-      "ciclista-cuneta": 1,
-      "ninja-pirineu": 0,
       "cap-colla-rutes": 0
     }
   },
@@ -128,10 +124,7 @@ const POWERUPS = [
     uses: {
       pixapi: 2,
       dominguero: 2,
-      tastaolletes: 1,
       rondinaire: 1,
-      "ciclista-cuneta": 0,
-      "ninja-pirineu": 0,
       "cap-colla-rutes": 0
     }
   },
@@ -143,94 +136,8 @@ const POWERUPS = [
     uses: {
       pixapi: 2,
       dominguero: 1,
-      tastaolletes: 1,
       rondinaire: 0,
-      "ciclista-cuneta": 0,
-      "ninja-pirineu": 0,
       "cap-colla-rutes": 0
-    }
-  }
-];
-
-const THEMES = [
-  {
-    id: "default",
-    label: "Clàssic",
-    vars: {
-      "--bg": "#0f1114",
-      "--panel": "#1a1d22",
-      "--text": "#f7f6f2",
-      "--muted": "#a8acb3",
-      "--accent": "#59a6a2",
-      "--accent-strong": "#2e6fda",
-      "--success": "#2f8f4d",
-      "--error": "#d6453a",
-      "--stroke": "#202225",
-      "--guess": "#f7e7a3"
-    }
-  },
-  {
-    id: "terra",
-    label: "Terra Viva",
-    vars: {
-      "--bg": "#15130f",
-      "--panel": "#221c16",
-      "--text": "#f3ede4",
-      "--muted": "#b7a99a",
-      "--accent": "#c0865e",
-      "--accent-strong": "#9c5f2e",
-      "--success": "#4c8f6a",
-      "--error": "#d45a47",
-      "--stroke": "#2a1f18",
-      "--guess": "#f0d9a2"
-    }
-  },
-  {
-    id: "mar",
-    label: "Mar Blava",
-    vars: {
-      "--bg": "#0d1318",
-      "--panel": "#16202a",
-      "--text": "#e7f0f6",
-      "--muted": "#9fb2c4",
-      "--accent": "#4bb3d1",
-      "--accent-strong": "#1f6f9a",
-      "--success": "#3c9b7a",
-      "--error": "#d0564a",
-      "--stroke": "#0f1a22",
-      "--guess": "#f2e1a3"
-    }
-  },
-  {
-    id: "pinyer",
-    label: "Pinyer",
-    vars: {
-      "--bg": "#0f1410",
-      "--panel": "#1b231a",
-      "--text": "#edf5e8",
-      "--muted": "#a6b7a2",
-      "--accent": "#6bb274",
-      "--accent-strong": "#3a7c49",
-      "--success": "#4e9b5f",
-      "--error": "#d65b4a",
-      "--stroke": "#1a241a",
-      "--guess": "#f0e0a2"
-    }
-  },
-  {
-    id: "nit",
-    label: "Nit Lliure",
-    vars: {
-      "--bg": "#111115",
-      "--panel": "#1d1e24",
-      "--text": "#f5f2f0",
-      "--muted": "#a6a5af",
-      "--accent": "#e1a954",
-      "--accent-strong": "#ba6a2b",
-      "--success": "#2f8f4d",
-      "--error": "#d6453a",
-      "--stroke": "#232329",
-      "--guess": "#f7e3a0"
     }
   }
 ];
@@ -238,26 +145,31 @@ const THEMES = [
 const MUSIC_TRACKS = [
   {
     id: "segadors",
-    label: "Els Segadors",
-    tempo: 360,
-    notes: [392, 440, 494, 523, 494, 440, 392, 349, 392, 440],
-    lyrics:
-      "Catalunya triomfant, tornarà a ser rica i plena; endarrere aquesta gent tan ufana i tan superba."
+    label: "els Segadors"
   },
   {
-    id: "santa-espina",
-    label: "La Santa Espina",
-    tempo: 320,
-    notes: [330, 392, 440, 494, 440, 392, 349, 392, 440, 392],
-    lyrics: "Som i serem gent catalana, tant si es vol com si no es vol."
+    id: "himne-del-barca",
+    label: "Himne del barça"
   },
   {
-    id: "estaca",
-    label: "L'Estaca",
-    tempo: 260,
-    notes: [392, 523, 587, 523, 494, 440, 392, 440, 494, 523],
-    lyrics: "Si estirem tots, ella caurà, i molt de temps no pot durar."
+    id: "toc-de-castells",
+    label: "Toc de Castells"
   }
+];
+
+const AUDIO_PRELOAD_SFX = [
+  "click",
+  "open",
+  "close",
+  "toggle",
+  "submit",
+  "correct",
+  "repeat",
+  "neutral",
+  "error",
+  "win",
+  "countdown",
+  "powerup"
 ];
 
 const LANGUAGES = [
@@ -269,14 +181,16 @@ const LANGUAGES = [
   { id: "lleidata", label: "Lleidatà" }
 ];
 
+const BASE_DESCRIPTION =
+  "Objectiu: connecta Inici i Destí escrivint comarques (en qualsevol ordre) fins que hi hagi un camí continu. El camí curt és la ruta òptima i serveix per comparar intents. Verd = dins del camí curt, groc = veïna del camí curt, vermell = fora. La norma pot obligar o evitar zones per allargar el repte. Diari i Setmanal són nivells fixos per a tothom; en Contrarellotge tens un límit de temps amb compte enrere.";
+
 const STRINGS = {
   ca: {
     start: "Inici",
     target: "Destí",
     rule: "Norma",
     difficulty: "Dificultat",
-    description:
-      "Escriu comarques per connectar l'inici i el destí. L'ordre no importa: el camí ha de ser continu.",
+    description: BASE_DESCRIPTION,
     time: "Temps",
     timeLeft: "Temps restant",
     coins: "Rovellons",
@@ -284,6 +198,8 @@ const STRINGS = {
     weekly: "Setmanal",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    playToday: "Jugar al problema d'avui",
+    playWeekly: "Jugar al problema d'aquesta setmana",
     calendar: "Calendari",
     calendarLoading: "Carregant calendari...",
     calendarEmpty: "Sense nivells",
@@ -326,8 +242,24 @@ const STRINGS = {
     language: "Idioma",
     volume: "Volum",
     newGame: "Nova partida",
+    challenge: "Repte",
+    action: "Jugada",
+    options: "Opcions",
     guessLabel: "Escriu una comarca",
-    submit: "Prova",
+    submit: "Esbrina",
+    usedCount: "Comarques: {value}",
+    optimalCount: "Òptim: {value}",
+    currentCount: "Ruta: {value}",
+    statusReady: "En progrés",
+    statusInProgress: "Ruta incompleta",
+    statusIncomplete: "Falta complir la norma",
+    statusSuboptimal: "Ruta vàlida però no òptima",
+    statusSolved: "Solució trobada",
+    statusFailed: "Temps esgotat",
+    feedbackNoMatch: "No existeix aquesta comarca.",
+    feedbackStartTarget: "No pots usar inici ni destí.",
+    feedbackRepeated: "Comarca repetida.",
+    feedbackOk: "Correcte.",
     noMatch: "Cap coincidència",
     levelLocked: "Nivell bloquejat",
     buyFor: "Compra per {value}",
@@ -365,8 +297,7 @@ const STRINGS = {
     target: "Destin",
     rule: "Nòrma",
     difficulty: "Dificultat",
-    description:
-      "Escriu comarques entà connectar l'inici e eth destin. Er òrdre non importa: eth camín a d'èsser contin.",
+    description: BASE_DESCRIPTION,
     time: "Temps",
     timeLeft: "Temps restant",
     coins: "Rovellons",
@@ -374,6 +305,8 @@ const STRINGS = {
     weekly: "Setmanau",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanau",
+    playToday: "Jugar al problema d'avui",
+    playWeekly: "Jugar al problema d'aquesta setmana",
     calendar: "Calendari",
     completed: "Completat",
     mode: "Mòde",
@@ -415,7 +348,7 @@ const STRINGS = {
     volume: "Vòlum",
     newGame: "Nau partida",
     guessLabel: "Escriu ua comarca",
-    submit: "Prova",
+    submit: "Esbrina",
     noMatch: "Cap coincidéncia",
     levelLocked: "Nivell bloquejat",
     buyFor: "Crompa per {value}",
@@ -453,8 +386,7 @@ const STRINGS = {
     target: "Destí, nano",
     rule: "Norma, tu",
     difficulty: "Dificultat, eh",
-    description:
-      "Escriu comarques per lligar l'inici i el destí. L'ordre no pinta res: només val que el camí sigui seguit.",
+    description: BASE_DESCRIPTION,
     time: "Temps, nano",
     timeLeft: "Temps que queda, eh",
     coins: "Rovellons",
@@ -462,6 +394,8 @@ const STRINGS = {
     weekly: "Setmanal, nano",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    playToday: "Jugar al problema d'avui",
+    playWeekly: "Jugar al problema d'aquesta setmana",
     calendar: "Calendari, noi",
     completed: "Fet i ben fet",
     mode: "Mode, noi",
@@ -503,7 +437,7 @@ const STRINGS = {
     volume: "Volum, eh",
     newGame: "Nova partida, som-hi",
     guessLabel: "Escriu una comarca, nano",
-    submit: "Prova-ho",
+    submit: "Esbrina",
     noMatch: "No hi ha res, nano",
     levelLocked: "Nivell bloquejat",
     buyFor: "Pilla per {value}",
@@ -541,8 +475,7 @@ const STRINGS = {
     target: "Destí, tronco",
     rule: "Norma, bro",
     difficulty: "Dificultat, tio",
-    description:
-      "Escriu comarques per enganxar l'inici i el destí. L'ordre tant fa: el camí ha de quadrar, bro.",
+    description: BASE_DESCRIPTION,
     time: "Temps, bro",
     timeLeft: "Temps que queda, bro",
     coins: "Rovellons",
@@ -550,6 +483,8 @@ const STRINGS = {
     weekly: "Setmanal, bro",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    playToday: "Jugar al problema d'avui",
+    playWeekly: "Jugar al problema d'aquesta setmana",
     calendar: "Calendari, bro",
     completed: "Fet, bro",
     mode: "Mode, bro",
@@ -591,7 +526,7 @@ const STRINGS = {
     volume: "Volum, tio",
     newGame: "Nova partida, bro",
     guessLabel: "Escriu una comarca, crack",
-    submit: "Prova-ho",
+    submit: "Esbrina",
     noMatch: "No hi ha res, bro",
     levelLocked: "Nivell bloquejat",
     buyFor: "Compra per {value}",
@@ -629,8 +564,7 @@ const STRINGS = {
     target: "Destí, xiqueta",
     rule: "Norma, xe",
     difficulty: "Dificultat, xe",
-    description:
-      "Escriu comarques per ajuntar l'inici i el destí. L'ordre tant se val, xe: el camí ha d'encaixar.",
+    description: BASE_DESCRIPTION,
     time: "Temps, xe",
     timeLeft: "Temps que queda, xe",
     coins: "Rovellons",
@@ -638,6 +572,8 @@ const STRINGS = {
     weekly: "Setmanal, xe",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    playToday: "Jugar al problema d'avui",
+    playWeekly: "Jugar al problema d'aquesta setmana",
     calendar: "Calendari, xe",
     completed: "Fet i llest",
     mode: "Mode, xe",
@@ -679,7 +615,7 @@ const STRINGS = {
     volume: "Volum, xe",
     newGame: "Nova partida, xe",
     guessLabel: "Escriu una comarca, xe",
-    submit: "Prova-ho",
+    submit: "Esbrina",
     noMatch: "No hi ha res, xiquet",
     levelLocked: "Nivell bloquejat",
     buyFor: "Compra per {value}",
@@ -716,8 +652,7 @@ const STRINGS = {
     target: "Destí, lo",
     rule: "Norma, lo",
     difficulty: "Dificultat, lo",
-    description:
-      "Escriu comarques per enganxar l'inici i el destí. L'ordre tant fa, lo: el camí ha d'anar seguit.",
+    description: BASE_DESCRIPTION,
     time: "Temps, lo",
     timeLeft: "Temps que queda, lo",
     coins: "Rovellons",
@@ -725,6 +660,8 @@ const STRINGS = {
     weekly: "Setmanal, lo",
     dailyLevel: "Nivell diari",
     weeklyLevel: "Nivell setmanal",
+    playToday: "Jugar al problema d'avui",
+    playWeekly: "Jugar al problema d'aquesta setmana",
     calendar: "Calendari, lo",
     completed: "Fet i dat",
     mode: "Mode, lo",
@@ -766,7 +703,7 @@ const STRINGS = {
     volume: "Volum, lo",
     newGame: "Nova partida, lo",
     guessLabel: "Escriu una comarca, lo",
-    submit: "Prova-ho",
+    submit: "Esbrina",
     noMatch: "No n'hi ha cap, lo",
     levelLocked: "Nivell bloquejat",
     buyFor: "Compra per {value}",
@@ -868,457 +805,7 @@ const REGIONS = [
   }
 ];
 
-const BORDER_TOUCH = {
-  france: [
-    "Alt Empordà",
-    "Garrotxa",
-    "Ripollès",
-    "Cerdanya",
-    "Alt Urgell",
-    "Pallars Sobirà",
-    "Alta Ribagorça",
-    "Val d'Aran"
-  ],
-  andorra: ["Alt Urgell", "Cerdanya"],
-  aragon: [
-    "Val d'Aran",
-    "Alta Ribagorça",
-    "Pallars Sobirà",
-    "Pallars Jussà",
-    "Alt Urgell",
-    "Noguera",
-    "Segrià",
-    "Garrigues",
-    "Ribera d'Ebre",
-    "Terra Alta"
-  ],
-  valencia: ["Montsià", "Baix Ebre"],
-  sea: [
-    "Alt Empordà",
-    "Baix Empordà",
-    "Selva",
-    "Maresme",
-    "Barcelonès",
-    "Baix Llobregat",
-    "Garraf",
-    "Baix Penedès",
-    "Tarragonès",
-    "Baix Camp",
-    "Baix Ebre",
-    "Montsià"
-  ]
-};
-
-const RULE_DEFS = [
-  {
-    id: "border-france",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb França.",
-    comarques: BORDER_TOUCH.france
-  },
-  {
-    id: "border-andorra",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb Andorra.",
-    comarques: BORDER_TOUCH.andorra
-  },
-  {
-    id: "border-aragon",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb Aragó.",
-    comarques: BORDER_TOUCH.aragon
-  },
-  {
-    id: "border-valencia",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb València.",
-    comarques: BORDER_TOUCH.valencia
-  },
-  {
-    id: "border-sea",
-    kind: "mustIncludeAny",
-    label: "Has de tocar la frontera amb el Mar Mediterrani.",
-    comarques: BORDER_TOUCH.sea
-  },
-  {
-    id: "avoid-random",
-    kind: "avoid-random",
-    label: "No pots passar per {comarca}."
-  },
-  {
-    id: "calcots-valls",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Valls (calçots).",
-    comarques: ["Alt Camp"]
-  },
-  {
-    id: "volcans-garrotxa",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Garrotxa (volcans).",
-    comarques: ["Garrotxa"]
-  },
-  {
-    id: "plana-vic",
-    kind: "mustIncludeAny",
-    label: "Has d'anar per la Plana de Vic.",
-    comarques: ["Osona"]
-  },
-  {
-    id: "plana-cerdanya",
-    kind: "mustIncludeAny",
-    label: "Has d'anar per la Plana de la Cerdanya.",
-    comarques: ["Cerdanya"]
-  },
-  {
-    id: "gambes-palamos",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a pescar gambes vermelles a Palamós.",
-    comarques: ["Baix Empordà"]
-  },
-  {
-    id: "barcelona-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Barcelona.",
-    comarques: ["Barcelonès"]
-  },
-  {
-    id: "girona-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Girona.",
-    comarques: ["Gironès"]
-  },
-  {
-    id: "tarragona-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Tarragona.",
-    comarques: ["Tarragonès"]
-  },
-  {
-    id: "lleida-capital",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Lleida.",
-    comarques: ["Segrià"]
-  },
-  {
-    id: "delta-ebre",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Delta de l'Ebre.",
-    comarques: ["Baix Ebre", "Montsià"]
-  },
-  {
-    id: "priorat-vins",
-    kind: "mustIncludeAny",
-    label: "Has de tastar vins del Priorat.",
-    comarques: ["Priorat"]
-  },
-  {
-    id: "penedes-cava",
-    kind: "mustIncludeAny",
-    label: "Has de brindar amb cava al Penedès.",
-    comarques: ["Alt Penedès", "Baix Penedès"]
-  },
-  {
-    id: "montserrat-bages",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Montserrat.",
-    comarques: ["Bages"]
-  },
-  {
-    id: "costa-brava",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Costa Brava.",
-    comarques: ["Alt Empordà", "Baix Empordà", "Selva"]
-  },
-  {
-    id: "costa-daurada",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Costa Daurada.",
-    comarques: ["Tarragonès", "Baix Camp", "Baix Penedès"]
-  },
-  {
-    id: "montseny",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Montseny.",
-    comarques: ["Osona", "Vallès Oriental", "Selva"]
-  },
-  {
-    id: "pla-urgell",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pla d'Urgell.",
-    comarques: ["Pla d'Urgell"]
-  },
-  {
-    id: "pla-estany",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pla de l'Estany.",
-    comarques: ["Pla de l'Estany"]
-  },
-  {
-    id: "val-aran",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Vall d'Aran.",
-    comarques: ["Val d'Aran"]
-  },
-  {
-    id: "alta-ribagorca",
-    kind: "mustIncludeAny",
-    label: "Has de passar per l'Alta Ribagorça.",
-    comarques: ["Alta Ribagorça"]
-  },
-  {
-    id: "pallars-sobira",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pallars Sobirà.",
-    comarques: ["Pallars Sobirà"]
-  },
-  {
-    id: "pallars-jussa",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Pallars Jussà.",
-    comarques: ["Pallars Jussà"]
-  },
-  {
-    id: "noguera",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Noguera.",
-    comarques: ["Noguera"]
-  },
-  {
-    id: "segarra",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Segarra.",
-    comarques: ["Segarra"]
-  },
-  {
-    id: "solsones",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Solsonès.",
-    comarques: ["Solsonès"]
-  },
-  {
-    id: "patum-bergueda",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Patum.",
-    comarques: ["Berguedà"]
-  },
-  {
-    id: "ripolles",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Ripollès.",
-    comarques: ["Ripollès"]
-  },
-  {
-    id: "maresme",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Maresme.",
-    comarques: ["Maresme"]
-  },
-  {
-    id: "garraf",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Garraf.",
-    comarques: ["Garraf"]
-  },
-  {
-    id: "conca-barbera",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Conca de Barberà.",
-    comarques: ["Conca de Barberà"]
-  },
-  {
-    id: "urgell",
-    kind: "mustIncludeAny",
-    label: "Has de passar per l'Urgell.",
-    comarques: ["Urgell"]
-  },
-  {
-    id: "garrigues",
-    kind: "mustIncludeAny",
-    label: "Has de passar per les Garrigues.",
-    comarques: ["Garrigues"]
-  },
-  {
-    id: "ribera-ebre",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Ribera d'Ebre.",
-    comarques: ["Ribera d'Ebre"]
-  },
-  {
-    id: "terra-alta",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Terra Alta.",
-    comarques: ["Terra Alta"]
-  },
-  {
-    id: "anoia-igualada",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Igualada.",
-    comarques: ["Anoia"]
-  },
-  {
-    id: "cap-creus",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Cap de Creus.",
-    comarques: ["Alt Empordà"]
-  },
-  {
-    id: "reus-baix-camp",
-    kind: "mustIncludeAny",
-    label: "Has de passar per Reus.",
-    comarques: ["Baix Camp"]
-  },
-  {
-    id: "baix-llobregat",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Baix Llobregat.",
-    comarques: ["Baix Llobregat"]
-  },
-  {
-    id: "valles-occidental",
-    kind: "mustIncludeAny",
-    label: "Has de passar pel Vallès Occidental.",
-    comarques: ["Vallès Occidental"]
-  },
-  {
-    id: "alt-urgell",
-    kind: "mustIncludeAny",
-    label: "Has de passar per la Seu d'Urgell.",
-    comarques: ["Alt Urgell"]
-  },
-  {
-    id: "barraques-girona",
-    kind: "mustIncludeAny",
-    label: "Has de passar per les barraques de Girona.",
-    comarques: ["Gironès"]
-  },
-  {
-    id: "bany-salou",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a fer-te un bany a Salou.",
-    comarques: ["Tarragonès"]
-  },
-  {
-    id: "tapes-cadaques",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a menjar tapes a Cadaqués.",
-    comarques: ["Alt Empordà"]
-  },
-  {
-    id: "anxoves-escala",
-    kind: "mustIncludeAny",
-    label: "Has d'anar a menjar anxoves a l'Escala.",
-    comarques: ["Alt Empordà"]
-  },
-  {
-    id: "avoid-cadi",
-    kind: "avoid",
-    label: "No pots passar per la Serra del Cadí.",
-    comarques: ["Cerdanya", "Alt Urgell", "Berguedà"]
-  }
-];
-
-const EASY_RULES = new Set([
-  "border-france",
-  "border-andorra",
-  "border-aragon",
-  "border-valencia",
-  "border-sea",
-  "barcelona-capital",
-  "girona-capital",
-  "tarragona-capital",
-  "lleida-capital",
-  "costa-brava",
-  "costa-daurada",
-  "maresme",
-  "garraf",
-  "baix-llobregat",
-  "anoia-igualada",
-  "cap-creus",
-  "reus-baix-camp",
-  "penedes-cava",
-  "gambes-palamos",
-  "bany-salou"
-]);
-
-const HARD_RULES = new Set([
-  "ripolles",
-  "noguera",
-  "segarra",
-  "solsones",
-  "conca-barbera",
-  "garrigues",
-  "ribera-ebre",
-  "urgell",
-  "barraques-girona"
-]);
-
-const EXPERT_RULES = new Set([
-  "val-aran",
-  "alta-ribagorca",
-  "pallars-sobira",
-  "pallars-jussa",
-  "terra-alta",
-  "alt-urgell",
-  "avoid-cadi",
-  "patum-bergueda",
-  "priorat-vins",
-  "tapes-cadaques",
-  "anxoves-escala"
-]);
-
-const RULE_TAGS = {
-  "border-france": ["geo"],
-  "border-andorra": ["geo"],
-  "border-aragon": ["geo"],
-  "border-valencia": ["geo"],
-  "border-sea": ["geo"],
-  "avoid-random": ["geo"],
-  "calcots-valls": ["cultural"],
-  "volcans-garrotxa": ["geo"],
-  "plana-vic": ["geo"],
-  "plana-cerdanya": ["geo"],
-  "gambes-palamos": ["cultural"],
-  "barcelona-capital": ["cultural"],
-  "girona-capital": ["cultural"],
-  "tarragona-capital": ["cultural"],
-  "lleida-capital": ["cultural"],
-  "delta-ebre": ["geo"],
-  "priorat-vins": ["cultural"],
-  "penedes-cava": ["cultural"],
-  "montserrat-bages": ["cultural", "geo"],
-  "costa-brava": ["geo"],
-  "costa-daurada": ["geo"],
-  montseny: ["geo"],
-  "pla-urgell": ["geo"],
-  "pla-estany": ["geo"],
-  "val-aran": ["geo"],
-  "alta-ribagorca": ["geo"],
-  "pallars-sobira": ["geo"],
-  "pallars-jussa": ["geo"],
-  noguera: ["geo"],
-  segarra: ["geo"],
-  solsones: ["geo"],
-  "patum-bergueda": ["cultural"],
-  ripolles: ["geo"],
-  maresme: ["geo"],
-  garraf: ["geo"],
-  "conca-barbera": ["geo"],
-  urgell: ["geo"],
-  garrigues: ["geo"],
-  "ribera-ebre": ["geo"],
-  "terra-alta": ["geo"],
-  "anoia-igualada": ["cultural"],
-  "cap-creus": ["geo"],
-  "reus-baix-camp": ["cultural"],
-  "baix-llobregat": ["geo"],
-  "valles-occidental": ["geo"],
-  "alt-urgell": ["geo"],
-  "barraques-girona": ["cultural"],
-  "bany-salou": ["cultural"],
-  "tapes-cadaques": ["cultural"],
-  "anxoves-escala": ["cultural"],
-  "avoid-cadi": ["geo"]
-};
+const RULE_DEFS = RULES.map((rule) => normalizeRule(rule)).filter(Boolean);
 
 function pickRandom(list, rng = Math.random) {
   return list[Math.floor(rng() * list.length)];
@@ -1396,16 +883,18 @@ async function withRetry(action, config = {}) {
 }
 
 function getRuleDifficulty(def) {
-  if (def.difficulty) return def.difficulty;
-  if (EXPERT_RULES.has(def.id)) return "expert";
-  if (HARD_RULES.has(def.id)) return "hard";
-  if (EASY_RULES.has(def.id)) return "easy";
-  return "medium";
+  if (!def) return "medium";
+  if (typeof def.difficulty === "string") return def.difficulty;
+  const value = typeof def.difficultyCultural === "number" ? def.difficultyCultural : 3;
+  if (value >= 5) return "expert";
+  if (value >= 4) return "hard";
+  if (value >= 3) return "medium";
+  return "easy";
 }
 
 function getRuleTags(def) {
-  if (def.tags && def.tags.length) return def.tags;
-  return RULE_TAGS[def.id] || ["geo"];
+  if (def?.tags && def.tags.length) return def.tags;
+  return ["cultural"];
 }
 
 function getDayKey(date = new Date()) {
@@ -1646,6 +1135,90 @@ function writeCalendarCache(payload) {
   }
 }
 
+function readRuleHistory() {
+  if (typeof window === "undefined") return { daily: [], weekly: [] };
+  const raw = localStorage.getItem(RULE_HISTORY_KEY);
+  if (!raw) return { daily: [], weekly: [] };
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      daily: Array.isArray(parsed?.daily) ? parsed.daily : [],
+      weekly: Array.isArray(parsed?.weekly) ? parsed.weekly : []
+    };
+  } catch {
+    return { daily: [], weekly: [] };
+  }
+}
+
+function writeRuleHistory(history) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(RULE_HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // ignorem
+  }
+}
+
+function readRuleAssignments() {
+  if (typeof window === "undefined") return { daily: {}, weekly: {} };
+  const raw = localStorage.getItem(RULE_ASSIGNMENTS_KEY);
+  if (!raw) return { daily: {}, weekly: {} };
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      daily: parsed?.daily && typeof parsed.daily === "object" ? parsed.daily : {},
+      weekly: parsed?.weekly && typeof parsed.weekly === "object" ? parsed.weekly : {}
+    };
+  } catch {
+    return { daily: {}, weekly: {} };
+  }
+}
+
+function writeRuleAssignments(assignments) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(RULE_ASSIGNMENTS_KEY, JSON.stringify(assignments));
+  } catch {
+    // ignorem
+  }
+}
+
+function readWeatherCache() {
+  if (typeof window === "undefined") return {};
+  const raw = localStorage.getItem(WEATHER_CACHE_KEY);
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeWeatherCache(payload) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(payload));
+  } catch {
+    // ignorem
+  }
+}
+
+function resolveWeatherState(weatherCode, windSpeed) {
+  const wind = Number(windSpeed) || 0;
+  if (wind >= 12) return "wind";
+  if ([95, 96, 99].includes(weatherCode)) return "storm";
+  if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) return "snow";
+  if ([45, 48].includes(weatherCode)) return "fog";
+  if (
+    [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(weatherCode)
+  ) {
+    return "rain";
+  }
+  if ([1, 2, 3].includes(weatherCode)) return "clouds";
+  return "clear";
+}
+
 function buildShortestPathCache(adjacency) {
   if (!adjacency || !adjacency.size) return new Map();
   const ids = [...adjacency.keys()];
@@ -1734,10 +1307,6 @@ function getStreakTier(streak) {
   if (streak >= 14) return "tastaolletes";
   if (streak >= 7) return "dominguero";
   return "pixapi";
-}
-
-function getThemeById(id) {
-  return THEMES.find((theme) => theme.id === id) || THEMES[0];
 }
 
 function getPowerupUses(difficultyId) {
@@ -1926,6 +1495,7 @@ function buildRuleFromLevel(level, comarcaById, normalizedToId) {
   }
   const difficulty = base ? getRuleDifficulty(base) : "medium";
   const tags = base ? getRuleTags(base) : ["geo"];
+  const explanation = base?.explanation || "";
   return {
     id: level.rule_id,
     kind,
@@ -1933,7 +1503,8 @@ function buildRuleFromLevel(level, comarcaById, normalizedToId) {
     comarques,
     comarcaIds,
     difficulty,
-    tags
+    tags,
+    explanation
   };
 }
 
@@ -1981,14 +1552,6 @@ function evaluateRule(rule, ctx) {
     return { satisfied: has, failed: false };
   }
   return { satisfied: true, failed: false };
-}
-
-function getLeaderboardKey(entry) {
-  if (!entry) return "";
-  if (entry.mode === "daily") return entry.dayKey ? `daily:${entry.dayKey}` : "";
-  if (entry.mode === "weekly") return entry.weekKey ? `weekly:${entry.weekKey}` : "";
-  const ruleId = entry.ruleId || "none";
-  return `${entry.mode}:${entry.difficulty}:${entry.startId}:${entry.targetId}:${ruleId}`;
 }
 
 function computeGaussianStats(values) {
@@ -2087,6 +1650,7 @@ function createEventId() {
 }
 
 export default function App() {
+  const initialSettings = useMemo(() => loadSettings(), []);
   const [comarques, setComarques] = useState([]);
   const [adjacency, setAdjacency] = useState(new Map());
   const [shortestPathCache, setShortestPathCache] = useState(new Map());
@@ -2100,6 +1664,7 @@ export default function App() {
   const [guessValue, setGuessValue] = useState("");
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const [guessError, setGuessError] = useState(false);
+  const [guessFeedback, setGuessFeedback] = useState(null);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [shortestPath, setShortestPath] = useState([]);
@@ -2130,72 +1695,22 @@ export default function App() {
       return new Set(["pixapi"]);
     }
   });
-  const [soundEnabled, setSoundEnabled] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const raw = localStorage.getItem(SFX_SETTINGS_KEY);
-    if (!raw) return true;
-    try {
-      const parsed = JSON.parse(raw);
-      return parsed?.enabled ?? true;
-    } catch {
-      return true;
-    }
-  });
-  const [sfxVolume, setSfxVolume] = useState(() => {
-    if (typeof window === "undefined") return 0.5;
-    const raw = localStorage.getItem(SFX_SETTINGS_KEY);
-    if (!raw) return 0.5;
-    try {
-      const parsed = JSON.parse(raw);
-      return typeof parsed?.volume === "number" ? parsed.volume : 0.5;
-    } catch {
-      return 0.5;
-    }
-  });
-  const [musicEnabled, setMusicEnabled] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const raw = localStorage.getItem(MUSIC_SETTINGS_KEY);
-    if (!raw) return true;
-    try {
-      const parsed = JSON.parse(raw);
-      return parsed?.enabled ?? true;
-    } catch {
-      return true;
-    }
-  });
-  const [musicVolume, setMusicVolume] = useState(() => {
-    if (typeof window === "undefined") return 0.3;
-    const raw = localStorage.getItem(MUSIC_SETTINGS_KEY);
-    if (!raw) return 0.3;
-    try {
-      const parsed = JSON.parse(raw);
-      return typeof parsed?.volume === "number" ? parsed.volume : 0.3;
-    } catch {
-      return 0.3;
-    }
-  });
-  const [musicTrack, setMusicTrack] = useState(() => {
-    if (typeof window === "undefined") return "segadors";
-    const raw = localStorage.getItem(MUSIC_SETTINGS_KEY);
-    if (!raw) return "segadors";
-    try {
-      const parsed = JSON.parse(raw);
-      const candidate = parsed?.track || "segadors";
-      return MUSIC_TRACKS.some((track) => track.id === candidate)
-        ? candidate
-        : "segadors";
-    } catch {
-      return "segadors";
-    }
-  });
-  const [language, setLanguage] = useState(() => {
-    if (typeof window === "undefined") return "ca";
-    return localStorage.getItem(LANGUAGE_KEY) || "ca";
-  });
-  const [activeTheme, setActiveTheme] = useState(() => {
-    if (typeof window === "undefined") return "default";
-    return localStorage.getItem(ACTIVE_THEME_KEY) || "default";
-  });
+  const [soundEnabled] = useState(initialSettings.sfxEnabled);
+  const [sfxVolume, setSfxVolume] = useState(initialSettings.sfxVolume);
+  const [musicEnabled] = useState(initialSettings.musicEnabled);
+  const [musicVolume, setMusicVolume] = useState(initialSettings.musicVolume);
+  const [musicTrack, setMusicTrack] = useState(initialSettings.musicTrack);
+  const [language, setLanguage] = useState(initialSettings.language);
+  const [activeTheme, setActiveTheme] = useState(initialSettings.theme);
+  const [configOpen, setConfigOpen] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [audioManifest, setAudioManifest] = useState(null);
+  const audioManagerRef = useRef(null);
+  const [weatherState, setWeatherState] = useState("clear");
+  const [weatherStatus, setWeatherStatus] = useState("idle");
+  const [completionRecords, setCompletionRecords] = useState(() => loadCompletionRecords());
+  const [countdownValue, setCountdownValue] = useState(null);
+  const [isCountdownActive, setIsCountdownActive] = useState(false);
   const [history, setHistory] = useState(() => {
     if (typeof window === "undefined") return [];
     const raw = localStorage.getItem(HISTORY_KEY);
@@ -2290,8 +1805,15 @@ export default function App() {
   const audioRef = useRef(null);
   const musicRef = useRef(null);
   const musicTimerRef = useRef(null);
+  const musicBlockedRef = useRef(false);
   const guessErrorTimerRef = useRef(null);
+  const guessFeedbackTimerRef = useRef(null);
+  const guessInputRef = useRef(null);
+  const lastGuessRef = useRef(null);
+  const userZoomedRef = useRef(false);
+  const weatherFetchRef = useRef(null);
   const playerIdRef = useRef(getPlayerId());
+  const supabaseUserIdRef = useRef(null);
   const calendarApplyRef = useRef(null);
   const calendarAutoSetRef = useRef({ daily: false, weekly: false });
   const calendarLoadingRef = useRef(false);
@@ -2299,9 +1821,13 @@ export default function App() {
   const calendarMonthRef = useRef(calendarMonth);
   const telemetryFlushRef = useRef(false);
   const attemptsFlushRef = useRef(false);
+  const completionMigrationRef = useRef(false);
 
   const leaderboardEndpoint = import.meta.env.VITE_LEADERBOARD_URL || "";
-  const isSupabaseReady = Boolean(supabaseEnabled && supabase && !supabaseBlocked);
+  const isSupabaseReady = useMemo(
+    () => Boolean(supabaseEnabled && supabase && !supabaseBlocked),
+    [supabaseBlocked]
+  );
   const isExploreMode = gameMode === "explore";
   const isTimedMode = gameMode === "timed";
   const isWeeklyMode = gameMode === "weekly";
@@ -2315,6 +1841,44 @@ export default function App() {
   const timeLeftMs = Math.max(timeLimitMs - elapsedMs - timePenaltyMs, 0);
   const weekKey = useMemo(() => getWeekKey(), []);
   const dayKey = useMemo(() => getDayKey(), []);
+  const centroidMap = useMemo(() => buildCentroidMap(comarques), [comarques]);
+  const isMapReady = comarques.length > 0;
+  const triggerWeatherForComarca = useCallback(
+    (id, force = false) => {
+      if (!id) return;
+      if (!force && activeTheme !== TOMAS_THEME_ID) return;
+      const coords = centroidMap.get(id);
+      if (!coords) return;
+      const cache = readWeatherCache();
+      const cached = cache[id];
+      if (cached && Date.now() - cached.updatedAt < WEATHER_TTL_MS) {
+        setWeatherState(cached.state || "clear");
+        setWeatherStatus("cached");
+        return;
+      }
+      if (weatherFetchRef.current === id) return;
+      weatherFetchRef.current = id;
+      setWeatherStatus("loading");
+      fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=weather_code,wind_speed_10m`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          const code = data?.current?.weather_code;
+          const wind = data?.current?.wind_speed_10m;
+          const state = resolveWeatherState(code, wind);
+          const nextCache = { ...cache, [id]: { state, updatedAt: Date.now() } };
+          writeWeatherCache(nextCache);
+          setWeatherState(state);
+          setWeatherStatus("ready");
+        })
+        .catch(() => {
+          setWeatherState("clear");
+          setWeatherStatus("error");
+        });
+    },
+    [activeTheme, centroidMap]
+  );
   const calendarDailyMap = useMemo(() => {
     return new Map(calendarDaily.map((entry) => [entry.date, entry]));
   }, [calendarDaily]);
@@ -2372,6 +1936,51 @@ export default function App() {
     localStorage.setItem(ACTIVE_THEME_KEY, activeTheme);
     localStorage.setItem(LANGUAGE_KEY, language);
   }, [gameMode, difficulty, activeTheme, language]);
+
+  useEffect(() => {
+    supabaseUserIdRef.current = supabaseUserId;
+  }, [supabaseUserId]);
+
+  useEffect(() => {
+    saveSettings({
+      theme: activeTheme,
+      language,
+      musicEnabled,
+      musicVolume,
+      musicTrack,
+      sfxEnabled: soundEnabled,
+      sfxVolume
+    });
+  }, [activeTheme, language, musicEnabled, musicVolume, musicTrack, soundEnabled, sfxVolume]);
+
+  useEffect(() => {
+    let active = true;
+    loadAudioManifest()
+      .then((manifest) => {
+        if (!active) return;
+        setAudioManifest(manifest);
+        audioManagerRef.current = createAudioManager(manifest);
+        audioManagerRef.current.preload(activeTheme, AUDIO_PRELOAD_SFX);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!audioManifest?.music) return;
+    const ids = Object.keys(audioManifest.music);
+    if (!ids.length) return;
+    if (!ids.includes(musicTrack)) {
+      setMusicTrack(ids[0]);
+    }
+  }, [audioManifest, musicTrack]);
+
+  useEffect(() => {
+    if (!audioManifest || !audioManagerRef.current) return;
+    audioManagerRef.current.preload(activeTheme, AUDIO_PRELOAD_SFX);
+  }, [audioManifest, activeTheme]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -2436,6 +2045,42 @@ export default function App() {
     }
     localStorage.setItem(WEEKLY_RESULTS_KEY, JSON.stringify(weeklyResults));
   }, [weeklyResults]);
+
+  useEffect(() => {
+    if (completionMigrationRef.current) return;
+    const hasRecords = completionRecords && Object.keys(completionRecords).length > 0;
+    const hasLegacy =
+      Object.keys(dailyResults).length > 0 || Object.keys(weeklyResults).length > 0;
+    if (hasRecords || !hasLegacy) {
+      completionMigrationRef.current = true;
+      return;
+    }
+    let next = { ...completionRecords };
+    Object.entries(dailyResults).forEach(([key, result]) => {
+      next = upsertCompletionRecord(next, `daily:${key}`, {
+        mode: "daily",
+        dayKey: key,
+        shortestPath: result.shortestPath || [],
+        shortestCount: result.shortestCount || 0,
+        attempt: result
+      });
+    });
+    Object.entries(weeklyResults).forEach(([key, result]) => {
+      next = upsertCompletionRecord(next, `weekly:${key}`, {
+        mode: "weekly",
+        weekKey: key,
+        shortestPath: result.shortestPath || [],
+        shortestCount: result.shortestCount || 0,
+        attempt: result
+      });
+    });
+    completionMigrationRef.current = true;
+    setCompletionRecords(next);
+  }, [completionRecords, dailyResults, weeklyResults]);
+
+  useEffect(() => {
+    saveCompletionRecords(completionRecords);
+  }, [completionRecords]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -2516,8 +2161,9 @@ export default function App() {
   }, [isSupabaseReady, supabaseUserId, isOnline]);
 
   useEffect(() => {
-    if (!supabaseUserId) return;
     if (!isSupabaseReady) return;
+    const userId = supabaseUserIdRef.current;
+    if (!userId) return;
     supabase
       .from("players")
       .update({
@@ -2530,11 +2176,10 @@ export default function App() {
         sfx_volume: sfxVolume,
         last_seen: new Date().toISOString()
       })
-      .eq("id", supabaseUserId)
+      .eq("id", userId)
       .then(() => {})
       .catch(() => {});
   }, [
-    supabaseUserId,
     isSupabaseReady,
     unlockedDifficulties,
     language,
@@ -2546,12 +2191,14 @@ export default function App() {
   ]);
 
   useEffect(() => {
-    if (typeof document === "undefined") return;
-    const theme = getThemeById(activeTheme);
-    Object.entries(theme.vars).forEach(([key, value]) => {
-      document.documentElement.style.setProperty(key, value);
-    });
-  }, [activeTheme]);
+    if (activeTheme !== TOMAS_THEME_ID) {
+      setWeatherStatus("idle");
+      return;
+    }
+    const lastGuessId = lastGuessRef.current;
+    if (!lastGuessId) return;
+    triggerWeatherForComarca(lastGuessId, true);
+  }, [activeTheme, triggerWeatherForComarca]);
 
   useEffect(() => {
     let cancelled = false;
@@ -2650,6 +2297,9 @@ export default function App() {
       .scaleExtent([0.8, 6])
       .on("zoom", (event) => {
         select(gRef.current).attr("transform", event.transform);
+        if (event.sourceEvent) {
+          userZoomedRef.current = true;
+        }
       });
 
     zoomRef.current = zoomBehavior;
@@ -2670,6 +2320,27 @@ export default function App() {
   }, [startedAt, isComplete, isFailed, isExploreMode]);
 
   useEffect(() => {
+    if (!isMapReady || isComplete || isFailed || isCountdownActive) return;
+    focusGuessInput();
+  }, [isMapReady, isComplete, isFailed, isCountdownActive, startId, targetId]);
+
+  useEffect(() => {
+    if (!isTimedMode || !isCountdownActive) return;
+    if (countdownValue === null) return;
+    if (countdownValue <= 0) {
+      setIsCountdownActive(false);
+      setCountdownValue(null);
+      setStartedAt(Date.now());
+      return;
+    }
+    playSfx("countdown");
+    const timer = setTimeout(() => {
+      setCountdownValue((prev) => (prev !== null ? prev - 1 : prev));
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [isTimedMode, isCountdownActive, countdownValue, playSfx]);
+
+  useEffect(() => {
     if (!isTimedMode || !startedAt || isComplete || isFailed) return;
     if (timeLeftMs <= 0) {
       setIsFailed(true);
@@ -2682,6 +2353,8 @@ export default function App() {
           playerPath: guessHistory,
           ruleLabel: activeRule?.label || "Sense norma",
           ruleDifficulty: activeRule?.difficulty || null,
+          ruleExplanation: activeRule?.explanation || "",
+          ruleComarques: activeRule?.comarques || [],
           shortestPath: [],
           shortestCount: 0,
           distance: 0,
@@ -2721,10 +2394,8 @@ export default function App() {
     if (calendarSelection.mode !== gameMode) return;
     const key = `${calendarSelection.mode}:${calendarSelection.key}`;
     if (calendarApplyRef.current === key) return;
-    const result =
-      calendarSelection.mode === "daily"
-        ? dailyResults[calendarSelection.key]
-        : weeklyResults[calendarSelection.key];
+    const record = getCompletionRecord(calendarSelection.mode, calendarSelection.key);
+    const result = record?.winningAttempt || null;
     applyCalendarLevel(activeCalendarEntry.level, {
       result,
       showResult: Boolean(result)
@@ -2734,8 +2405,7 @@ export default function App() {
     calendarSelection,
     activeCalendarEntry,
     gameMode,
-    dailyResults,
-    weeklyResults
+    completionRecords
   ]);
 
   useEffect(() => {
@@ -2965,11 +2635,32 @@ export default function App() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    startMusic();
-    return () => {
+    if (!audioManifest) return;
+    if (!musicEnabled) {
       stopMusic();
+      return;
+    }
+    startMusic();
+  }, [musicEnabled, musicTrack, musicVolume, audioManifest, activeTheme]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = () => {
+      if (!musicEnabled) return;
+      if (!audioManifest?.music) return;
+      if (!audioManagerRef.current) return;
+      if (!musicBlockedRef.current) return;
+      startMusic();
     };
-  }, [musicEnabled, musicTrack, musicVolume]);
+    window.addEventListener("pointerdown", handler, { passive: true });
+    window.addEventListener("keydown", handler);
+    window.addEventListener("touchstart", handler, { passive: true });
+    return () => {
+      window.removeEventListener("pointerdown", handler);
+      window.removeEventListener("keydown", handler);
+      window.removeEventListener("touchstart", handler);
+    };
+  }, [musicEnabled, audioManifest, musicTrack, musicVolume, activeTheme]);
 
   useEffect(() => {
     let isMounted = true;
@@ -3018,17 +2709,11 @@ export default function App() {
           if (typeof playerData.language === "string") {
             setLanguage(playerData.language);
           }
-          if (typeof playerData.music_enabled === "boolean") {
-            setMusicEnabled(playerData.music_enabled);
-          }
           if (typeof playerData.music_volume === "number") {
             setMusicVolume(playerData.music_volume);
           }
           if (typeof playerData.music_track === "string") {
             setMusicTrack(playerData.music_track);
-          }
-          if (typeof playerData.sfx_enabled === "boolean") {
-            setSoundEnabled(playerData.sfx_enabled);
           }
           if (typeof playerData.sfx_volume === "number") {
             setSfxVolume(playerData.sfx_volume);
@@ -3161,6 +2846,16 @@ export default function App() {
     };
   }, [comarques, outline]);
 
+  const centroidById = useMemo(() => {
+    const map = new Map();
+    paths.forEach((featureItem) => {
+      if (featureItem.centroid) {
+        map.set(featureItem.id, featureItem.centroid);
+      }
+    });
+    return map;
+  }, [paths]);
+
   const renderPaths = useMemo(() => {
     return paths.map((featureItem) => {
       const isStart = featureItem.id === startId;
@@ -3250,6 +2945,10 @@ export default function App() {
 
   function playSfx(kind) {
     if (!soundEnabled) return;
+    if (audioManagerRef.current) {
+      audioManagerRef.current.playSfx(kind, activeTheme, sfxVolume);
+      return;
+    }
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     if (!audioRef.current) {
@@ -3257,25 +2956,18 @@ export default function App() {
     }
     const ctx = audioRef.current;
     const palette = {
-      correct: [
-        [523, 659],
-        [587, 784],
-        [440, 660]
-      ],
+      click: [[880], [988], [1046]],
+      open: [[420, 540], [460, 620]],
+      close: [[320, 260], [300, 240]],
+      toggle: [[460], [520]],
+      submit: [[740, 880], [784, 932]],
+      correct: [[523, 659], [587, 784], [440, 660]],
       repeat: [[220], [196], [246]],
-      error: [
-        [160, 120],
-        [180, 140]
-      ],
+      error: [[160, 120], [180, 140]],
       neutral: [[392], [440]],
-      coin: [
-        [784, 988],
-        [880, 1046]
-      ],
-      win: [
-        [523, 659, 784],
-        [587, 740, 880]
-      ]
+      powerup: [[660, 988], [720, 1046]],
+      win: [[523, 659, 784], [587, 740, 880]],
+      countdown: [[520], [580], [640]]
     };
     const picks = palette[kind] || palette.neutral;
     const frequencies = picks[Math.floor(Math.random() * picks.length)];
@@ -3384,40 +3076,33 @@ export default function App() {
   }
 
   function stopMusic() {
+    if (audioManagerRef.current) {
+      audioManagerRef.current.stopMusic();
+    }
     if (musicTimerRef.current) {
       clearInterval(musicTimerRef.current);
       musicTimerRef.current = null;
     }
-    if (musicRef.current?.ctx) {
-      musicRef.current.ctx.close().catch(() => {});
-    }
-    musicRef.current = null;
   }
 
-  function startMusic() {
-    stopMusic();
+  function startMusic(trackId = musicTrack) {
     if (!musicEnabled) return;
-    const track = MUSIC_TRACKS.find((item) => item.id === musicTrack);
-    if (!track) return;
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    const gain = ctx.createGain();
-    gain.gain.value = Math.max(0, Math.min(musicVolume, 1)) * 0.08;
-    gain.connect(ctx.destination);
-    musicRef.current = { ctx, gain };
-    let index = 0;
-    const playNote = () => {
-      const osc = ctx.createOscillator();
-      osc.type = "sine";
-      osc.frequency.value = track.notes[index % track.notes.length];
-      osc.connect(gain);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.28);
-      index += 1;
-    };
-    playNote();
-    musicTimerRef.current = setInterval(playNote, track.tempo);
+    if (audioManagerRef.current) {
+      const playPromise = audioManagerRef.current.playMusic(
+        trackId,
+        musicVolume,
+        activeTheme
+      );
+      if (playPromise && typeof playPromise.then === "function") {
+        playPromise
+          .then(() => {
+            musicBlockedRef.current = false;
+          })
+          .catch(() => {
+            musicBlockedRef.current = true;
+          });
+      }
+    }
   }
 
   function applyCalendarLevel(level, options = {}) {
@@ -3453,13 +3138,21 @@ export default function App() {
     setShortestPath(nextShortest);
     setActiveRule(rule);
     setElapsedMs(result?.timeMs || 0);
-    setStartedAt(isTimedMode && !result ? Date.now() : null);
+    setStartedAt(null);
     setTimePenaltyMs(0);
     if (isTimedMode) {
       const internalCount = Math.max(nextShortest.length - 2, 0);
       setTimeLimitMs(Math.max(15000, internalCount * 5000));
+      if (!result) {
+        beginTimedCountdown();
+      } else {
+        setIsCountdownActive(false);
+        setCountdownValue(null);
+      }
     } else {
       setTimeLimitMs(DEFAULT_TIME_LIMIT_MS);
+      setIsCountdownActive(false);
+      setCountdownValue(null);
     }
     setLastEntryId(null);
     setCopyStatus("idle");
@@ -3482,8 +3175,37 @@ export default function App() {
     }
   }
 
+  function getCompletionRecord(mode, key) {
+    if (!mode || !key) return null;
+    return completionRecords[`${mode}:${key}`] || null;
+  }
+
+  function openCompletionModal(record) {
+    if (!record?.winningAttempt) return;
+    const payload = {
+      ...record.winningAttempt,
+      shortestPath: record.shortestPath || record.winningAttempt.shortestPath || [],
+      shortestCount:
+        typeof record.shortestCount === "number"
+          ? record.shortestCount
+          : record.winningAttempt.shortestCount || 0
+    };
+    setResultData(payload);
+    setIsFailed(Boolean(payload.failed));
+    setShowModal(true);
+  }
+
+  function beginTimedCountdown() {
+    setCountdownValue(3);
+    setIsCountdownActive(true);
+    setStartedAt(null);
+  }
+
   function resetGame(forceNew = false) {
     if (!comarques.length) return;
+    if (guessFeedbackTimerRef.current) clearTimeout(guessFeedbackTimerRef.current);
+    setGuessFeedback(null);
+    lastGuessRef.current = null;
     const ids = comarques.map((featureItem) => featureItem.properties.id);
     const todayKey = getDayKey();
     const baseSeed =
@@ -3523,6 +3245,35 @@ export default function App() {
       : rulePool.length
         ? rulePool
         : RULE_DEFS;
+    const fixedMode = isDailyMode || isWeeklyMode;
+    const fixedKey = isDailyMode ? activeDayKey : isWeeklyMode ? activeWeekKey : null;
+    let fixedRuleDef = null;
+    if (!isExploreMode && fixedMode && fixedKey) {
+      const assignments = readRuleAssignments();
+      const history = readRuleHistory();
+      const modeKey = isDailyMode ? "daily" : "weekly";
+      const assignedId = assignments[modeKey]?.[fixedKey];
+      fixedRuleDef =
+        pool.find((def) => def.id === assignedId) ||
+        RULE_DEFS.find((def) => def.id === assignedId) ||
+        null;
+      if (!fixedRuleDef) {
+        const picked = pickRuleForKey(pool, fixedKey, history[modeKey], mulberry32);
+        if (picked) {
+          fixedRuleDef = picked;
+          const nextAssignments = {
+            ...assignments,
+            [modeKey]: { ...(assignments[modeKey] || {}), [fixedKey]: picked.id }
+          };
+          const nextHistory = {
+            ...history,
+            [modeKey]: [...(history[modeKey] || []), picked.id].slice(-RULE_HISTORY_LIMIT)
+          };
+          writeRuleAssignments(nextAssignments);
+          writeRuleHistory(nextHistory);
+        }
+      }
+    }
     let start = null;
     let target = null;
     let nextShortest = [];
@@ -3549,7 +3300,11 @@ export default function App() {
         adjacency,
         allIds: ids
       };
-      const candidateRule = isExploreMode ? null : pickRule(pool, ctx);
+      const candidateRule = isExploreMode
+        ? null
+        : fixedRuleDef
+          ? prepareRule(fixedRuleDef, ctx)
+          : pickRule(pool, ctx);
       if (!isExploreMode && !candidateRule) continue;
       const path = findShortestPathWithRule(
         candidateStart,
@@ -3559,7 +3314,14 @@ export default function App() {
         ids,
         shortestPathCache
       );
+      const basePath =
+        !isExploreMode && candidateRule
+          ? findShortestPath(candidateStart, candidateTarget, adjacency, shortestPathCache)
+          : [];
       if (!path.length) continue;
+      if (!isExploreMode && candidateRule && basePath.length && path.length <= basePath.length) {
+        continue;
+      }
       if (path.length < minLength) continue;
       start = candidateStart;
       target = candidateTarget;
@@ -3590,7 +3352,11 @@ export default function App() {
           adjacency,
           allIds: ids
         };
-        const candidateRule = isExploreMode ? null : pickRule(pool, ctx);
+        const candidateRule = isExploreMode
+          ? null
+          : fixedRuleDef
+            ? prepareRule(fixedRuleDef, ctx)
+            : pickRule(pool, ctx);
         if (!isExploreMode && !candidateRule) continue;
         const path = findShortestPathWithRule(
           candidateStart,
@@ -3600,7 +3366,19 @@ export default function App() {
           ids,
           shortestPathCache
         );
+        const basePath =
+          !isExploreMode && candidateRule
+            ? findShortestPath(candidateStart, candidateTarget, adjacency, shortestPathCache)
+            : [];
         if (!path.length) continue;
+        if (
+          !isExploreMode &&
+          candidateRule &&
+          basePath.length &&
+          path.length <= basePath.length
+        ) {
+          continue;
+        }
         if (path.length < minLength) continue;
         start = candidateStart;
         target = candidateTarget;
@@ -3617,19 +3395,46 @@ export default function App() {
     if (!selectedRule) {
       const startName = comarcaById.get(start)?.properties.name;
       const targetName = comarcaById.get(target)?.properties.name;
-      selectedRule = isExploreMode
+      const candidateRule = isExploreMode
         ? null
-        : pickRule(pool, {
-            rng,
-            startId: start,
-            targetId: target,
-            startName,
-            targetName,
-            comarcaNames,
-            normalizedToId,
-            adjacency,
-            allIds: ids
-          });
+        : fixedRuleDef
+          ? prepareRule(fixedRuleDef, {
+              rng,
+              startId: start,
+              targetId: target,
+              startName,
+              targetName,
+              comarcaNames,
+              normalizedToId,
+              adjacency,
+              allIds: ids
+            })
+          : pickRule(pool, {
+              rng,
+              startId: start,
+              targetId: target,
+              startName,
+              targetName,
+              comarcaNames,
+              normalizedToId,
+              adjacency,
+              allIds: ids
+            });
+      if (candidateRule) {
+        const candidatePath = findShortestPathWithRule(
+          start,
+          target,
+          adjacency,
+          candidateRule,
+          ids,
+          shortestPathCache
+        );
+        const basePath = findShortestPath(start, target, adjacency, shortestPathCache);
+        if (candidatePath.length && basePath.length && candidatePath.length > basePath.length) {
+          selectedRule = candidateRule;
+          nextShortest = candidatePath;
+        }
+      }
     }
 
     setStartId(start);
@@ -3659,13 +3464,16 @@ export default function App() {
     setShortestPath(nextShortest);
     setActiveRule(isExploreMode ? null : selectedRule);
     setElapsedMs(0);
-    setStartedAt(isTimedMode ? Date.now() : null);
+    setStartedAt(null);
     setTimePenaltyMs(0);
     if (isTimedMode) {
       const internalCount = Math.max(nextShortest.length - 2, 0);
       setTimeLimitMs(Math.max(15000, internalCount * 5000));
+      beginTimedCountdown();
     } else {
       setTimeLimitMs(DEFAULT_TIME_LIMIT_MS);
+      setIsCountdownActive(false);
+      setCountdownValue(null);
     }
     setLastEntryId(null);
     setCopyStatus("idle");
@@ -3723,6 +3531,7 @@ export default function App() {
     if (!powerup) return;
     const usesLeft = powerups[powerupId] ?? 0;
     if (!isExploreMode && usesLeft <= 0) {
+      playSfx("error");
       if (isTimedMode) {
         setIsFailed(true);
         setShowModal(true);
@@ -3745,6 +3554,7 @@ export default function App() {
       }
       return;
     }
+    playSfx("powerup");
     if (powerupId === "reveal-next") {
       const revealId =
         shortestPath.find(
@@ -3795,30 +3605,55 @@ export default function App() {
     }, 700);
   }
 
+  function focusGuessInput() {
+    if (!guessInputRef.current) return;
+    requestAnimationFrame(() => {
+      guessInputRef.current?.focus();
+    });
+  }
+
+  function pushGuessFeedback(text, tone = "neutral") {
+    if (!text) return;
+    setGuessFeedback({ text, tone });
+    if (guessFeedbackTimerRef.current) clearTimeout(guessFeedbackTimerRef.current);
+    guessFeedbackTimerRef.current = setTimeout(() => {
+      setGuessFeedback(null);
+    }, 1600);
+  }
+
   function handleGuessSubmit(event) {
     event.preventDefault();
     if (!startId || !targetId || isComplete || isFailed) return;
 
     const trimmed = guessValue.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      focusGuessInput();
+      return;
+    }
 
     const normalized = normalizeName(trimmed);
     const id = normalizedToId.get(normalized);
     if (!id) {
       triggerGuessError();
       playSfx("error");
+      pushGuessFeedback(t("feedbackNoMatch"), "bad");
+      focusGuessInput();
       return;
     }
 
     if (id === startId || id === targetId) {
       triggerGuessError();
       playSfx("neutral");
+      pushGuessFeedback(t("feedbackStartTarget"), "warn");
+      focusGuessInput();
       return;
     }
 
     if (guessedSet.has(id)) {
       triggerGuessError();
       playSfx("repeat");
+      pushGuessFeedback(t("feedbackRepeated"), "warn");
+      focusGuessInput();
       return;
     }
 
@@ -3830,10 +3665,17 @@ export default function App() {
     setCurrentId(id);
     setGuessValue("");
     setIsSuggestionsOpen(false);
+    lastGuessRef.current = id;
 
     const name = comarcaById.get(id)?.properties.name || trimmed;
     setGuessHistory((prev) => [...prev, { id, name }]);
     playSfx("correct");
+    pushGuessFeedback(t("feedbackOk"), "good");
+    focusGuessInput();
+    if (!userZoomedRef.current) {
+      smartRecenter(id);
+    }
+    triggerWeatherForComarca(id);
   }
 
   function handleGuessChange(event) {
@@ -3841,6 +3683,7 @@ export default function App() {
     setGuessValue(value);
     setIsSuggestionsOpen(Boolean(value.trim()));
     if (guessError) setGuessError(false);
+    if (guessFeedback) setGuessFeedback(null);
   }
 
   function handleGuessFocus() {
@@ -3852,11 +3695,18 @@ export default function App() {
   }
 
   function handleSuggestionPick(name) {
+    playSfx("click");
     setGuessValue(name);
     setIsSuggestionsOpen(false);
+    focusGuessInput();
   }
 
   function handleCalendarPick(mode, key) {
+    const record = getCompletionRecord(mode, key);
+    if (record?.winningAttempt) {
+      openCompletionModal(record);
+      return;
+    }
     const entry =
       mode === "daily" ? calendarDailyMap.get(key) : calendarWeeklyMap.get(key);
     calendarApplyRef.current = null;
@@ -3875,21 +3725,70 @@ export default function App() {
       setGameMode(mode);
       return;
     }
-    const result = mode === "daily" ? dailyResults[key] : weeklyResults[key];
+    const result = record?.winningAttempt || null;
     applyCalendarLevel(entry.level, { result, showResult: Boolean(result) });
     calendarApplyRef.current = `${mode}:${key}`;
   }
 
-  function handleStartNext() {
-    if (isDailyMode && dailyResults[activeDayKey]) {
-      setResultData(dailyResults[activeDayKey]);
-      setShowModal(true);
+  function handlePlayToday() {
+    playSfx("click");
+    const key = dayKey;
+    const record = getCompletionRecord("daily", key);
+    if (record?.winningAttempt) {
+      openCompletionModal(record);
       return;
     }
-    if (isWeeklyMode && weeklyResults[activeWeekKey]) {
-      setResultData(weeklyResults[activeWeekKey]);
-      setShowModal(true);
+    setCalendarSelection({ mode: "daily", key });
+    if (gameMode !== "daily") {
+      setGameMode("daily");
       return;
+    }
+    const entry = calendarDailyMap.get(key);
+    if (entry?.level) {
+      applyCalendarLevel(entry.level);
+      calendarApplyRef.current = `daily:${key}`;
+    } else if (entry?.levelId) {
+      handleCalendarAction("daily", key);
+    }
+  }
+
+  function handlePlayWeekly() {
+    playSfx("click");
+    const key = weekKey;
+    const record = getCompletionRecord("weekly", key);
+    if (record?.winningAttempt) {
+      openCompletionModal(record);
+      return;
+    }
+    setCalendarSelection({ mode: "weekly", key });
+    if (gameMode !== "weekly") {
+      setGameMode("weekly");
+      return;
+    }
+    const entry = calendarWeeklyMap.get(key);
+    if (entry?.level) {
+      applyCalendarLevel(entry.level);
+      calendarApplyRef.current = `weekly:${key}`;
+    } else if (entry?.levelId) {
+      handleCalendarAction("weekly", key);
+    }
+  }
+
+  function handleStartNext() {
+    playSfx("submit");
+    if (isDailyMode) {
+      const record = getCompletionRecord("daily", activeDayKey);
+      if (record?.winningAttempt) {
+        openCompletionModal(record);
+        return;
+      }
+    }
+    if (isWeeklyMode) {
+      const record = getCompletionRecord("weekly", activeWeekKey);
+      if (record?.winningAttempt) {
+        openCompletionModal(record);
+        return;
+      }
     }
     if (isDailyMode && calendarSelection?.mode === "daily") {
       const entry = calendarDailyMap.get(activeDayKey);
@@ -3912,59 +3811,84 @@ export default function App() {
 
   const handleZoomIn = useCallback(() => {
     if (!zoomRef.current || !svgRef.current) return;
+    userZoomedRef.current = true;
     select(svgRef.current).call(zoomRef.current.scaleBy, 1.2);
   }, []);
 
   const handleZoomOut = useCallback(() => {
     if (!zoomRef.current || !svgRef.current) return;
+    userZoomedRef.current = true;
     select(svgRef.current).call(zoomRef.current.scaleBy, 0.85);
   }, []);
 
   const handleRecenter = useCallback(() => {
     if (!zoomRef.current || !svgRef.current) return;
+    userZoomedRef.current = false;
     select(svgRef.current).call(zoomRef.current.transform, zoomIdentity);
   }, []);
 
+  function smartRecenter(id) {
+    if (!zoomRef.current || !svgRef.current) return;
+    const centroid = centroidById.get(id);
+    if (!centroid) return;
+    const [x, y] = centroid;
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    select(svgRef.current).call(zoomRef.current.translateTo, x, y);
+  }
+
   function handleThemeSelect(themeId) {
+    playSfx("toggle");
     setActiveTheme(themeId);
+    if (themeId === TOMAS_THEME_ID) {
+      triggerWeatherForComarca(lastGuessRef.current, true);
+    }
+  }
+
+  function handleConfigOpen() {
+    playSfx("open");
+    setConfigOpen(true);
+  }
+
+  function handleConfigClose() {
+    playSfx("close");
+    setConfigOpen(false);
   }
 
   function handleDifficultyPick(difficultyId) {
     if (!unlockedDifficulties.has(difficultyId)) return;
+    playSfx("toggle");
     setDifficulty(difficultyId);
   }
 
-  function handleDailySelect() {
+  function handleCalendarOpen(mode) {
+    playSfx("open");
     const now = new Date();
     let targetMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    if (!calendarDailyMap.has(dayKey)) {
-      const latestDay = calendarDaily[0]?.date;
-      if (latestDay) {
-        const parsed = new Date(`${latestDay}T00:00:00`);
-        if (!Number.isNaN(parsed.valueOf())) {
-          targetMonth = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
+    if (mode === "daily") {
+      if (!calendarDailyMap.has(dayKey)) {
+        const latestDay = calendarDaily[0]?.date;
+        if (latestDay) {
+          const parsed = new Date(`${latestDay}T00:00:00`);
+          if (!Number.isNaN(parsed.valueOf())) {
+            targetMonth = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
+          }
         }
       }
-    }
-    setCalendarMonth(targetMonth);
-    setCalendarMode("daily");
-    setCalendarOpen(true);
-  }
-
-  function handleWeeklySelect() {
-    const now = new Date();
-    let targetMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    if (!calendarWeeklyMap.has(weekKey)) {
-      const latestWeek = calendarWeekly[0]?.weekKey;
-      if (latestWeek) {
-        const year = Number(latestWeek.slice(0, 4));
-        if (!Number.isNaN(year)) {
-          targetMonth = new Date(year, 0, 1);
+      setCalendarMonth(targetMonth);
+      setCalendarMode("daily");
+    } else {
+      if (!calendarWeeklyMap.has(weekKey)) {
+        const latestWeek = calendarWeekly[0]?.weekKey;
+        if (latestWeek) {
+          const year = Number(latestWeek.slice(0, 4));
+          if (!Number.isNaN(year)) {
+            targetMonth = new Date(year, 0, 1);
+          }
         }
       }
+      setCalendarMonth(targetMonth);
+      setCalendarMode("weekly");
     }
-    setCalendarMonth(targetMonth);
-    setCalendarMode("weekly");
     setCalendarOpen(true);
   }
 
@@ -3979,6 +3903,13 @@ export default function App() {
   async function handleCalendarAction(mode, key) {
     const hasCalendarData = calendarDaily.length > 0 || calendarWeekly.length > 0;
     if (!hasCalendarData && calendarStatus !== "ready") return;
+    playSfx("click");
+    const record = getCompletionRecord(mode, key);
+    if (record?.winningAttempt) {
+      openCompletionModal(record);
+      setCalendarOpen(false);
+      return;
+    }
     const entry =
       mode === "daily" ? calendarDailyMap.get(key) : calendarWeeklyMap.get(key);
     if (!entry?.level && !entry?.levelId) return;
@@ -4019,14 +3950,15 @@ export default function App() {
   }
 
   function handleCalendarClose() {
+    playSfx("close");
     setCalendarOpen(false);
   }
 
   function handleTitleReset() {
     const todayKey = dayKey;
     const thisWeekKey = weekKey;
-    const todayDone = Boolean(dailyResults[todayKey]);
-    const weekDone = Boolean(weeklyResults[thisWeekKey]);
+    const todayDone = Boolean(getCompletionRecord("daily", todayKey)?.winningAttempt);
+    const weekDone = Boolean(getCompletionRecord("weekly", thisWeekKey)?.winningAttempt);
     setShowModal(false);
     setResultData(null);
     setIsFailed(false);
@@ -4080,6 +4012,14 @@ export default function App() {
     setReplayOrder(order);
     setReplayIndex(0);
   }
+
+  const getLeaderboardKey = (item) => {
+    if (!item) return "";
+    if (item.mode === "daily") return item.dayKey ? `daily:${item.dayKey}` : "";
+    if (item.mode === "weekly") return item.weekKey ? `weekly:${item.weekKey}` : "";
+    const ruleId = item.ruleId || "none";
+    return `${item.mode}:${item.difficulty}:${item.startId}:${item.targetId}:${ruleId}`;
+  };
 
   function computeRank(entries, entry, key) {
     if (!entries.length) return null;
@@ -4321,6 +4261,26 @@ export default function App() {
       const resultPayload = stats
         ? { ...baseResultPayload, ...stats }
         : baseResultPayload;
+      const levelId = isDailyMode
+        ? calendarDailyMap.get(activeDayKey)?.level?.id ||
+          calendarDailyMap.get(activeDayKey)?.levelId ||
+          null
+        : isWeeklyMode
+          ? calendarWeeklyMap.get(activeWeekKey)?.level?.id ||
+            calendarWeeklyMap.get(activeWeekKey)?.levelId ||
+            null
+          : null;
+      setCompletionRecords((prev) =>
+        upsertCompletionRecord(prev, levelKey, {
+          levelId,
+          mode: gameMode,
+          dayKey: isDailyMode ? activeDayKey : null,
+          weekKey: isWeeklyMode ? activeWeekKey : null,
+          shortestPath: shortestNames,
+          shortestCount,
+          attempt: resultPayload
+        })
+      );
       if (isDailyMode) {
         setDailyResults((prev) => ({ ...prev, [activeDayKey]: resultPayload }));
       }
@@ -4385,9 +4345,57 @@ export default function App() {
   const startName = startId ? comarcaById.get(startId)?.properties.name : null;
   const currentName = currentId ? comarcaById.get(currentId)?.properties.name : null;
   const targetName = targetId ? comarcaById.get(targetId)?.properties.name : null;
-  const isDailyCompleted = Boolean(dailyResults[dayKey]);
-  const isWeeklyCompleted = Boolean(weeklyResults[weekKey]);
-  const activeRuleDifficulty = activeRule?.difficulty || (activeRule ? getRuleDifficulty(activeRule) : null);
+  const dailyRecord = getCompletionRecord("daily", dayKey);
+  const weeklyRecord = getCompletionRecord("weekly", weekKey);
+  const isDailyCompleted = Boolean(dailyRecord?.winningAttempt);
+  const isWeeklyCompleted = Boolean(weeklyRecord?.winningAttempt);
+  const shortestPathSet = useMemo(() => new Set(shortestPath), [shortestPath]);
+  const shortestNeighborSet = useMemo(
+    () => buildNeighborSet(shortestPath, adjacency),
+    [shortestPath, adjacency]
+  );
+  const guessHistoryWithStatus = useMemo(() => {
+    if (!guessHistory.length) return [];
+    return guessHistory.map((entry) => {
+      let status = "bad";
+      if (shortestPathSet.has(entry.id)) {
+        status = "good";
+      } else if (shortestNeighborSet.has(entry.id)) {
+        status = "near";
+      }
+      return { ...entry, status };
+    });
+  }, [guessHistory, shortestPathSet, shortestNeighborSet]);
+  const usedCount = guessedIds.length;
+  const optimalCount = shortestPath.length ? Math.max(shortestPath.length - 2, 0) : null;
+  const currentPathCount = pathInGuesses.length
+    ? Math.max(pathInGuesses.length - 2, 0)
+    : null;
+  const actionStatus = useMemo(() => {
+    if (isComplete) return t("statusSolved");
+    if (isFailed) return t("statusFailed");
+    if (pathInGuesses.length && !ruleStatus.satisfied) return t("statusIncomplete");
+    if (
+      pathInGuesses.length &&
+      ruleStatus.satisfied &&
+      optimalCount !== null &&
+      currentPathCount !== null &&
+      currentPathCount > optimalCount
+    ) {
+      return t("statusSuboptimal");
+    }
+    if (guessHistory.length) return t("statusInProgress");
+    return t("statusReady");
+  }, [
+    isComplete,
+    isFailed,
+    pathInGuesses.length,
+    ruleStatus.satisfied,
+    optimalCount,
+    currentPathCount,
+    guessHistory.length,
+    t
+  ]);
   const currentLevelKey = useMemo(() => {
     if (isDailyMode) return `daily:${activeDayKey}`;
     if (isWeeklyMode) return `weekly:${activeWeekKey}`;
@@ -4407,13 +4415,20 @@ export default function App() {
   const isPerfectRecord = currentStats.perfect;
   const timeLeftUrgent = isTimedMode && timeLeftMs <= 10000;
   const shouldShowSuggestions = isSuggestionsOpen && suggestions.length > 0;
-  const activeTrack = MUSIC_TRACKS.find((track) => track.id === musicTrack);
+  const musicOptions = useMemo(() => {
+    if (audioManifest?.music) {
+      return Object.entries(audioManifest.music).map(([id, file]) => ({
+        id,
+        label: (file.split("/").pop() || id).replace(/\.[^/.]+$/, "")
+      }));
+    }
+    return MUSIC_TRACKS.map((track) => ({ id: track.id, label: track.label }));
+  }, [audioManifest]);
   const todayLabel = useMemo(() => formatFullDayLabel(dayKey), [dayKey]);
   const showDailySkeleton = calendarStatus === "loading" && calendarDaily.length === 0;
   const showWeeklySkeleton = calendarStatus === "loading" && calendarWeekly.length === 0;
   const hasDailyLevels = calendarDaily.some((entry) => entry.levelId);
   const hasWeeklyLevels = calendarWeekly.some((entry) => entry.levelId);
-  const isMapReady = comarques.length > 0;
   const calendarMonthLabel = useMemo(() => {
     return calendarMonth.toLocaleDateString("ca-ES", {
       month: "long",
@@ -4435,7 +4450,8 @@ export default function App() {
   }, [resultData]);
 
   return (
-    <div className="page">
+    <ThemeProvider themeId={activeTheme} weatherState={weatherState}>
+      <div className="page">
       <header className="topbar">
         <div className="brand">
           <div className="brand-row">
@@ -4450,35 +4466,35 @@ export default function App() {
           <div className="topbar-actions">
             <button
               type="button"
-              className="topbar-button"
-              onClick={handleStartNext}
+              className="topbar-button topbar-play-today"
+              onClick={handlePlayToday}
               disabled={!isMapReady}
             >
-              {t("newGame")}
+              {t("playToday")}
             </button>
-            <div className="calendar-toggle">
-              <button
-                type="button"
-                className={`calendar-toggle-button ${isDailyMode ? "active" : ""} ${
-                  isDailyCompleted ? "done" : ""
-                }`}
-                onClick={handleDailySelect}
-                aria-pressed={isDailyMode}
-              >
-                <span>{t("daily")}</span>
-                {isDailyCompleted ? <span className="calendar-status">OK</span> : null}
-              </button>
-              <button
-                type="button"
-                className={`calendar-toggle-button ${isWeeklyMode ? "active" : ""} ${
-                  isWeeklyCompleted ? "done" : ""
-                }`}
-                onClick={handleWeeklySelect}
-                aria-pressed={isWeeklyMode}
-              >
-                <span>{t("weekly")}</span>
-                {isWeeklyCompleted ? <span className="calendar-status">OK</span> : null}
-              </button>
+            <button
+              type="button"
+              className="topbar-button topbar-play-weekly"
+              onClick={handlePlayWeekly}
+              disabled={!isMapReady}
+            >
+              {t("playWeekly")}
+            </button>
+            <button
+              type="button"
+              className="calendar-icon-button topbar-calendar"
+              onClick={() => handleCalendarOpen("daily")}
+              aria-label={t("calendar")}
+            >
+              <span className="calendar-icon" aria-hidden="true" />
+              <span>{t("calendar")}</span>
+            </button>
+            <div className="streak-card topbar-streak">
+              <span className="label">Ratxa</span>
+              <span className="value">
+                {displayStreak} {displayStreak === 1 ? "dia" : "dies"}
+              </span>
+              <span className="muted">{streakTierLabel}</span>
             </div>
           </div>
           {!isOnline ? (
@@ -4486,21 +4502,26 @@ export default function App() {
               <span className="status-badge offline">{t("offline")}</span>
             </div>
           ) : null}
-          <div className="streak-card">
-            <span className="label">Ratxa</span>
-            <span className="value">
-              {displayStreak} {displayStreak === 1 ? "dia" : "dies"}
-            </span>
-            <span className="muted">{streakTierLabel}</span>
-          </div>
         </div>
       </header>
 
       <section className="game-layout">
         <div
-          className={`map-wrap ${difficultyConfig.fog ? "fog" : ""}`}
+          className={`map-wrap ${difficultyConfig.fog ? "fog" : ""} ${
+            isTimedMode ? "timed-mode" : ""
+          } ${isCountdownActive ? "countdown-active" : ""}`}
           aria-busy={!isMapReady}
         >
+          {isTimedMode ? (
+            <div className={`map-timer ${timeLeftUrgent ? "urgent" : ""}`}>
+              {startedAt && !isCountdownActive ? formatTime(timeLeftMs) : ""}
+            </div>
+          ) : null}
+          {isTimedMode && isCountdownActive ? (
+            <div className="countdown-overlay" aria-live="polite">
+              <span className="countdown-value">{countdownValue}</span>
+            </div>
+          ) : null}
           {!isMapReady ? (
             <div className="map-loading" role="status" aria-live="polite">
               Carregant mapa...
@@ -4582,82 +4603,42 @@ export default function App() {
         </div>
 
         <aside className="side-panel">
-          <div className="panel-card panel-primary">
-            <div className="stat-row">
-              <span className="label">{t("start")}</span>
-              <span className="value start">{startName || "—"}</span>
+          <div className="panel-card action-card">
+            <div className="action-header">
+              <span className="label">{t("action")}</span>
+              <span className="action-status muted">{actionStatus}</span>
             </div>
-            <div className="stat-row">
-              <span className="label">{t("target")}</span>
-              <span className="value target">{targetName || "—"}</span>
-            </div>
-            <span className="label">{t("rule")}</span>
-            <div
-              className={`rule-chip ${
-                ruleStatus.failed ? "bad" : ruleStatus.satisfied ? "good" : ""
-              }`}
-            >
-              {activeRule?.label || t("noRule")}
-            </div>
-            {activeRuleDifficulty ? (
-              <span className="muted">{formatRuleDifficulty(activeRuleDifficulty)}</span>
-            ) : null}
-            <div className="stat-row">
-              <span className="label">{t("difficulty")}</span>
-              <span className="value">{difficultyConfig.label}</span>
-            </div>
-            {isTimedMode ? (
-              <div className="stat-row">
-                <span className="label">{t("timeLeft")}</span>
-                <span className={`value ${timeLeftUrgent ? "urgent" : "dim"}`}>
-                  {timeLeftUrgent ? formatTime(timeLeftMs) : ""}
+            <div className="action-progress muted">
+              <span className="progress-item">
+                {t("usedCount", { value: usedCount })}
+              </span>
+              {typeof optimalCount === "number" ? (
+                <span className="progress-item">
+                  {t("optimalCount", { value: optimalCount })}
                 </span>
-              </div>
-            ) : null}
-            <div className="difficulty-grid">
-              {DIFFICULTIES.map((entry) => {
-                const isUnlocked = unlockedDifficulties.has(entry.id);
-                const isActive = entry.id === activeDifficulty;
-                const isLocked = !isUnlocked && entry.id !== "pixapi";
-                const disabled = (isFixedMode && !isActive) || (!isUnlocked && isLocked);
-                return (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    className={`difficulty-button ${isActive ? "active" : ""} ${
-                      isLocked ? "locked" : ""
-                    }`}
-                    onClick={() => {
-                      if (isFixedMode) return;
-                      if (isUnlocked) {
-                        handleDifficultyPick(entry.id);
-                      }
-                    }}
-                    disabled={disabled}
-                    aria-pressed={isActive}
-                  >
-                    <span>{entry.label}</span>
-                  </button>
-                );
-              })}
+              ) : null}
+              {typeof currentPathCount === "number" ? (
+                <span className="progress-item">
+                  {t("currentCount", { value: currentPathCount })}
+                </span>
+              ) : null}
             </div>
-            {isFixedMode ? (
-              <span className="muted">{t("fixedDifficulty")}</span>
-            ) : null}
-            <form className="guess-form" onSubmit={handleGuessSubmit}>
+            <form className="guess-form action-form" onSubmit={handleGuessSubmit}>
               <label className="label" htmlFor="guess-input">
                 {t("guessLabel")}
               </label>
               <input
+                ref={guessInputRef}
                 id="guess-input"
                 type="text"
                 value={guessValue}
                 onChange={handleGuessChange}
                 onFocus={handleGuessFocus}
                 onBlur={handleGuessBlur}
-                disabled={isComplete || isFailed || !isMapReady}
+                disabled={isComplete || isFailed || !isMapReady || isCountdownActive}
                 className={guessError ? "input-error" : ""}
                 aria-invalid={guessError}
+                autoFocus
               />
               {shouldShowSuggestions ? (
                 <div className="suggestions is-open">
@@ -4677,172 +4658,201 @@ export default function App() {
               <button
                 type="submit"
                 className="submit"
-                disabled={isComplete || isFailed || !isMapReady}
+                disabled={isComplete || isFailed || !isMapReady || isCountdownActive}
               >
                 {t("submit")}
               </button>
             </form>
-          </div>
-
-          <div className="panel-card">
-            <span className="label">{t("mode")}</span>
-            <div className="mode-buttons">
-              {PRIMARY_MODES.map((mode) => (
-                <button
-                  key={mode.id}
-                  type="button"
-                  className={`mode-button ${gameMode === mode.id ? "active" : ""}`}
-                  onClick={() => setGameMode(mode.id)}
-                >
-                  {t(mode.id)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="panel-card">
-            <span className="label">{t("powerups")}</span>
-            <div className="powerups">
-              {POWERUPS.map((powerup) => {
-                const usesLeft = powerups[powerup.id] ?? 0;
-                const disabled =
-                  isComplete ||
-                  isFailed ||
-                  (!isExploreMode && !isTimedMode && usesLeft <= 0);
-                return (
-                  <button
-                    key={powerup.id}
-                    type="button"
-                    className="powerup-button"
-                    onClick={() => handlePowerupUse(powerup.id)}
-                    disabled={disabled}
-                  >
-                    <span>{powerup.label}</span>
-                    <span className="badge">{isExploreMode ? "∞" : usesLeft}</span>
-                  </button>
-                );
-              })}
-            </div>
-            <span className="muted">5s</span>
-          </div>
-
-          <div className="panel-card">
-            <span className="label">{t("stats")}</span>
-            <div className="stats-grid">
-              <div className="stat-row">
-                <span className="label">{t("attempts")}</span>
-                <span className="value">{attempts}</span>
+            {guessFeedback ? (
+              <div className="action-feedback muted" role="status" aria-live="polite">
+                {guessFeedback.text}
               </div>
-              <div className="stat-row">
-                <span className="label">{t("bestTime")}</span>
-                <span className="value">
-                  {currentStats.bestTime ? formatTime(currentStats.bestTime) : "—"}
-                </span>
-              </div>
-              <div className="stat-row">
-                <span className="label">{t("bestAttempts")}</span>
-                <span className={`value ${isPerfectRecord ? "is-perfect" : ""}`}>
-                  {currentStats.bestAttempts ?? "—"}
-                </span>
-              </div>
-            </div>
-            {isPerfectRecord ? (
-              <span className="badge success">{t("perfect")}</span>
             ) : null}
-            <span className="label">{t("path")}</span>
-            <ul className="path-list">
-              {guessHistory.map((entry, index) => (
-                <li key={`${entry.id}-${index}`} className="guess-item">
-                  {entry.name}
-                </li>
-              ))}
-            </ul>
           </div>
 
-          <div className="panel-card">
-            <span className="label">{t("config")}</span>
-            <span className="label">{t("theme")}</span>
-            <div className="theme-grid">
-              {THEMES.map((theme) => (
+          <div className="panel-card challenge-card">
+            <div className="section-header">
+              <span className="label">{t("challenge")}</span>
+            </div>
+            <div className="stat-inline">
+              <span className="label">{t("start")}:</span>
+              <span className="value start">{startName || "—"}</span>
+            </div>
+            <div className="stat-inline">
+              <span className="label">{t("target")}:</span>
+              <span className="value target">{targetName || "—"}</span>
+            </div>
+            <span className="label">{t("rule")}</span>
+            <div
+              className={`rule-chip ${
+                ruleStatus.failed ? "bad" : ruleStatus.satisfied ? "good" : ""
+              }`}
+            >
+              {activeRule?.label || t("noRule")}
+            </div>
+            <div className="stat-inline">
+              <span className="label">{t("difficulty")}:</span>
+              <span className="value">{difficultyConfig.shortLabel}</span>
+            </div>
+            <div className="guess-history">
+              {guessHistoryWithStatus.length ? (
+                <ul className="guess-history-list">
+                  {guessHistoryWithStatus.map((entry, index) => (
+                    <li
+                      key={`${entry.id}-${index}`}
+                      className={`guess-history-item ${entry.status}`}
+                    >
+                      {entry.name}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="muted">—</span>
+              )}
+            </div>
+          </div>
+
+          <div className={`panel-card options-card ${optionsOpen ? "is-open" : ""}`}>
+            <button
+              type="button"
+              className="options-toggle"
+              onClick={() => setOptionsOpen((prev) => !prev)}
+              aria-expanded={optionsOpen}
+              aria-controls="options-panel"
+            >
+              <span className="label">{t("options")}</span>
+              <span className="chevron" aria-hidden="true">
+                {optionsOpen ? "▴" : "▾"}
+              </span>
+            </button>
+            <div id="options-panel" className="options-body" hidden={!optionsOpen}>
+              <div className="options-section">
+                <span className="label">{t("mode")}</span>
+                <div className="mode-buttons">
+                  {PRIMARY_MODES.map((mode) => (
+                    <button
+                      key={mode.id}
+                      type="button"
+                      className={`mode-button ${gameMode === mode.id ? "active" : ""}`}
+                      onClick={() => {
+                        playSfx("toggle");
+                        setGameMode(mode.id);
+                      }}
+                    >
+                      {t(mode.id)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="options-section">
+                <span className="label">{t("difficulty")}</span>
+                <div className="difficulty-grid">
+                  {DIFFICULTIES.map((entry) => {
+                    const isUnlocked = unlockedDifficulties.has(entry.id);
+                    const isActive = entry.id === activeDifficulty;
+                    const isLocked = !isUnlocked && entry.id !== "pixapi";
+                    const disabled =
+                      (isFixedMode && !isActive) || (!isUnlocked && isLocked);
+                    return (
+                      <button
+                        key={entry.id}
+                        type="button"
+                        className={`difficulty-button ${isActive ? "active" : ""} ${
+                          isLocked ? "locked" : ""
+                        }`}
+                        onClick={() => {
+                          if (isFixedMode) return;
+                          if (isUnlocked) {
+                            handleDifficultyPick(entry.id);
+                          }
+                        }}
+                        disabled={disabled}
+                        aria-pressed={isActive}
+                      >
+                        <span>{entry.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {isFixedMode ? (
+                  <span className="muted">{t("fixedDifficulty")}</span>
+                ) : null}
+              </div>
+
+              <div className="options-section">
                 <button
-                  key={theme.id}
                   type="button"
-                  className={`theme-button ${activeTheme === theme.id ? "active" : ""}`}
-                  onClick={() => handleThemeSelect(theme.id)}
+                  className="new-game-button"
+                  onClick={handleStartNext}
+                  disabled={!isMapReady}
                 >
-                  <span>{theme.label}</span>
+                  {t("newGame")}
                 </button>
-              ))}
-            </div>
+              </div>
 
-            <span className="label">{t("music")}</span>
-            <div className="toggle-row">
-              <input
-                id="music-toggle"
-                type="checkbox"
-                checked={musicEnabled}
-                onChange={(event) => setMusicEnabled(event.target.checked)}
-              />
-              <label htmlFor="music-toggle">{musicEnabled ? t("on") : t("off")}</label>
-            </div>
-            <select
-              className="level-select"
-              value={musicTrack}
-              onChange={(event) => setMusicTrack(event.target.value)}
-            >
-              {MUSIC_TRACKS.map((track) => (
-                <option key={track.id} value={track.id}>
-                  {track.label}
-                </option>
-              ))}
-            </select>
-            {activeTrack?.lyrics ? <p className="muted">{activeTrack.lyrics}</p> : null}
-            <div className="range-row">
-              <span className="label">{t("volume")}</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={musicVolume}
-                onChange={(event) => setMusicVolume(Number(event.target.value))}
-              />
-            </div>
+              <div className="options-section">
+                <span className="label">{t("powerups")}</span>
+                <div className="powerups">
+                  {POWERUPS.map((powerup) => {
+                    const usesLeft = powerups[powerup.id] ?? 0;
+                    const disabled =
+                      isComplete ||
+                      isFailed ||
+                      isCountdownActive ||
+                      (!isExploreMode && !isTimedMode && usesLeft <= 0);
+                    return (
+                      <button
+                        key={powerup.id}
+                        type="button"
+                        className="powerup-button"
+                        onClick={() => handlePowerupUse(powerup.id)}
+                        disabled={disabled}
+                      >
+                        <span>{powerup.label}</span>
+                        <span className="badge">{isExploreMode ? "∞" : usesLeft}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="muted">5s</span>
+              </div>
 
-            <span className="label">{t("sounds")}</span>
-            <div className="toggle-row">
-              <input
-                id="sfx-toggle"
-                type="checkbox"
-                checked={soundEnabled}
-                onChange={(event) => setSoundEnabled(event.target.checked)}
-              />
-              <label htmlFor="sfx-toggle">{soundEnabled ? t("on") : t("off")}</label>
-            </div>
-            <div className="range-row">
-              <span className="label">{t("volume")}</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={sfxVolume}
-                onChange={(event) => setSfxVolume(Number(event.target.value))}
-              />
-            </div>
+              <div className="options-section">
+                <span className="label">{t("stats")}</span>
+                <div className="stats-grid">
+                  <div className="stat-row">
+                    <span className="label">{t("attempts")}</span>
+                    <span className="value">{attempts}</span>
+                  </div>
+                  <div className="stat-row">
+                    <span className="label">{t("bestTime")}</span>
+                    <span className="value">
+                      {currentStats.bestTime ? formatTime(currentStats.bestTime) : "—"}
+                    </span>
+                  </div>
+                  <div className="stat-row">
+                    <span className="label">{t("bestAttempts")}</span>
+                    <span className={`value ${isPerfectRecord ? "is-perfect" : ""}`}>
+                      {currentStats.bestAttempts ?? "—"}
+                    </span>
+                  </div>
+                </div>
+                {isPerfectRecord ? (
+                  <span className="badge success">{t("perfect")}</span>
+                ) : null}
+              </div>
 
-            <span className="label">{t("language")}</span>
-            <select
-              className="level-select"
-              value={language}
-              onChange={(event) => setLanguage(event.target.value)}
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.id} value={lang.id}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
+              <div className="options-section">
+                <button
+                  type="button"
+                  className="config-button"
+                  onClick={handleConfigOpen}
+                >
+                  {t("config")}
+                </button>
+              </div>
+            </div>
           </div>
         </aside>
       </section>
@@ -4915,7 +4925,9 @@ export default function App() {
                     : calendarMonthDays.map((day) => {
                         const dailyEntry = calendarDailyMap.get(day.key) || null;
                         const isToday = day.key === dayKey;
-                        const isDoneDaily = Boolean(dailyResults[day.key]);
+                        const isDoneDaily = Boolean(
+                          getCompletionRecord("daily", day.key)?.winningAttempt
+                        );
                         const hasDailyLevel = Boolean(dailyEntry?.levelId);
                         const dayDotClass = hasDailyLevel
                           ? isDoneDaily
@@ -4980,7 +4992,9 @@ export default function App() {
                       ))
                     : calendarWeekRows.map((week, index) => {
                       const weeklyEntry = calendarWeeklyMap.get(week.key) || null;
-                      const isDoneWeekly = Boolean(weeklyResults[week.key]);
+                      const isDoneWeekly = Boolean(
+                        getCompletionRecord("weekly", week.key)?.winningAttempt
+                      );
                       const hasWeeklyLevel = Boolean(weeklyEntry?.levelId);
                       const weekDotClass = hasWeeklyLevel
                         ? isDoneWeekly
@@ -5053,6 +5067,93 @@ export default function App() {
         </div>
       ) : null}
 
+      {configOpen ? (
+        <div className="modal-backdrop" onClick={handleConfigClose}>
+          <div className="modal config-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t("config")}</h2>
+              <button
+                type="button"
+                className="icon-button"
+                onClick={handleConfigClose}
+                aria-label={t("close")}
+              >
+                ×
+              </button>
+            </div>
+            <div className="config-content">
+              <span className="label">{t("theme")}</span>
+              <div className="theme-grid">
+                {THEMES.map((theme) => (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    className={`theme-button ${activeTheme === theme.id ? "active" : ""}`}
+                    onClick={() => handleThemeSelect(theme.id)}
+                  >
+                    <span>{theme.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <span className="label">{t("music")}</span>
+              <select
+                className="level-select"
+                value={musicTrack}
+                onChange={(event) => {
+                  const nextTrack = event.target.value;
+                  setMusicTrack(nextTrack);
+                  startMusic(nextTrack);
+                }}
+              >
+                {musicOptions.map((track) => (
+                  <option key={track.id} value={track.id}>
+                    {track.label}
+                  </option>
+                ))}
+              </select>
+              <div className="range-row">
+                <span className="label">{t("volume")}</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={musicVolume}
+                  onChange={(event) => setMusicVolume(Number(event.target.value))}
+                />
+              </div>
+
+              <span className="label">{t("sounds")}</span>
+              <div className="range-row">
+                <span className="label">{t("volume")}</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={sfxVolume}
+                  onChange={(event) => setSfxVolume(Number(event.target.value))}
+                />
+              </div>
+
+              <span className="label">{t("language")}</span>
+              <select
+                className="level-select"
+                value={language}
+                onChange={(event) => setLanguage(event.target.value)}
+              >
+                {LANGUAGES.map((lang) => (
+                  <option key={lang.id} value={lang.id}>
+                    {lang.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {showModal && resultData ? (
         <div className="modal-backdrop">
           <div className="modal">
@@ -5106,6 +5207,19 @@ export default function App() {
                 </div>
               </div>
             ) : null}
+            {isFailed && (resultData.ruleExplanation || resultData.ruleComarques?.length) ? (
+              <div className="modal-section">
+                <span className="label">{t("rule")}</span>
+                {resultData.ruleExplanation ? (
+                  <p className="modal-subtitle">{resultData.ruleExplanation}</p>
+                ) : null}
+                {resultData.ruleComarques?.length ? (
+                  <p className="modal-subtitle">
+                    Comarques: {resultData.ruleComarques.join(", ")}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
             <div className="modal-section">
               <span className="label">{t("yourPath")}</span>
               <ul className="path-list">
@@ -5135,6 +5249,7 @@ export default function App() {
           </div>
         </div>
       ) : null}
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }
