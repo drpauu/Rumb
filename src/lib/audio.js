@@ -10,6 +10,7 @@ export async function loadAudioManifest() {
 export function createAudioManager(manifest = {}) {
   const sfxPools = new Map();
   const musicTracks = new Map();
+  const activeSfxNodes = new Set();
   let currentMusic = null;
   let activeSfx = 0;
   const maxConcurrent = Number.isFinite(manifest.maxConcurrentSfx)
@@ -26,6 +27,12 @@ export function createAudioManager(manifest = {}) {
       manifest.themes?.default ||
       {}
     );
+  }
+
+  function clampVolume(value, fallback = 1) {
+    const numeric =
+      typeof value === "number" && Number.isFinite(value) ? value : fallback;
+    return Math.max(0, Math.min(numeric, 1));
   }
 
   function buildPool(kind, themeId) {
@@ -49,19 +56,20 @@ export function createAudioManager(manifest = {}) {
     const theme = getThemeConfig(themeId);
     const rate = Number.isFinite(theme.rate) ? theme.rate : 1;
     const audio = pool[Math.floor(Math.random() * pool.length)].cloneNode(true);
-    audio.volume = Math.max(0, Math.min(volume, 1));
+    audio.volume = clampVolume(volume, 0.6);
     audio.playbackRate = rate;
     activeSfx += 1;
+    activeSfxNodes.add(audio);
+    const cleanup = () => {
+      if (!activeSfxNodes.delete(audio)) return;
+      activeSfx = Math.max(0, activeSfx - 1);
+    };
     audio.addEventListener(
       "ended",
-      () => {
-        activeSfx = Math.max(0, activeSfx - 1);
-      },
+      cleanup,
       { once: true }
     );
-    audio.play().catch(() => {
-      activeSfx = Math.max(0, activeSfx - 1);
-    });
+    audio.play().catch(cleanup);
   }
 
   function playMusic(trackId, volume = 0.3, themeId = "default") {
@@ -85,7 +93,7 @@ export function createAudioManager(manifest = {}) {
     }
     const audio = musicTracks.get(trackId);
     if (!audio) return;
-    audio.volume = Math.max(0, Math.min(volume, 1));
+    audio.volume = clampVolume(volume, 0.3);
     audio.playbackRate = rate;
     const playPromise = audio.play();
     currentMusic = trackId;
@@ -102,6 +110,21 @@ export function createAudioManager(manifest = {}) {
     currentMusic = null;
   }
 
+  function setMusicVolume(volume) {
+    if (!currentMusic) return;
+    const audio = musicTracks.get(currentMusic);
+    if (!audio) return;
+    audio.volume = clampVolume(volume, 0.3);
+  }
+
+  function setSfxVolume(volume) {
+    if (!activeSfxNodes.size) return;
+    const clamped = clampVolume(volume, 0.6);
+    activeSfxNodes.forEach((audio) => {
+      audio.volume = clamped;
+    });
+  }
+
   function preload(themeId = "default", kinds = []) {
     const requested = kinds.length ? kinds : Object.keys(manifest.sfx || {});
     requested.forEach((kind) => buildPool(kind, themeId));
@@ -111,6 +134,8 @@ export function createAudioManager(manifest = {}) {
     playSfx,
     playMusic,
     stopMusic,
+    setMusicVolume,
+    setSfxVolume,
     preload
   };
 }

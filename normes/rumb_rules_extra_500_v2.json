@@ -1,0 +1,3502 @@
+[
+  {
+    "text": "Esquiva la comarca on paisatge de riu i delta a prop, amb navegació i memòria de barques sense oblidar entre muralles i ponts antics; amb flaires d'hivern i brasa, però en temporada alta t'arrisques a perdre molt temps entre aglomeracions.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on aigua termal, balnearis i passeigs que barregen interior i litoral alhora en una fageda ombrívola; amb castanyes i bolets, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on oli d’arbequina, molins i pa torrat amb all i tomàquet amb el detall que amb vent que et talla la cara; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on coves amb restes prehistòriques i aire de bosc interior i encara amb gralles que ressonen; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on música de cobla i caràcter de comarca central alhora entre vinyes i marges; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on la muntanya d’agulles inconfusibles amb monestir i cor de veus blanques i amb foc i espurnes al cel; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on marges de pedra seca entre vinya i masies que expliquen segles de feina amb el detall que en una fageda ombrívola; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on Corpus amb foc, salts i figures simbòliques que fan tremolar una plaça on també amb gust de cassola lenta; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on firals de pagesia i tractors, amb cuina de cassola sense oblidar quan el poble s'engalana; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on un celler modernista que sembla una catedral agrícola de maó i arcades sense oblidar amb canyissars que xiuxiuegen; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on fires d’oli nou on l’aroma omple el carrer i amb aigua termal i balnearis; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on Corpus amb foc, salts i figures simbòliques que fan tremolar una plaça mentre amb música de cobla; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on penya-segats i camins costaners amb vistes llargues i en camins de contraban; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on pollastre de potes blaves i carxofes, amb fira que defensa el producte i a tocar d'una badia plena de musclos; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on papereries i rius que han mogut molins i fàbriques durant generacions mentre amb llegendes que encara corren; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on sol de muntanya i pastures, amb arquitectura de pedra i fusta i encara amb olor d'oli nou; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on xató i trobades d’hivern amb escarola, bacallà i salsa intensa on també amb vent que et talla la cara; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on colles que fan cultura popular a tocar de grans vies sense oblidar amb gralles que ressonen; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on arròs, canyissars i ocells, amb cuina marinera i d’horta a la vegada sense oblidar en prats d'alta muntanya; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on trinxat fumejant per combatre el fred d’una vall alta i oberta alhora amb boira a primera hora; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on romànic auster i camins que fan de porta cap a valls d’alta muntanya amb el detall que en un carreró de pedra; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on formatges de valls pirinenques i fires on el gust és tan important com el paisatge i amb olor d'oli nou; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on cant de taverna i caràcter de muntanya en festes majors amb el detall que a tocar d'una badia plena de musclos; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on gamba vermella i arrossos, amb mercats que fan venir gana i encara en un dia de mercat; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on tradició de Corpus amb un ou que balla sobre l’aigua en un claustre tot plegat amb castanyes i bolets; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on delta i aeroport, amb horta que resisteix la pressió metropolitana alhora amb jotes i so de banda; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on monestirs cistercencs i pedres que respiren silenci i història on també amb aigua termal i balnearis; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on memòria d’un gran violoncel·lista i música al costat de la platja amb el detall que amb canyissars que xiuxiuegen; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on setmana medieval amb drac, cavaller i carrers emmurallats on també en camins de contraban; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on sal i mines, i una cuina de fonda que barreja muntanya i plana on també a tocar d'un gran riu cabalós; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on fira de tardor amb bolets i cuina de brasa amb el detall que amb timbals que marquen el pas; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on pollastre de potes blaves i carxofes, amb fira que defensa el producte amb el detall que entre parets de basalt; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on llegenda de mosques que van salvar una ciutat assetjada i encara en una fageda ombrívola; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on fira de bestiar i vida de plaça en una capital petita on també amb canyissars que xiuxiuegen; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on ponts de pedra i ermites petites entre muntanyes molt tancades i encara amb sants i processons solemnes; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on parla amb trets gironins i orgull de plaça major sense oblidar entre oliveres i pedra seca; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "No passis per la comarca on congost i parets verticals que fan el riu estret i espectacular sense oblidar entre vinyes i marges; amb boira a primera hora, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on castells de frontera i camins de vinya que connecten pobles de pas i encara amb canyissars que xiuxiuegen; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on secà i marges, amb pedra seca i pobles petits i amb flaires d'hivern i brasa; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on xatonada amb barrets de palla, comparses i bacallà a l’hivern tot plegat amb havaneres a la vora del mar; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on firals de pagesia i tractors, amb cuina de cassola on també en un dia de mercat; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on neu, esquí i mercats de formatges, amb estanys i prats alhora amb gust de cassola lenta; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on raiers baixant troncs pel riu, recordant un ofici antic mentre amb canyissars que xiuxiuegen; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on una misteriosa llum medieval que va salvar una obra d’aigua essencial on també en una plaça que fa vibrar; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on memòria de riu i mar, amb barques i llotja i quan el poble s'engalana; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on jota i banda, amb accent meridional i caràcter de frontera i entre muralles i ponts antics; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on formatge i mel de muntanya amb fires petites sense oblidar quan el poble s'engalana; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on sol de muntanya i pastures, amb arquitectura de pedra i fusta sense oblidar amb llegendes que encara corren; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on talls de neu, prats d’alta muntanya i llegendes de contrabandistes amb el detall que amb llum de capvespre; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on arròs, canyissars i ocells, amb cuina marinera i d’horta a la vegada i encara amb timbals que marquen el pas; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on la passió per les torres humanes que es descarreguen a plaça amb faixa i pinya on també a tocar d'un estany quiet; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on arrossars com miralls i muscleres a les badies quan baixa el sol i amb sants i processons solemnes; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on oli d’arbequina, molins i pa torrat amb all i tomàquet i amb corals i veus blanques; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on neu, esquí i mercats de formatges, amb estanys i prats i en una fageda ombrívola; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on volta a l’aigua amb rem i banys d’estiu on també amb foc i espurnes al cel; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on fira de bestiar i vida de plaça en una capital petita mentre amb canyissars que xiuxiuegen; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on fires d’oli nou on l’aroma omple el carrer i amb gralles que ressonen; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on formatges de valls pirinenques i fires on el gust és tan important com el paisatge on també amb música de cobla; amb llegendes que encara corren, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on xatonada amb barrets de palla, comparses i bacallà a l’hivern i a tocar d'un estany quiet; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Evita la comarca on monestirs cistercencs i pedres que respiren silenci i història alhora amb canyissars que xiuxiuegen; quan el poble s'engalana, però si vas amb pressa, les carreteres secundàries t'alenteixen massa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on tradició de Corpus amb un ou que balla sobre l’aigua en un claustre amb el detall que amb corals i veus blanques; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on paisatge de riu i delta a prop, amb navegació i memòria de barques i en prats d'alta muntanya; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on avellanes torrades i olor de mar, amb horta que toca la costa sense oblidar a tocar d'una badia plena de musclos; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on colles que fan cultura popular a tocar de grans vies sense oblidar entre oliveres i pedra seca; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on una misteriosa llum medieval que va salvar una obra d’aigua essencial i encara a tocar d'una badia plena de musclos; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on ponts de pedra i ermites petites entre muntanyes molt tancades alhora entre vinyes i marges; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on fesols menuts cuits a foc lent, amb terra negra i volcans tot plegat amb vitralls i rajoles modernistes; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on llegenda de mosques que van salvar una ciutat assetjada i a tocar d'un gran riu cabalós; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on festes de cançó d’havaneres i rom cremat en passeigs amb el detall que en un dia de mercat; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on llegenda d’un drac adormit sota un estany immens i tranquil alhora en un carreró de pedra; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on una festa de la fil·loxera que es recorda amb foc i gegants a la plaça on també amb foc i espurnes al cel; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on parcs d’alta muntanya, estanys i silenci de vall tot plegat amb timbals que marquen el pas; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on memòria d’un gran violoncel·lista i música al costat de la platja mentre en un carreró de pedra; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on xató i trobades d’hivern amb escarola, bacallà i salsa intensa on també a tocar d'una badia plena de musclos; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on oli d’arbequina, molins i pa torrat amb all i tomàquet on també amb vent que et talla la cara; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on maresmenc cantat, amb pescadors i horta a tocar de mar sense oblidar amb llegendes que encara corren; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on trinxat fumejant per combatre el fred d’una vall alta i oberta i amb sants i processons solemnes; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on aigua termal, balnearis i passeigs que barregen interior i litoral on també entre oliveres i pedra seca; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on prats i ramats, amb cançons de taverna i fires de bestiar amb el detall que amb jotes i so de banda; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on campanars esvelts i romànic de vall, amb pedra freda i silenci d’hivern i amb música de cobla; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on formatges de valls pirinenques i fires on el gust és tan important com el paisatge i en una plaça que fa vibrar; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on parcs d’alta muntanya, estanys i silenci de vall tot plegat amb flaires d'hivern i brasa; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on raiers baixant troncs pel riu, recordant un ofici antic i encara entre oliveres i pedra seca; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on maresmenc cantat, amb pescadors i horta a tocar de mar alhora amb gust de cassola lenta; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on una festa de la fil·loxera que es recorda amb foc i gegants a la plaça i encara amb jotes i so de banda; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on canals, regadius i camps perfectament dibuixats a la plana i amb aigua termal i balnearis; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Descarta la comarca on memòria de la batalla i paisatge de vinya i vent sense oblidar amb vent que et talla la cara; amb llum de capvespre, però en temporada alta t'arrisques a perdre molt temps entre aglomeracions.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Terra Alta"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on cultura marinera i de vila d’estiueig amb llum blanca mentre amb timbals que marquen el pas; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on xató i trobades d’hivern amb escarola, bacallà i salsa intensa i encara amb foc i espurnes al cel; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on festes de cançó d’havaneres i rom cremat en passeigs i amb vitralls i rajoles modernistes; amb havaneres a la vora del mar, però si vas amb pressa, les carreteres secundàries t'alenteixen massa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on un univers surrealista convertit en museu-teatre on tot és possible on també a tocar d'una badia plena de musclos; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on arquitectura modernista exuberant que fa de la ciutat un museu viu sense oblidar en un carreró de pedra; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on congost i parets verticals que fan el riu estret i espectacular alhora amb olor d'oli nou; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on arrossars com miralls i muscleres a les badies quan baixa el sol on també amb aigua termal i balnearis; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on trinxat fumejant per combatre el fred d’una vall alta i oberta mentre amb gust de cassola lenta; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on embotits curats amb boira i fred, amb llonganissa de nom famós sense oblidar a tocar d'un estany quiet; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on Corpus amb foc, salts i figures simbòliques que fan tremolar una plaça alhora entre vinyes i marges; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on arquitectura modernista exuberant que fa de la ciutat un museu viu sense oblidar amb havaneres a la vora del mar; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on fira de tardor amb bolets i cuina de brasa alhora a tocar d'un gran riu cabalós; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on plana ampla, masies i mercats de dissabte i a tocar d'una badia plena de musclos; entre parets de basalt, però tindries massa desviament per arribar als punts clau.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on pollastre de potes blaves i carxofes, amb fira que defensa el producte sense oblidar quan el poble s'engalana; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on parla amb trets gironins i orgull de plaça major i amb memòria obrera i xemeneies; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on camins de pedra seca i fonts amagades i encara amb llegendes que encara corren; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on cuina volcànica i artesania de ceràmica tot plegat amb boira a primera hora; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on un celler modernista que sembla una catedral agrícola de maó i arcades i encara amb boira a primera hora; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on un celler modernista que sembla una catedral agrícola de maó i arcades mentre entre oliveres i pedra seca; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on volta a l’aigua amb rem i banys d’estiu tot plegat entre muralles i ponts antics; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on memòria de riu i mar, amb barques i llotja on també quan el poble s'engalana; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on xató i trobades d’hivern amb escarola, bacallà i salsa intensa alhora amb música de cobla; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on sermons medievals en llengua vulgar que són un tresor literari antic sense oblidar a tocar d'una badia plena de musclos; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on congost i parets verticals que fan el riu estret i espectacular tot plegat en una plaça que fa vibrar; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on fesols menuts cuits a foc lent, amb terra negra i volcans amb el detall que amb aigua termal i balnearis; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on castells de frontera i camins de vinya que connecten pobles de pas i encara amb foc i espurnes al cel; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on coves amb restes prehistòriques i aire de bosc interior i encara amb canyissars que xiuxiuegen; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on muralles, ponts i festivals de flors que omplen carrers i encara amb canyissars que xiuxiuegen; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on avellanes torrades i olor de mar, amb horta que toca la costa sense oblidar amb flaires d'hivern i brasa; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on fira de bestiar i vida de plaça en una capital petita tot plegat amb foc i espurnes al cel; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on camins de pedra seca i fonts amagades amb el detall que amb timbals que marquen el pas; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on ponts de pedra i ermites petites entre muntanyes molt tancades on també amb sants i processons solemnes; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on una festa de la fil·loxera que es recorda amb foc i gegants a la plaça sense oblidar en un dia de mercat; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on una misteriosa llum medieval que va salvar una obra d’aigua essencial sense oblidar en camins de contraban; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on falles de foc baixant de la muntanya per Sant Joan tot plegat en camins de contraban; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "No travessis la comarca on gossos d’atura dirigint ramats en concurs de precisió a l’estiu on també amb corals i veus blanques; amb jotes i so de banda, però en temporada alta t'arrisques a perdre molt temps entre aglomeracions.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Ripollès"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on delta i aeroport, amb horta que resisteix la pressió metropolitana tot plegat en un dia de mercat; amb sants i processons solemnes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on maduixes dolces i mercats que fan olor de primavera alhora a tocar d'un estany quiet; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on embotits curats amb boira i fred, amb llonganissa de nom famós sense oblidar amb aigua termal i balnearis; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on campaners que competeixen amb repics precisos i amb castanyes i bolets; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "No passis per la comarca on talls de neu, prats d’alta muntanya i llegendes de contrabandistes alhora amb llegendes que encara corren; entre muralles i ponts antics, però tindries massa desviament per arribar als punts clau.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on neu, esquí i mercats de formatges, amb estanys i prats amb el detall que amb boira a primera hora; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on camins de pedra seca i fonts amagades alhora amb gust de cassola lenta; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on memòria d’un gran violoncel·lista i música al costat de la platja on també amb foc i espurnes al cel; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on avellanes torrades i olor de mar, amb horta que toca la costa alhora amb llum de capvespre; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on fires d’oli nou on l’aroma omple el carrer on també entre oliveres i pedra seca; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on una misteriosa llum medieval que va salvar una obra d’aigua essencial i amb foc i espurnes al cel; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on un gran festival renaixentista on els carrers són un escenari del Segle d’Or i amb gralles que ressonen; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on firals de pagesia i tractors, amb cuina de cassola alhora entre vinyes i marges; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on fira de bestiar i vida de plaça en una capital petita tot plegat amb boira a primera hora; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on vinya i platges daurades amb passeigs tranquils i amb memòria obrera i xemeneies; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on la muntanya d’agulles inconfusibles amb monestir i cor de veus blanques i encara en prats d'alta muntanya; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on oli d’arbequina, molins i pa torrat amb all i tomàquet amb el detall que quan el poble s'engalana; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on neu, esquí i mercats de formatges, amb estanys i prats alhora en una plaça que fa vibrar; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on una calçotada al camp amb salsa espessa i porrons, quan el fred encara pica mentre entre muralles i ponts antics; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on talls de neu, prats d’alta muntanya i llegendes de contrabandistes sense oblidar en camins de contraban; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on la muntanya d’agulles inconfusibles amb monestir i cor de veus blanques on també en un carreró de pedra; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on memòria de riu i mar, amb barques i llotja amb el detall que amb sants i processons solemnes; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on maresmenc cantat, amb pescadors i horta a tocar de mar alhora amb corals i veus blanques; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on tradició de danses de festa major amb cobla petita i encara amb sants i processons solemnes; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on campaners que competeixen amb repics precisos tot plegat amb vent que et talla la cara; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on talls de neu, prats d’alta muntanya i llegendes de contrabandistes amb el detall que a tocar d'un estany quiet; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on gamba vermella i arrossos, amb mercats que fan venir gana i encara en un dia de mercat; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Descarta la comarca on xató i trobades d’hivern amb escarola, bacallà i salsa intensa on també amb llum de capvespre; en una fageda ombrívola, però si vas amb pressa, les carreteres secundàries t'alenteixen massa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on campanars esvelts i romànic de vall, amb pedra freda i silenci d’hivern i encara en un carreró de pedra; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on paisatge de prepirineu, mines i colònies tèxtils a tocar de riu on també amb olor d'oli nou; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on tradició de danses de festa major amb cobla petita tot plegat amb memòria obrera i xemeneies; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on maduixes dolces i mercats que fan olor de primavera alhora entre parets de basalt; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on romànic auster i camins que fan de porta cap a valls d’alta muntanya mentre en una fageda ombrívola; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on parla amb trets gironins i orgull de plaça major i amb música de cobla; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on petjada d’un arquitecte modernista recordada en museu i carrers de pedra sense oblidar en una plaça que fa vibrar; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on la passió per les torres humanes que es descarreguen a plaça amb faixa i pinya mentre en un carreró de pedra; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on fesols menuts cuits a foc lent, amb terra negra i volcans alhora amb llum de capvespre; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on falles de foc baixant de la muntanya per Sant Joan amb el detall que amb llum de capvespre; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on xatonada amb barrets de palla, comparses i bacallà a l’hivern amb el detall que entre vinyes i marges; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on falles de foc baixant de la muntanya per Sant Joan i encara en un carreró de pedra; amb boira a primera hora, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on delta i aeroport, amb horta que resisteix la pressió metropolitana on també amb memòria obrera i xemeneies; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on música de cobla i caràcter de comarca central alhora entre vinyes i marges; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on llegenda de mosques que van salvar una ciutat assetjada mentre amb llegendes que encara corren; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on globus aerostàtics tenyint el cel de colors durant un festival que fa mirar amunt i quan el poble s'engalana; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on avellanes torrades i olor de mar, amb horta que toca la costa on també entre oliveres i pedra seca; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on aigua termal, balnearis i passeigs que barregen interior i litoral i encara a tocar d'un gran riu cabalós; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on catedrals del vi i cooperatives agrícoles amb orgull i a tocar d'una badia plena de musclos; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on catedrals del vi i cooperatives agrícoles amb orgull alhora amb vitralls i rajoles modernistes; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Descarta la comarca on secà i marges, amb pedra seca i pobles petits mentre entre muralles i ponts antics; entre oliveres i pedra seca, però en temporada alta t'arrisques a perdre molt temps entre aglomeracions.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on cuina volcànica i artesania de ceràmica i encara amb foc i espurnes al cel; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on un celler modernista que sembla una catedral agrícola de maó i arcades i encara amb corals i veus blanques; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on marges de pedra seca entre vinya i masies que expliquen segles de feina alhora amb flaires d'hivern i brasa; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on sermons medievals en llengua vulgar que són un tresor literari antic on també amb corals i veus blanques; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on la muntanya d’agulles inconfusibles amb monestir i cor de veus blanques alhora en un dia de mercat; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on penya-segats i camins costaners amb vistes llargues on també amb castanyes i bolets; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on cuina volcànica i artesania de ceràmica on també entre oliveres i pedra seca; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on avellanes torrades i olor de mar, amb horta que toca la costa mentre a tocar d'un estany quiet; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on pobles de pedra i carrerons, amb mar i cales que obliguen a caminar mentre amb boira a primera hora; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on arròs, canyissars i ocells, amb cuina marinera i d’horta a la vegada alhora en un carreró de pedra; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on congost i parets verticals que fan el riu estret i espectacular sense oblidar amb sants i processons solemnes; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on fira de bestiar i vida de plaça en una capital petita i amb vitralls i rajoles modernistes; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on muralles, ponts i festivals de flors que omplen carrers sense oblidar amb jotes i so de banda; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on arquitectura modernista exuberant que fa de la ciutat un museu viu alhora amb castanyes i bolets; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on trinxat fumejant per combatre el fred d’una vall alta i oberta mentre entre oliveres i pedra seca; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on campanars esvelts i romànic de vall, amb pedra freda i silenci d’hivern amb el detall que en una plaça que fa vibrar; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on globus aerostàtics tenyint el cel de colors durant un festival que fa mirar amunt alhora en un carreró de pedra; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on tradició de danses de festa major amb cobla petita on també en un carreró de pedra; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on camins de pedra i masies escampades tot plegat entre vinyes i marges; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on llegenda d’un drac adormit sota un estany immens i tranquil amb el detall que amb foc i espurnes al cel; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on festes de cançó d’havaneres i rom cremat en passeigs alhora amb castanyes i bolets; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on cultura marinera i de vila d’estiueig amb llum blanca mentre amb havaneres a la vora del mar; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on xatonada amb barrets de palla, comparses i bacallà a l’hivern on també amb timbals que marquen el pas; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Descarta la comarca on arquitectura modernista exuberant que fa de la ciutat un museu viu sense oblidar amb llum de capvespre; entre muralles i ponts antics, però el ritme del joc es pot trencar amb tantes parades obligades.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on tradició de Corpus amb un ou que balla sobre l’aigua en un claustre tot plegat amb sants i processons solemnes; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on el vent del nord que es cola entre oliveres i roques i marca el caràcter de la gent alhora amb havaneres a la vora del mar; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on romànic auster i camins que fan de porta cap a valls d’alta muntanya i encara amb llum de capvespre; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on ramaderia d’estiu i transhumància amb el detall que amb havaneres a la vora del mar; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on monestirs cistercencs i pedres que respiren silenci i història amb el detall que amb castanyes i bolets; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on delta i aeroport, amb horta que resisteix la pressió metropolitana on també amb canyissars que xiuxiuegen; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "No passis per la comarca on música de cobla i caràcter de comarca central i amb foc i espurnes al cel; entre vinyes i marges, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on una festa de la fil·loxera que es recorda amb foc i gegants a la plaça alhora amb timbals que marquen el pas; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on una calçotada al camp amb salsa espessa i porrons, quan el fred encara pica on també amb canyissars que xiuxiuegen; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on cant de taverna i caràcter de muntanya en festes majors i amb música de cobla; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on volta a l’aigua amb rem i banys d’estiu alhora entre muralles i ponts antics; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on embotits curats amb boira i fred, amb llonganissa de nom famós on també amb flaires d'hivern i brasa; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "No travessis la comarca on parla occidental i mercats de ponent alhora quan el poble s'engalana; a tocar d'un gran riu cabalós, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Segarra"
+    ]
+  },
+  {
+    "text": "Evita la comarca on llegenda de mosques que van salvar una ciutat assetjada i encara amb olor d'oli nou; a tocar d'una badia plena de musclos, però tindries massa desviament per arribar als punts clau.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on neu, esquí i mercats de formatges, amb estanys i prats on també entre muralles i ponts antics; en una fageda ombrívola, però si vas amb pressa, les carreteres secundàries t'alenteixen massa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on coves amb restes prehistòriques i aire de bosc interior i amb memòria obrera i xemeneies; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on maresmenc cantat, amb pescadors i horta a tocar de mar sense oblidar amb boira a primera hora; amb canyissars que xiuxiuegen, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "No passis per la comarca on colles que fan cultura popular a tocar de grans vies alhora amb llum de capvespre; amb boira a primera hora, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on vinya i platges daurades amb passeigs tranquils alhora a tocar d'un estany quiet; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Evita la comarca on clotxa de pa buidat amb escalivada i arengada, dinar de tros alhora amb sants i processons solemnes; amb gralles que ressonen, però en temporada alta t'arrisques a perdre molt temps entre aglomeracions.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Terra Alta"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on coves amb restes prehistòriques i aire de bosc interior tot plegat en una fageda ombrívola; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on cant de taverna i caràcter de muntanya en festes majors alhora amb flaires d'hivern i brasa; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on un gran festival renaixentista on els carrers són un escenari del Segle d’Or mentre entre muralles i ponts antics; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on oli d’arbequina, molins i pa torrat amb all i tomàquet amb el detall que a tocar d'un estany quiet; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on cant de taverna i caràcter de muntanya en festes majors i amb memòria obrera i xemeneies; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on sal i mines, i una cuina de fonda que barreja muntanya i plana sense oblidar en camins de contraban; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on camins de pedra i masies escampades tot plegat amb olor d'oli nou; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on xatonada amb barrets de palla, comparses i bacallà a l’hivern amb el detall que amb havaneres a la vora del mar; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on talls de neu, prats d’alta muntanya i llegendes de contrabandistes i amb olor d'oli nou; amb sants i processons solemnes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on fira d’arts escèniques que converteix carrers en escenari amb el detall que amb vent que et talla la cara; amb jotes i so de banda, però el ritme del joc es pot trencar amb tantes parades obligades.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Urgell"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on castells de frontera i camins de vinya que connecten pobles de pas sense oblidar a tocar d'una badia plena de musclos; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on fira de tardor amb bolets i cuina de brasa alhora amb sants i processons solemnes; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on volta a l’aigua amb rem i banys d’estiu sense oblidar a tocar d'una badia plena de musclos; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on catedrals del vi i cooperatives agrícoles amb orgull sense oblidar entre oliveres i pedra seca; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on una calçotada al camp amb salsa espessa i porrons, quan el fred encara pica on també en un dia de mercat; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on camins de pedra i masies escampades i amb vent que et talla la cara; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on congost de parets altíssimes i aigua verda sense oblidar en una fageda ombrívola; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on un celler modernista que sembla una catedral agrícola de maó i arcades sense oblidar en una fageda ombrívola; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on memòria d’un gran violoncel·lista i música al costat de la platja sense oblidar amb canyissars que xiuxiuegen; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on fira de tardor amb bolets i cuina de brasa amb el detall que amb llegendes que encara corren; en camins de contraban, però tindries massa desviament per arribar als punts clau.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on arrossars com miralls i muscleres a les badies quan baixa el sol amb el detall que amb castanyes i bolets; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on fires d’oli nou on l’aroma omple el carrer mentre a tocar d'un gran riu cabalós; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on campaners que competeixen amb repics precisos i entre oliveres i pedra seca; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on formatges de valls pirinenques i fires on el gust és tan important com el paisatge alhora amb llum de capvespre; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on embotits curats amb boira i fred, amb llonganissa de nom famós alhora en un dia de mercat; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on un univers surrealista convertit en museu-teatre on tot és possible alhora a tocar d'un estany quiet; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on formatge i mel de muntanya amb fires petites i encara a tocar d'un gran riu cabalós; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on monestirs cistercencs i pedres que respiren silenci i història alhora amb gust de cassola lenta; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on festes de cançó d’havaneres i rom cremat en passeigs on també amb llum de capvespre; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on la passió per les torres humanes que es descarreguen a plaça amb faixa i pinya alhora en una plaça que fa vibrar; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on llegenda d’un drac adormit sota un estany immens i tranquil on també en camins de contraban; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on prats i ramats, amb cançons de taverna i fires de bestiar alhora a tocar d'una badia plena de musclos; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on paisatge de riu i delta a prop, amb navegació i memòria de barques mentre amb aigua termal i balnearis; amb sants i processons solemnes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on papereries i rius que han mogut molins i fàbriques durant generacions mentre en una plaça que fa vibrar; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on parla amb trets gironins i orgull de plaça major sense oblidar amb corals i veus blanques; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on muralles, ponts i festivals de flors que omplen carrers amb el detall que amb gust de cassola lenta; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on prats i ramats, amb cançons de taverna i fires de bestiar amb el detall que amb gralles que ressonen; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on sol de muntanya i pastures, amb arquitectura de pedra i fusta on també a tocar d'un gran riu cabalós; amb sants i processons solemnes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on firals de pagesia i tractors, amb cuina de cassola i amb castanyes i bolets; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on plana ampla, masies i mercats de dissabte sense oblidar en un carreró de pedra; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on paisatge de riu i delta a prop, amb navegació i memòria de barques sense oblidar amb sants i processons solemnes; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on caves i brindis de vi escumós després de la verema, amb olor de most mentre amb jotes i so de banda; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on setmana medieval amb drac, cavaller i carrers emmurallats on també entre muralles i ponts antics; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on raiers baixant troncs pel riu, recordant un ofici antic amb el detall que entre parets de basalt; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on aigua termal, balnearis i passeigs que barregen interior i litoral on també amb sants i processons solemnes; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on tradició de danses de festa major amb cobla petita sense oblidar a tocar d'un gran riu cabalós; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on vinya i platges daurades amb passeigs tranquils mentre amb boira a primera hora; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on fira de bestiar i vida de plaça en una capital petita mentre amb aigua termal i balnearis; amb música de cobla, però si vas amb pressa, les carreteres secundàries t'alenteixen massa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on prats i ramats, amb cançons de taverna i fires de bestiar i amb gralles que ressonen; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on romànic auster i camins que fan de porta cap a valls d’alta muntanya amb el detall que amb corals i veus blanques; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on parla occidental amb 'lo' i orgull de mercat amb el detall que a tocar d'un gran riu cabalós; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on falles de foc baixant de la muntanya per Sant Joan i encara amb música de cobla; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Evita la comarca on xatonada amb barrets de palla, comparses i bacallà a l’hivern on també amb flaires d'hivern i brasa; en un dia de mercat, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on formatges de valls pirinenques i fires on el gust és tan important com el paisatge i encara amb jotes i so de banda; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on secà i marges, amb pedra seca i pobles petits i encara amb vitralls i rajoles modernistes; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on arròs, canyissars i ocells, amb cuina marinera i d’horta a la vegada mentre amb corals i veus blanques; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on romànic auster i camins que fan de porta cap a valls d’alta muntanya tot plegat amb vitralls i rajoles modernistes; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on ponts de pedra i ermites petites entre muntanyes molt tancades i encara a tocar d'un gran riu cabalós; en una fageda ombrívola, però si vas amb pressa, les carreteres secundàries t'alenteixen massa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on congost de parets altíssimes i aigua verda i amb boira a primera hora; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Evita la comarca on delta i aeroport, amb horta que resisteix la pressió metropolitana i encara amb gust de cassola lenta; amb sants i processons solemnes, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on paisatge de riu i delta a prop, amb navegació i memòria de barques mentre amb gralles que ressonen; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on cultura marinera i de vila d’estiueig amb llum blanca tot plegat amb gust de cassola lenta; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on prats i ramats, amb cançons de taverna i fires de bestiar tot plegat amb corals i veus blanques; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on pobles de pedra i carrerons, amb mar i cales que obliguen a caminar i amb aigua termal i balnearis; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on vinya i platges daurades amb passeigs tranquils tot plegat en una fageda ombrívola; entre vinyes i marges, però el calendari fort de la zona és massa puntual per a aquesta partida.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on volta a l’aigua amb rem i banys d’estiu i amb flaires d'hivern i brasa; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on campaners que competeixen amb repics precisos sense oblidar a tocar d'un estany quiet; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on firals de pagesia i tractors, amb cuina de cassola sense oblidar en camins de contraban; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on rumba catalana de barri, guitarra i palmes amb ritme de ventilador i amb vent que et talla la cara; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on talls de neu, prats d’alta muntanya i llegendes de contrabandistes on també amb llum de capvespre; amb sants i processons solemnes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on el vent del nord que es cola entre oliveres i roques i marca el caràcter de la gent i amb corals i veus blanques; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on congost i parets verticals que fan el riu estret i espectacular i encara en un dia de mercat; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on la passió per les torres humanes que es descarreguen a plaça amb faixa i pinya alhora en una plaça que fa vibrar; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on rumba catalana de barri, guitarra i palmes amb ritme de ventilador sense oblidar amb corals i veus blanques; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on paisatge de prepirineu, mines i colònies tèxtils a tocar de riu on també amb vent que et talla la cara; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on cants mariners amb rom cremat a la nit, en una cala plena de llumets amb el detall que amb gralles que ressonen; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on arrossars com miralls i muscleres a les badies quan baixa el sol i en una plaça que fa vibrar; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on pollastre de potes blaves i carxofes, amb fira que defensa el producte amb el detall que en un dia de mercat; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on sol de muntanya i pastures, amb arquitectura de pedra i fusta i entre oliveres i pedra seca; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on pobles de pedra i carrerons, amb mar i cales que obliguen a caminar alhora en prats d'alta muntanya; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on nit d’estels molt fosca en un massís on el cel és patrimoni sense oblidar amb flaires d'hivern i brasa; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on música de cobla i caràcter de comarca central i encara amb llegendes que encara corren; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on fageda humida i boira, amb camins suaus i basalt alhora entre parets de basalt; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on petjada d’un arquitecte modernista recordada en museu i carrers de pedra i encara entre vinyes i marges; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on llegenda de mosques que van salvar una ciutat assetjada amb el detall que en un carreró de pedra; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on un univers surrealista convertit en museu-teatre on tot és possible mentre amb llum de capvespre; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on arrossars com miralls i muscleres a les badies quan baixa el sol alhora entre parets de basalt; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on fageda humida i boira, amb camins suaus i basalt alhora a tocar d'un estany quiet; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on jota i banda, amb accent meridional i caràcter de frontera on també entre muralles i ponts antics; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on parla occidental amb 'lo' i orgull de mercat on també amb castanyes i bolets; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on pollastre de potes blaves i carxofes, amb fira que defensa el producte alhora amb vent que et talla la cara; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on arròs, canyissars i ocells, amb cuina marinera i d’horta a la vegada mentre amb jotes i so de banda; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on la muntanya d’agulles inconfusibles amb monestir i cor de veus blanques tot plegat entre parets de basalt; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on cants mariners amb rom cremat a la nit, en una cala plena de llumets sense oblidar amb vent que et talla la cara; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on cants mariners amb rom cremat a la nit, en una cala plena de llumets tot plegat en una fageda ombrívola; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on parcs d’alta muntanya, estanys i silenci de vall mentre amb corals i veus blanques; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on penya-segats i camins costaners amb vistes llargues tot plegat amb gralles que ressonen; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on paisatge de riu i delta a prop, amb navegació i memòria de barques amb el detall que entre parets de basalt; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on nit d’estels molt fosca en un massís on el cel és patrimoni alhora entre oliveres i pedra seca; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on maduixes dolces i mercats que fan olor de primavera mentre amb aigua termal i balnearis; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on paisatge de prepirineu, mines i colònies tèxtils a tocar de riu i entre vinyes i marges; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on nit d’estels molt fosca en un massís on el cel és patrimoni tot plegat amb havaneres a la vora del mar; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on trinxat fumejant per combatre el fred d’una vall alta i oberta mentre en prats d'alta muntanya; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on plana ampla, masies i mercats de dissabte i amb vent que et talla la cara; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on fires d’oli nou on l’aroma omple el carrer i encara amb timbals que marquen el pas; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on papereries i rius que han mogut molins i fàbriques durant generacions mentre a tocar d'un estany quiet; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on marges de pedra seca entre vinya i masies que expliquen segles de feina sense oblidar amb castanyes i bolets; amb jotes i so de banda.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on una festa de la fil·loxera que es recorda amb foc i gegants a la plaça i en una plaça que fa vibrar; amb gralles que ressonen, però si vas amb pressa, les carreteres secundàries t'alenteixen massa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Evita la comarca on catedrals del vi i cooperatives agrícoles amb orgull mentre en prats d'alta muntanya; amb aigua termal i balnearis, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on gamba vermella i arrossos, amb mercats que fan venir gana amb el detall que amb corals i veus blanques; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on colles que fan cultura popular a tocar de grans vies i en una fageda ombrívola; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on sol de muntanya i pastures, amb arquitectura de pedra i fusta sense oblidar amb vent que et talla la cara; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on camins de pedra seca i fonts amagades alhora entre oliveres i pedra seca; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on el vent del nord que es cola entre oliveres i roques i marca el caràcter de la gent amb el detall que amb canyissars que xiuxiuegen; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on marges de pedra seca entre vinya i masies que expliquen segles de feina amb el detall que amb gralles que ressonen; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on memòria d’un gran violoncel·lista i música al costat de la platja sense oblidar amb llum de capvespre; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on secà i marges, amb pedra seca i pobles petits on també en prats d'alta muntanya; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on una empremta grega i romana arran de mar, amb pedres antigues i mosaics mentre amb gust de cassola lenta; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on muralles, ponts i festivals de flors que omplen carrers on també amb canyissars que xiuxiuegen; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on sal i mines, i una cuina de fonda que barreja muntanya i plana i encara amb gralles que ressonen; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on Corpus amb foc, salts i figures simbòliques que fan tremolar una plaça mentre amb olor d'oli nou; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on campanars esvelts i romànic de vall, amb pedra freda i silenci d’hivern sense oblidar entre oliveres i pedra seca; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on plana ampla, masies i mercats de dissabte sense oblidar amb havaneres a la vora del mar; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on castells de frontera i camins de vinya que connecten pobles de pas alhora amb gust de cassola lenta; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on cultura marinera i de vila d’estiueig amb llum blanca on també en camins de contraban; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on una misteriosa llum medieval que va salvar una obra d’aigua essencial mentre amb llegendes que encara corren; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on arquitectura modernista exuberant que fa de la ciutat un museu viu sense oblidar amb boira a primera hora; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on jota i banda, amb accent meridional i caràcter de frontera tot plegat amb timbals que marquen el pas; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on cuina volcànica i artesania de ceràmica sense oblidar amb canyissars que xiuxiuegen; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on congost de parets altíssimes i aigua verda tot plegat amb sants i processons solemnes; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on ponts de pedra i ermites petites entre muntanyes molt tancades on també en camins de contraban; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on festes de cançó d’havaneres i rom cremat en passeigs mentre amb memòria obrera i xemeneies; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on caves i brindis de vi escumós després de la verema, amb olor de most alhora entre vinyes i marges; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on gamba vermella i arrossos, amb mercats que fan venir gana alhora a tocar d'un gran riu cabalós; amb olor d'oli nou, però el ritme del joc es pot trencar amb tantes parades obligades.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on falles de foc baixant de la muntanya per Sant Joan mentre en un carreró de pedra; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on gamba vermella i arrossos, amb mercats que fan venir gana i amb música de cobla; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on globus aerostàtics tenyint el cel de colors durant un festival que fa mirar amunt on també en una plaça que fa vibrar; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on cuina volcànica i artesania de ceràmica tot plegat amb corals i veus blanques; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on nit d’estels molt fosca en un massís on el cel és patrimoni amb el detall que amb vitralls i rajoles modernistes; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on marges de pedra seca entre vinya i masies que expliquen segles de feina on també quan el poble s'engalana; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on parcs d’alta muntanya, estanys i silenci de vall on també amb boira a primera hora; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on el vent del nord que es cola entre oliveres i roques i marca el caràcter de la gent i en una fageda ombrívola; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on penya-segats i camins costaners amb vistes llargues on també amb foc i espurnes al cel; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on vinya i platges daurades amb passeigs tranquils amb el detall que en una plaça que fa vibrar; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on catedrals del vi i cooperatives agrícoles amb orgull mentre en una plaça que fa vibrar; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Evita la comarca on cuina de clotxa i brasa en feines del camp i encara amb sants i processons solemnes; amb gralles que ressonen, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Ribera d'Ebre"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on secà i marges, amb pedra seca i pobles petits tot plegat en una plaça que fa vibrar; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on cants mariners amb rom cremat a la nit, en una cala plena de llumets on també amb llum de capvespre; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on la passió per les torres humanes que es descarreguen a plaça amb faixa i pinya mentre amb olor d'oli nou; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on fageda humida i boira, amb camins suaus i basalt tot plegat amb memòria obrera i xemeneies; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "No travessis la comarca on memòria de riu i mar, amb barques i llotja sense oblidar amb havaneres a la vora del mar; a tocar d'un gran riu cabalós, però tindries massa desviament per arribar als punts clau.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on ramaderia d’estiu i transhumància on també amb memòria obrera i xemeneies; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on Corpus amb foc, salts i figures simbòliques que fan tremolar una plaça amb el detall que amb foc i espurnes al cel; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on paisatge de prepirineu, mines i colònies tèxtils a tocar de riu i en un carreró de pedra; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on sal i mines, i una cuina de fonda que barreja muntanya i plana sense oblidar en camins de contraban; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on sermons medievals en llengua vulgar que són un tresor literari antic i amb gralles que ressonen; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on canals, regadius i camps perfectament dibuixats a la plana sense oblidar amb llegendes que encara corren; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on globus aerostàtics tenyint el cel de colors durant un festival que fa mirar amunt tot plegat a tocar d'una badia plena de musclos; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "No travessis la comarca on camins de pedra i masies escampades on també amb canyissars que xiuxiuegen; en prats d'alta muntanya, però el calendari fort de la zona és massa puntual per a aquesta partida.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on gamba vermella i arrossos, amb mercats que fan venir gana i encara amb música de cobla; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on canals, regadius i camps perfectament dibuixats a la plana i amb aigua termal i balnearis; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Descarta la comarca on Corpus amb foc, salts i figures simbòliques que fan tremolar una plaça i encara amb vitralls i rajoles modernistes; a tocar d'un estany quiet, però tindries massa desviament per arribar als punts clau.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on fageda humida i boira, amb camins suaus i basalt i amb gust de cassola lenta; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on parla amb trets gironins i orgull de plaça major mentre amb gralles que ressonen; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on jota i banda, amb accent meridional i caràcter de frontera mentre a tocar d'un gran riu cabalós; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on coves amb restes prehistòriques i aire de bosc interior i encara amb gralles que ressonen; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on llegenda de mosques que van salvar una ciutat assetjada i en prats d'alta muntanya; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "No passis per la comarca on castells i festa major amb seguici popular i encara amb aigua termal i balnearis; en una plaça que fa vibrar, però el calendari fort de la zona és massa puntual per a aquesta partida.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Tarragonès"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on formatge i mel de muntanya amb fires petites mentre amb música de cobla; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on fira de tardor amb bolets i cuina de brasa mentre quan el poble s'engalana; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on petjada d’un arquitecte modernista recordada en museu i carrers de pedra alhora a tocar d'un estany quiet; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on plana ampla, masies i mercats de dissabte i encara amb timbals que marquen el pas; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on raiers baixant troncs pel riu, recordant un ofici antic sense oblidar amb vent que et talla la cara; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on camins de pedra i masies escampades i encara amb boira a primera hora; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on campanars esvelts i romànic de vall, amb pedra freda i silenci d’hivern mentre amb flaires d'hivern i brasa; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on aigua termal, balnearis i passeigs que barregen interior i litoral mentre en un dia de mercat; amb llegendes que encara corren.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on camins de pedra seca i fonts amagades on també amb memòria obrera i xemeneies; amb flaires d'hivern i brasa.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on papereries i rius que han mogut molins i fàbriques durant generacions alhora entre muralles i ponts antics; entre oliveres i pedra seca.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on maduixes dolces i mercats que fan olor de primavera tot plegat quan el poble s'engalana; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on una calçotada al camp amb salsa espessa i porrons, quan el fred encara pica tot plegat amb olor d'oli nou; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on embotits curats amb boira i fred, amb llonganissa de nom famós i a tocar d'un gran riu cabalós; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on globus aerostàtics tenyint el cel de colors durant un festival que fa mirar amunt amb el detall que en prats d'alta muntanya; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on setmana medieval amb drac, cavaller i carrers emmurallats amb el detall que amb gust de cassola lenta; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on plana ampla, masies i mercats de dissabte i amb havaneres a la vora del mar; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on el vent del nord que es cola entre oliveres i roques i marca el caràcter de la gent mentre entre oliveres i pedra seca; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on setmana medieval amb drac, cavaller i carrers emmurallats on també amb jotes i so de banda; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on rumba catalana de barri, guitarra i palmes amb ritme de ventilador i encara entre muralles i ponts antics; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on secà i marges, amb pedra seca i pobles petits mentre amb gust de cassola lenta; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrigues"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on un univers surrealista convertit en museu-teatre on tot és possible amb el detall que amb música de cobla; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on una empremta grega i romana arran de mar, amb pedres antigues i mosaics sense oblidar en camins de contraban; amb jotes i so de banda, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on memòria de riu i mar, amb barques i llotja mentre amb aigua termal i balnearis; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on caves i brindis de vi escumós després de la verema, amb olor de most i encara entre parets de basalt; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on delta i aeroport, amb horta que resisteix la pressió metropolitana sense oblidar amb corals i veus blanques; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on formatge i mel de muntanya amb fires petites i amb aigua termal i balnearis; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on una empremta grega i romana arran de mar, amb pedres antigues i mosaics i a tocar d'un gran riu cabalós; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on ponts de pedra i ermites petites entre muntanyes molt tancades on també amb gralles que ressonen; en una plaça que fa vibrar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alta Ribagorça"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on parla occidental amb 'lo' i orgull de mercat amb el detall que a tocar d'un gran riu cabalós; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Evita la comarca on cereals, castells i horitzó obert de pedra seca sense oblidar a tocar d'una badia plena de musclos; amb música de cobla, però en temporada alta t'arrisques a perdre molt temps entre aglomeracions.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Segarra"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on canals, regadius i camps perfectament dibuixats a la plana i encara a tocar d'una badia plena de musclos; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on petjada d’un arquitecte modernista recordada en museu i carrers de pedra mentre en camins de contraban; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on un gran festival renaixentista on els carrers són un escenari del Segle d’Or alhora amb foc i espurnes al cel; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on maduixes dolces i mercats que fan olor de primavera on també amb olor d'oli nou; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on festes de cançó d’havaneres i rom cremat en passeigs tot plegat a tocar d'un gran riu cabalós; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on un gran festival renaixentista on els carrers són un escenari del Segle d’Or amb el detall que amb havaneres a la vora del mar; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on caves i brindis de vi escumós després de la verema, amb olor de most i encara amb boira a primera hora; amb aigua termal i balnearis.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on maresmenc cantat, amb pescadors i horta a tocar de mar i amb corals i veus blanques; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on petjada d’un arquitecte modernista recordada en museu i carrers de pedra i encara a tocar d'un gran riu cabalós; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "Evita la comarca on la muntanya d’agulles inconfusibles amb monestir i cor de veus blanques i en prats d'alta muntanya; amb timbals que marquen el pas, però el ritme del joc es pot trencar amb tantes parades obligades.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on cants mariners amb rom cremat a la nit, en una cala plena de llumets i entre muralles i ponts antics; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on raiers baixant troncs pel riu, recordant un ofici antic alhora en una plaça que fa vibrar; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on cultura de celler familiar i tast amb calma tot plegat amb aigua termal i balnearis; entre muralles i ponts antics, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Priorat"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on monestirs cistercencs i pedres que respiren silenci i història i a tocar d'una badia plena de musclos; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on penjar un ruc de cartró que orina confeti per Carnestoltes mentre amb gralles que ressonen; amb llum de capvespre, però el ritme del joc es pot trencar amb tantes parades obligades.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Solsonès"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on un univers surrealista convertit en museu-teatre on tot és possible tot plegat amb canyissars que xiuxiuegen; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on sermons medievals en llengua vulgar que són un tresor literari antic on també amb vitralls i rajoles modernistes; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on formatge i mel de muntanya amb fires petites amb el detall que a tocar d'un estany quiet; amb sants i processons solemnes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on papereries i rius que han mogut molins i fàbriques durant generacions on també en un dia de mercat; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on camins de pedra i masies escampades mentre amb timbals que marquen el pas; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on xató i trobades d’hivern amb escarola, bacallà i salsa intensa amb el detall que amb corals i veus blanques; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on arquitectura modernista exuberant que fa de la ciutat un museu viu i amb vitralls i rajoles modernistes; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on monestirs cistercencs i pedres que respiren silenci i història mentre a tocar d'un estany quiet; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "No passis per la comarca on cants mariners amb rom cremat a la nit, en una cala plena de llumets i en un dia de mercat; entre vinyes i marges, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on llegenda d’un drac adormit sota un estany immens i tranquil alhora a tocar d'una badia plena de musclos; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on cultura marinera i de vila d’estiueig amb llum blanca i encara en camins de contraban; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on ramaderia d’estiu i transhumància tot plegat entre parets de basalt; quan el poble s'engalana.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on un gran festival renaixentista on els carrers són un escenari del Segle d’Or on també en camins de contraban; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Ebre"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on congost i parets verticals que fan el riu estret i espectacular amb el detall que amb gralles que ressonen; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on colles que fan cultura popular a tocar de grans vies sense oblidar a tocar d'un gran riu cabalós; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on pobles de pedra i carrerons, amb mar i cales que obliguen a caminar i encara amb timbals que marquen el pas; en un carreró de pedra.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on tradició de Corpus amb un ou que balla sobre l’aigua en un claustre amb el detall que amb llum de capvespre; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on congost de parets altíssimes i aigua verda mentre a tocar d'un estany quiet; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on canals, regadius i camps perfectament dibuixats a la plana tot plegat entre oliveres i pedra seca; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on fageda humida i boira, amb camins suaus i basalt mentre en un carreró de pedra; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on una calçotada al camp amb salsa espessa i porrons, quan el fred encara pica on també en un carreró de pedra; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Camp"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on caves i brindis de vi escumós després de la verema, amb olor de most i encara amb havaneres a la vora del mar; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on jota i banda, amb accent meridional i caràcter de frontera tot plegat amb llum de capvespre; entre vinyes i marges.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on parla occidental amb 'lo' i orgull de mercat alhora amb canyissars que xiuxiuegen; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on tradició de Corpus amb un ou que balla sobre l’aigua en un claustre mentre a tocar d'un gran riu cabalós; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on romànic i pirineu, amb monestir fundacional i llegendes on també amb aigua termal i balnearis; a tocar d'un estany quiet, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Ripollès"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on una misteriosa llum medieval que va salvar una obra d’aigua essencial tot plegat amb música de cobla; amb sants i processons solemnes, però tindries massa desviament per arribar als punts clau.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on ramaderia d’estiu i transhumància on també en un carreró de pedra; amb sants i processons solemnes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on neu, esquí i mercats de formatges, amb estanys i prats mentre amb jotes i so de banda; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Cerdanya"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on llegenda d’un drac adormit sota un estany immens i tranquil sense oblidar a tocar d'un estany quiet; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla de l'Estany"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on fesols menuts cuits a foc lent, amb terra negra i volcans alhora amb havaneres a la vora del mar; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on falles de foc baixant de la muntanya per Sant Joan i encara amb vitralls i rajoles modernistes; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "No travessis la comarca on raiers baixant troncs pel riu, recordant un ofici antic i encara amb boira a primera hora; amb llegendes que encara corren, però el calendari fort de la zona és massa puntual per a aquesta partida.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on sal i mines, i una cuina de fonda que barreja muntanya i plana tot plegat entre muralles i ponts antics; amb foc i espurnes al cel.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Bages"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on parla occidental amb 'lo' i orgull de mercat on també en una fageda ombrívola; amb boira a primera hora.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pla d'Urgell"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on catedrals del vi i cooperatives agrícoles amb orgull amb el detall que a tocar d'una badia plena de musclos; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on parcs d’alta muntanya, estanys i silenci de vall i entre oliveres i pedra seca; amb canyissars que xiuxiuegen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "Inclou a l'itinerari la comarca on una empremta grega i romana arran de mar, amb pedres antigues i mosaics sense oblidar amb flaires d'hivern i brasa; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on globus aerostàtics tenyint el cel de colors durant un festival que fa mirar amunt alhora en camins de contraban; a tocar d'un gran riu cabalós, però el ritme del joc es pot trencar amb tantes parades obligades.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on ramaderia d’estiu i transhumància amb el detall que amb música de cobla; amb gralles que ressonen.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Sobirà"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on aigua termal, balnearis i passeigs que barregen interior i litoral amb el detall que en una plaça que fa vibrar; amb gust de cassola lenta.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Camp"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on setmana medieval amb drac, cavaller i carrers emmurallats on també amb jotes i so de banda; amb castanyes i bolets.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Conca de Barberà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on paisatge de prepirineu, mines i colònies tèxtils a tocar de riu alhora amb gralles que ressonen; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on memòria de riu i mar, amb barques i llotja on també en una fageda ombrívola; entre parets de basalt.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "La teva ruta ha d'incloure la comarca on campaners que competeixen amb repics precisos i entre vinyes i marges; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on formatges de valls pirinenques i fires on el gust és tan important com el paisatge tot plegat entre vinyes i marges; amb vitralls i rajoles modernistes.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on penya-segats i camins costaners amb vistes llargues mentre amb vent que et talla la cara; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garraf"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on jota i banda, amb accent meridional i caràcter de frontera i encara en camins de contraban; amb sants i processons solemnes, però els trams més icònics depenen del temps i poden fallar-te.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Montsià"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on pobles de pedra i carrerons, amb mar i cales que obliguen a caminar on també a tocar d'un gran riu cabalós; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Empordà"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on nit d’estels molt fosca en un massís on el cel és patrimoni amb el detall que amb gralles que ressonen; en un dia de mercat.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Noguera"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on rumba catalana de barri, guitarra i palmes amb ritme de ventilador mentre amb gralles que ressonen; amb olor d'oli nou.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on una empremta grega i romana arran de mar, amb pedres antigues i mosaics tot plegat a tocar d'una badia plena de musclos; amb timbals que marquen el pas.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on rumba catalana de barri, guitarra i palmes amb ritme de ventilador i en camins de contraban; amb corals i veus blanques.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Barcelonès"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on vinya i platges daurades amb passeigs tranquils tot plegat entre vinyes i marges; en una fageda ombrívola.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Penedès"
+    ]
+  },
+  {
+    "text": "Procura no entrar a la comarca on cant de taverna i caràcter de muntanya en festes majors sense oblidar amb memòria obrera i xemeneies; amb llum de capvespre, però en temporada alta t'arrisques a perdre molt temps entre aglomeracions.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "Ves a la comarca on muralles, ponts i festivals de flors que omplen carrers sense oblidar en una fageda ombrívola; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Gironès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on una festa de la fil·loxera que es recorda amb foc i gegants a la plaça i encara en una plaça que fa vibrar; a tocar d'un estany quiet.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "No passis per la comarca on caves i brindis de vi escumós després de la verema, amb olor de most amb el detall que en prats d'alta muntanya; amb foc i espurnes al cel, però moltes visites funcionen amb reserva estricta i no t'encaixa.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Alt Penedès"
+    ]
+  },
+  {
+    "text": "Cal que travessis la comarca on maresmenc cantat, amb pescadors i horta a tocar de mar amb el detall que en un carreró de pedra; amb memòria obrera i xemeneies.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Maresme"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on música de cobla i caràcter de comarca central sense oblidar amb llegendes que encara corren; amb vent que et talla la cara.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  },
+  {
+    "text": "Has de fer parada a la comarca on una empremta grega i romana arran de mar, amb pedres antigues i mosaics tot plegat entre oliveres i pedra seca; amb havaneres a la vora del mar.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Empordà"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on fesols menuts cuits a foc lent, amb terra negra i volcans on també amb aigua termal i balnearis; en camins de contraban.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Garrotxa"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on congost de parets altíssimes i aigua verda mentre amb castanyes i bolets; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Pallars Jussà"
+    ]
+  },
+  {
+    "text": "Esquiva la comarca on castells de frontera i camins de vinya que connecten pobles de pas i entre vinyes i marges; amb jotes i so de banda, però el calendari fort de la zona és massa puntual per a aquesta partida.",
+    "type": "EXCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on castells de frontera i camins de vinya que connecten pobles de pas i amb canyissars que xiuxiuegen; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Anoia"
+    ]
+  },
+  {
+    "text": "És obligatori passar per la comarca on tradició de danses de festa major amb cobla petita tot plegat amb havaneres a la vora del mar; a tocar d'un gran riu cabalós.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Lluçanès"
+    ]
+  },
+  {
+    "text": "Has de passar per la comarca on cant de taverna i caràcter de muntanya en festes majors i amb corals i veus blanques; a tocar d'una badia plena de musclos.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Berguedà"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on fira de tardor amb bolets i cuina de brasa amb el detall que quan el poble s'engalana; amb música de cobla.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Moianès"
+    ]
+  },
+  {
+    "text": "Fes ruta per la comarca on sermons medievals en llengua vulgar que són un tresor literari antic amb el detall que amb memòria obrera i xemeneies; amb llum de capvespre.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Alt Urgell"
+    ]
+  },
+  {
+    "text": "No t'escapis de la comarca on colles que fan cultura popular a tocar de grans vies on també amb olor d'oli nou; en prats d'alta muntanya.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Baix Llobregat"
+    ]
+  },
+  {
+    "text": "Has d'anar a la comarca on música de cobla i caràcter de comarca central sense oblidar entre vinyes i marges; entre muralles i ponts antics.",
+    "type": "INCLUDE",
+    "comarques": [
+      "Osona"
+    ]
+  }
+]

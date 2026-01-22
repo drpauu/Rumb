@@ -9,6 +9,7 @@ import { loadSettings, saveSettings } from "./lib/settings.js";
 import { THEMES, TOMAS_THEME_ID } from "./lib/themes.js";
 import { RULES, pickRuleForKey, normalizeRule } from "./lib/rules.js";
 import { createAudioManager, loadAudioManifest } from "./lib/audio.js";
+import { useSound } from "./audio/SoundProvider.tsx";
 import {
   loadCompletionRecords,
   saveCompletionRecords,
@@ -239,6 +240,9 @@ const STRINGS = {
     theme: "Tema",
     music: "Música",
     sounds: "Sons",
+    soundToggle: "Sons activats",
+    masterVolume: "Volum general",
+    sfxVolume: "Volum d'efectes",
     language: "Idioma",
     volume: "Volum",
     newGame: "Nova partida",
@@ -344,6 +348,9 @@ const STRINGS = {
     theme: "Tèma",
     music: "Musica",
     sounds: "Sons",
+    soundToggle: "Sons activats",
+    masterVolume: "Volum generau",
+    sfxVolume: "Volum d'efèctes",
     language: "Lengua",
     volume: "Vòlum",
     newGame: "Nau partida",
@@ -433,6 +440,9 @@ const STRINGS = {
     theme: "Tema, noi",
     music: "Música, eh",
     sounds: "Sorollets, nano",
+    soundToggle: "Sons activats",
+    masterVolume: "Volum general",
+    sfxVolume: "Volum d'efectes",
     language: "Parla, noi",
     volume: "Volum, eh",
     newGame: "Nova partida, som-hi",
@@ -522,6 +532,9 @@ const STRINGS = {
     theme: "Tema, bro",
     music: "Música, bro",
     sounds: "Sons, tio",
+    soundToggle: "Sons activats",
+    masterVolume: "Volum general",
+    sfxVolume: "Volum d'efectes",
     language: "Idioma, bro",
     volume: "Volum, tio",
     newGame: "Nova partida, bro",
@@ -611,6 +624,9 @@ const STRINGS = {
     theme: "Tema, xe",
     music: "Música, xe",
     sounds: "Sons, xe",
+    soundToggle: "Sons activats",
+    masterVolume: "Volum general",
+    sfxVolume: "Volum d'efectes",
     language: "Idioma, xe",
     volume: "Volum, xe",
     newGame: "Nova partida, xe",
@@ -699,6 +715,9 @@ const STRINGS = {
     theme: "Tema, lo",
     music: "Música, lo",
     sounds: "Sons, lo",
+    soundToggle: "Sons activats",
+    masterVolume: "Volum general",
+    sfxVolume: "Volum d'efectes",
     language: "Idioma, lo",
     volume: "Volum, lo",
     newGame: "Nova partida, lo",
@@ -1695,8 +1714,15 @@ export default function App() {
       return new Set(["pixapi"]);
     }
   });
-  const [soundEnabled] = useState(initialSettings.sfxEnabled);
-  const [sfxVolume, setSfxVolume] = useState(initialSettings.sfxVolume);
+  const {
+    play,
+    enabled: sfxEnabled,
+    setEnabled: setSfxEnabled,
+    masterVolume,
+    setMasterVolume,
+    sfxVolume,
+    setSfxVolume
+  } = useSound();
   const [musicEnabled] = useState(initialSettings.musicEnabled);
   const [musicVolume, setMusicVolume] = useState(initialSettings.musicVolume);
   const [musicTrack, setMusicTrack] = useState(initialSettings.musicTrack);
@@ -1802,10 +1828,9 @@ export default function App() {
   const copyTimerRef = useRef(null);
   const hintTimersRef = useRef({});
   const replayTimerRef = useRef(null);
-  const audioRef = useRef(null);
-  const musicRef = useRef(null);
   const musicTimerRef = useRef(null);
   const musicBlockedRef = useRef(false);
+  const musicStartedRef = useRef(false);
   const guessErrorTimerRef = useRef(null);
   const guessFeedbackTimerRef = useRef(null);
   const guessInputRef = useRef(null);
@@ -1948,10 +1973,10 @@ export default function App() {
       musicEnabled,
       musicVolume,
       musicTrack,
-      sfxEnabled: soundEnabled,
+      sfxEnabled,
       sfxVolume
     });
-  }, [activeTheme, language, musicEnabled, musicVolume, musicTrack, soundEnabled, sfxVolume]);
+  }, [activeTheme, language, musicEnabled, musicVolume, musicTrack, sfxEnabled, sfxVolume]);
 
   useEffect(() => {
     let active = true;
@@ -2024,9 +2049,9 @@ export default function App() {
     if (typeof window === "undefined") return;
     localStorage.setItem(
       SFX_SETTINGS_KEY,
-      JSON.stringify({ enabled: soundEnabled, volume: sfxVolume })
+      JSON.stringify({ enabled: sfxEnabled, volume: sfxVolume })
     );
-  }, [soundEnabled, sfxVolume]);
+  }, [sfxEnabled, sfxVolume]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -2172,7 +2197,7 @@ export default function App() {
         music_track: musicTrack,
         music_enabled: musicEnabled,
         music_volume: musicVolume,
-        sfx_enabled: soundEnabled,
+        sfx_enabled: sfxEnabled,
         sfx_volume: sfxVolume,
         last_seen: new Date().toISOString()
       })
@@ -2186,7 +2211,7 @@ export default function App() {
     musicTrack,
     musicEnabled,
     musicVolume,
-    soundEnabled,
+    sfxEnabled,
     sfxVolume
   ]);
 
@@ -2333,16 +2358,16 @@ export default function App() {
       setStartedAt(Date.now());
       return;
     }
-    playSfx("countdown");
     const timer = setTimeout(() => {
       setCountdownValue((prev) => (prev !== null ? prev - 1 : prev));
     }, 1000);
     return () => clearTimeout(timer);
-  }, [isTimedMode, isCountdownActive, countdownValue, playSfx]);
+  }, [isTimedMode, isCountdownActive, countdownValue]);
 
   useEffect(() => {
     if (!isTimedMode || !startedAt || isComplete || isFailed) return;
     if (timeLeftMs <= 0) {
+      play("level_lose", { bypassCooldown: true });
       setIsFailed(true);
       setShowModal(true);
       setResultData((prev) =>
@@ -2380,7 +2405,8 @@ export default function App() {
     guessHistory,
     activeRule,
     activeDifficulty,
-    dailyStreak
+    dailyStreak,
+    play
   ]);
 
   useEffect(() => {
@@ -2641,7 +2667,22 @@ export default function App() {
       return;
     }
     startMusic();
-  }, [musicEnabled, musicTrack, musicVolume, audioManifest, activeTheme]);
+  }, [musicEnabled, musicTrack, audioManifest, activeTheme]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!audioManagerRef.current) return;
+    audioManagerRef.current.setMusicVolume?.(musicVolume);
+    if (!musicEnabled || !audioManifest?.music) return;
+    if (musicVolume <= 0) return;
+    if (musicBlockedRef.current || !musicStartedRef.current) {
+      startMusic();
+    }
+  }, [musicVolume, musicEnabled, audioManifest, activeTheme, musicTrack]);
+
+  useEffect(() => {
+    musicStartedRef.current = false;
+  }, [musicTrack]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -2649,8 +2690,10 @@ export default function App() {
       if (!musicEnabled) return;
       if (!audioManifest?.music) return;
       if (!audioManagerRef.current) return;
-      if (!musicBlockedRef.current) return;
-      startMusic();
+      if (musicVolume <= 0) return;
+      if (musicBlockedRef.current || !musicStartedRef.current) {
+        startMusic();
+      }
     };
     window.addEventListener("pointerdown", handler, { passive: true });
     window.addEventListener("keydown", handler);
@@ -2714,6 +2757,9 @@ export default function App() {
           }
           if (typeof playerData.music_track === "string") {
             setMusicTrack(playerData.music_track);
+          }
+          if (typeof playerData.sfx_enabled === "boolean") {
+            setSfxEnabled(playerData.sfx_enabled);
           }
           if (typeof playerData.sfx_volume === "number") {
             setSfxVolume(playerData.sfx_volume);
@@ -2943,47 +2989,6 @@ export default function App() {
     }
   }, [replayIndex, replayMode, replayOrder.length]);
 
-  function playSfx(kind) {
-    if (!soundEnabled) return;
-    if (audioManagerRef.current) {
-      audioManagerRef.current.playSfx(kind, activeTheme, sfxVolume);
-      return;
-    }
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
-    if (!audioRef.current) {
-      audioRef.current = new AudioContext();
-    }
-    const ctx = audioRef.current;
-    const palette = {
-      click: [[880], [988], [1046]],
-      open: [[420, 540], [460, 620]],
-      close: [[320, 260], [300, 240]],
-      toggle: [[460], [520]],
-      submit: [[740, 880], [784, 932]],
-      correct: [[523, 659], [587, 784], [440, 660]],
-      repeat: [[220], [196], [246]],
-      error: [[160, 120], [180, 140]],
-      neutral: [[392], [440]],
-      powerup: [[660, 988], [720, 1046]],
-      win: [[523, 659, 784], [587, 740, 880]],
-      countdown: [[520], [580], [640]]
-    };
-    const picks = palette[kind] || palette.neutral;
-    const frequencies = picks[Math.floor(Math.random() * picks.length)];
-    const gain = ctx.createGain();
-    gain.gain.value = Math.max(0.02, Math.min(sfxVolume, 1)) * 0.12;
-    gain.connect(ctx.destination);
-    frequencies.forEach((frequency, index) => {
-      const osc = ctx.createOscillator();
-      osc.type = index === 0 ? "sine" : "triangle";
-      osc.frequency.value = frequency;
-      osc.connect(gain);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.18);
-    });
-  }
-
   async function persistLevel(payload) {
     if (!payload) return;
     if (!isSupabaseReady) return;
@@ -3083,24 +3088,34 @@ export default function App() {
       clearInterval(musicTimerRef.current);
       musicTimerRef.current = null;
     }
+    musicStartedRef.current = false;
   }
 
-  function startMusic(trackId = musicTrack) {
+  function startMusic(trackId = musicTrack, volumeOverride) {
     if (!musicEnabled) return;
     if (audioManagerRef.current) {
+      const nextVolume =
+        typeof volumeOverride === "number" && Number.isFinite(volumeOverride)
+          ? volumeOverride
+          : musicVolume;
       const playPromise = audioManagerRef.current.playMusic(
         trackId,
-        musicVolume,
+        nextVolume,
         activeTheme
       );
       if (playPromise && typeof playPromise.then === "function") {
         playPromise
           .then(() => {
             musicBlockedRef.current = false;
+            musicStartedRef.current = true;
           })
           .catch(() => {
             musicBlockedRef.current = true;
+            musicStartedRef.current = false;
           });
+      } else {
+        musicBlockedRef.current = false;
+        musicStartedRef.current = true;
       }
     }
   }
@@ -3531,8 +3546,9 @@ export default function App() {
     if (!powerup) return;
     const usesLeft = powerups[powerupId] ?? 0;
     if (!isExploreMode && usesLeft <= 0) {
-      playSfx("error");
+      play("wrong_comarca");
       if (isTimedMode) {
+        play("level_lose", { bypassCooldown: true });
         setIsFailed(true);
         setShowModal(true);
         setResultData((prev) =>
@@ -3554,7 +3570,7 @@ export default function App() {
       }
       return;
     }
-    playSfx("powerup");
+    play("recharge");
     if (powerupId === "reveal-next") {
       const revealId =
         shortestPath.find(
@@ -3635,7 +3651,7 @@ export default function App() {
     const id = normalizedToId.get(normalized);
     if (!id) {
       triggerGuessError();
-      playSfx("error");
+      play("wrong_comarca");
       pushGuessFeedback(t("feedbackNoMatch"), "bad");
       focusGuessInput();
       return;
@@ -3643,7 +3659,7 @@ export default function App() {
 
     if (id === startId || id === targetId) {
       triggerGuessError();
-      playSfx("neutral");
+      play("wrong_comarca");
       pushGuessFeedback(t("feedbackStartTarget"), "warn");
       focusGuessInput();
       return;
@@ -3651,7 +3667,7 @@ export default function App() {
 
     if (guessedSet.has(id)) {
       triggerGuessError();
-      playSfx("repeat");
+      play("wrong_comarca");
       pushGuessFeedback(t("feedbackRepeated"), "warn");
       focusGuessInput();
       return;
@@ -3669,7 +3685,13 @@ export default function App() {
 
     const name = comarcaById.get(id)?.properties.name || trimmed;
     setGuessHistory((prev) => [...prev, { id, name }]);
-    playSfx("correct");
+    if (shortestPathSet.has(id)) {
+      play("correct_comarca");
+    } else if (shortestNeighborSet.has(id)) {
+      play("almost_comarca");
+    } else {
+      play("wrong_comarca");
+    }
     pushGuessFeedback(t("feedbackOk"), "good");
     focusGuessInput();
     if (!userZoomedRef.current) {
@@ -3695,7 +3717,7 @@ export default function App() {
   }
 
   function handleSuggestionPick(name) {
-    playSfx("click");
+    play("ui_select");
     setGuessValue(name);
     setIsSuggestionsOpen(false);
     focusGuessInput();
@@ -3731,7 +3753,7 @@ export default function App() {
   }
 
   function handlePlayToday() {
-    playSfx("click");
+    play("ui_select");
     const key = dayKey;
     const record = getCompletionRecord("daily", key);
     if (record?.winningAttempt) {
@@ -3753,7 +3775,7 @@ export default function App() {
   }
 
   function handlePlayWeekly() {
-    playSfx("click");
+    play("ui_select");
     const key = weekKey;
     const record = getCompletionRecord("weekly", key);
     if (record?.winningAttempt) {
@@ -3775,7 +3797,7 @@ export default function App() {
   }
 
   function handleStartNext() {
-    playSfx("submit");
+    play("ui_select");
     if (isDailyMode) {
       const record = getCompletionRecord("daily", activeDayKey);
       if (record?.winningAttempt) {
@@ -3837,7 +3859,7 @@ export default function App() {
   }
 
   function handleThemeSelect(themeId) {
-    playSfx("toggle");
+    play("ui_select");
     setActiveTheme(themeId);
     if (themeId === TOMAS_THEME_ID) {
       triggerWeatherForComarca(lastGuessRef.current, true);
@@ -3845,23 +3867,23 @@ export default function App() {
   }
 
   function handleConfigOpen() {
-    playSfx("open");
+    play("ui_select");
     setConfigOpen(true);
   }
 
   function handleConfigClose() {
-    playSfx("close");
+    play("ui_select");
     setConfigOpen(false);
   }
 
   function handleDifficultyPick(difficultyId) {
     if (!unlockedDifficulties.has(difficultyId)) return;
-    playSfx("toggle");
+    play("ui_select");
     setDifficulty(difficultyId);
   }
 
   function handleCalendarOpen(mode) {
-    playSfx("open");
+    play("ui_select");
     const now = new Date();
     let targetMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     if (mode === "daily") {
@@ -3903,7 +3925,7 @@ export default function App() {
   async function handleCalendarAction(mode, key) {
     const hasCalendarData = calendarDaily.length > 0 || calendarWeekly.length > 0;
     if (!hasCalendarData && calendarStatus !== "ready") return;
-    playSfx("click");
+    play("ui_select");
     const record = getCompletionRecord(mode, key);
     if (record?.winningAttempt) {
       openCompletionModal(record);
@@ -3950,11 +3972,12 @@ export default function App() {
   }
 
   function handleCalendarClose() {
-    playSfx("close");
+    play("ui_select");
     setCalendarOpen(false);
   }
 
   function handleTitleReset() {
+    play("ui_select");
     const todayKey = dayKey;
     const thisWeekKey = weekKey;
     const todayDone = Boolean(getCompletionRecord("daily", todayKey)?.winningAttempt);
@@ -4151,12 +4174,22 @@ export default function App() {
         ? `weekly:${activeWeekKey}`
         : `${gameMode}:${activeDifficulty}:${startId || "?"}:${targetId || "?"}:${ruleId || "none"}`;
 
-    if (distance === 0 && gameMode === "normal") {
-      const nextDifficulty = getNextDifficultyId(activeDifficulty);
-      if (nextDifficulty) {
-        setUnlockedDifficulties((prev) => new Set([...prev, nextDifficulty]));
-      }
+    const nextDifficulty =
+      distance === 0 && gameMode === "normal"
+        ? getNextDifficultyId(activeDifficulty)
+        : null;
+    const shouldUnlock =
+      Boolean(nextDifficulty) && !unlockedDifficulties.has(nextDifficulty);
+    if (shouldUnlock && nextDifficulty) {
+      setUnlockedDifficulties((prev) => new Set([...prev, nextDifficulty]));
     }
+
+    const currentStats = levelStats[levelKey] || {};
+    const isNewBestTime =
+      !currentStats.bestTime || totalTime < currentStats.bestTime;
+    const isNewBestAttempts =
+      !currentStats.bestAttempts || attempts < currentStats.bestAttempts;
+    const shouldReward = isNewBestTime || isNewBestAttempts;
 
     setLevelStats((prev) => {
       const current = prev[levelKey] || {};
@@ -4208,7 +4241,19 @@ export default function App() {
       .map((pathId) => comarcaById.get(pathId)?.properties.name || pathId);
 
     setIsComplete(true);
-    playSfx("win");
+    play("objective_met");
+    if (distance === 0) {
+      play("level_perfect", { bypassCooldown: true });
+    } else {
+      play("level_win", { bypassCooldown: true });
+    }
+    const rewardKeys = [];
+    if (bonusMs > 0) rewardKeys.push("treasure_bonus");
+    if (shouldUnlock) rewardKeys.push("unlock");
+    if (shouldReward) rewardKeys.push("coin_reward");
+    rewardKeys.forEach((key, index) => {
+      setTimeout(() => play(key), 1300 + index * 350);
+    });
     void fireConfetti({ particleCount: 180, spread: 70, origin: { y: 0.7 } });
     setLastEntryId(entry.id);
 
@@ -4550,13 +4595,33 @@ export default function App() {
             </div>
           </div>
           <div className="map-controls">
-            <button type="button" onClick={handleZoomIn} aria-label="Apropar">
+            <button
+              type="button"
+              onClick={() => {
+                play("ui_select");
+                handleZoomIn();
+              }}
+              aria-label="Apropar"
+            >
               +
             </button>
-            <button type="button" onClick={handleZoomOut} aria-label="Allunyar">
+            <button
+              type="button"
+              onClick={() => {
+                play("ui_select");
+                handleZoomOut();
+              }}
+              aria-label="Allunyar"
+            >
               −
             </button>
-            <button type="button" onClick={handleRecenter}>
+            <button
+              type="button"
+              onClick={() => {
+                play("ui_select");
+                handleRecenter();
+              }}
+            >
               Recentrar
             </button>
           </div>
@@ -4567,6 +4632,7 @@ export default function App() {
             viewBox={viewBox}
             role="img"
             aria-label="Mapa de Catalunya"
+            onPointerDown={() => play("map_tap")}
           >
             <g ref={gRef}>
               {outlinePath ? <path className="outline" d={outlinePath} /> : null}
@@ -4716,7 +4782,10 @@ export default function App() {
             <button
               type="button"
               className="options-toggle"
-              onClick={() => setOptionsOpen((prev) => !prev)}
+              onClick={() => {
+                play("ui_select");
+                setOptionsOpen((prev) => !prev);
+              }}
               aria-expanded={optionsOpen}
               aria-controls="options-panel"
             >
@@ -4735,7 +4804,7 @@ export default function App() {
                       type="button"
                       className={`mode-button ${gameMode === mode.id ? "active" : ""}`}
                       onClick={() => {
-                        playSfx("toggle");
+                        play("ui_select");
                         setGameMode(mode.id);
                       }}
                     >
@@ -4878,14 +4947,20 @@ export default function App() {
               <button
                 type="button"
                 className={`calendar-tab ${calendarMode === "daily" ? "active" : ""}`}
-                onClick={() => setCalendarMode("daily")}
+                onClick={() => {
+                  play("ui_select");
+                  setCalendarMode("daily");
+                }}
               >
                 {t("daily")}
               </button>
               <button
                 type="button"
                 className={`calendar-tab ${calendarMode === "weekly" ? "active" : ""}`}
-                onClick={() => setCalendarMode("weekly")}
+                onClick={() => {
+                  play("ui_select");
+                  setCalendarMode("weekly");
+                }}
               >
                 {t("weekly")}
               </button>
@@ -4897,7 +4972,10 @@ export default function App() {
                   <button
                     type="button"
                     className="icon-button"
-                    onClick={handleCalendarPrevMonth}
+                    onClick={() => {
+                      play("ui_select");
+                      handleCalendarPrevMonth();
+                    }}
                     aria-label={t("previous")}
                   >
                     ‹
@@ -4906,7 +4984,10 @@ export default function App() {
                   <button
                     type="button"
                     className="icon-button"
-                    onClick={handleCalendarNextMonth}
+                    onClick={() => {
+                      play("ui_select");
+                      handleCalendarNextMonth();
+                    }}
                     aria-label={t("next")}
                   >
                     ›
@@ -4970,7 +5051,10 @@ export default function App() {
                   <button
                     type="button"
                     className="icon-button"
-                    onClick={handleCalendarPrevMonth}
+                    onClick={() => {
+                      play("ui_select");
+                      handleCalendarPrevMonth();
+                    }}
                     aria-label={t("previous")}
                   >
                     ‹
@@ -4979,7 +5063,10 @@ export default function App() {
                   <button
                     type="button"
                     className="icon-button"
-                    onClick={handleCalendarNextMonth}
+                    onClick={() => {
+                      play("ui_select");
+                      handleCalendarNextMonth();
+                    }}
                     aria-label={t("next")}
                   >
                     ›
@@ -5120,13 +5207,39 @@ export default function App() {
                   max="1"
                   step="0.01"
                   value={musicVolume}
-                  onChange={(event) => setMusicVolume(Number(event.target.value))}
+                  onChange={(event) => {
+                    const nextVolume = Number(event.target.value);
+                    setMusicVolume(nextVolume);
+                    if (nextVolume > 0) {
+                      startMusic(musicTrack, nextVolume);
+                    }
+                  }}
                 />
               </div>
 
               <span className="label">{t("sounds")}</span>
+              <label className="toggle-row">
+                <input
+                  type="checkbox"
+                  checked={sfxEnabled}
+                  onChange={(event) => setSfxEnabled(event.target.checked)}
+                />
+                <span>{t("soundToggle")}</span>
+              </label>
               <div className="range-row">
-                <span className="label">{t("volume")}</span>
+                <span className="label">{t("masterVolume")}</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={masterVolume}
+                  onChange={(event) => setMasterVolume(Number(event.target.value))}
+                  disabled={!sfxEnabled}
+                />
+              </div>
+              <div className="range-row">
+                <span className="label">{t("sfxVolume")}</span>
                 <input
                   type="range"
                   min="0"
@@ -5134,6 +5247,7 @@ export default function App() {
                   step="0.01"
                   value={sfxVolume}
                   onChange={(event) => setSfxVolume(Number(event.target.value))}
+                  disabled={!sfxEnabled}
                 />
               </div>
 
